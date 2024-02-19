@@ -14,13 +14,13 @@ Sistema criado para gerenciar estoque de produtos além de cadastrar serviços e
 1° Passo : Clonar o repositório, baixando o .zip, ou rodando o código abaixo na pasta do projeto.
 
 ```bash
-    git clone https://github.com/luisgustavorr/GumossOilChange.git
+    git clone https://github.com/luisgustavorr/OilChangeManager.git
 ```
 2° Passo : Criar a pasta vendor usando o composer.
 ```bash
     composer install
 ```
-3° Passo : Criar seu arquivo .env na pasta raiz usando como base o arquivo [ExampleDotEnv](https://github.com/luisgustavorr/GumossOilChange/blob/main/ExampleDotEnv.txt).
+3° Passo : Criar seu arquivo .env na pasta raiz usando como base o arquivo [ExampleDotEnv](https://github.com/luisgustavorr/OilChangeManager/blob/main/ExampleDotEnv.txt).
 
 
 ## Usado Por
