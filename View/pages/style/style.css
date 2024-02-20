@@ -137,6 +137,19 @@ fundo {
   flex-direction: row;
 
 }
+.pesquisar_venda div{
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+.pesquisar_venda div input{
+  width: 135px;
+  height: 40px;
+  border-radius: 5px;
+  padding: 0 5px;
+
+  border: 1px solid #c2c2c2;
+}
 .saving_products{
   display: flex;
   position: absolute;
@@ -155,6 +168,12 @@ fundo {
   color: red;
   font-size: 16px;
   font-weight: 500;
+}
+.pesquisar_venda {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  justify-content: space-between;
 }
 .saving_header{
   display: flex;
@@ -1627,15 +1646,17 @@ i span {
   align-items: center;
 }
 .header_section .left_side {
-  width: 48%;
+  width: 22%;
   font-weight: 300;
   font-size: 18px;
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   flex-direction: column;
-  height: 70%;
+  height: 100%;
   border-right: 2px solid #F53F00;
-  align-items: center;
+  align-items: flex-end;
+  margin-left: 7%;
+  padding-right: 10px;
 }
 header img{
   height: 100%;
@@ -2114,4 +2135,10 @@ font-size: 15px;
 font-weight: 500;
 position: absolute;
 bottom: 0;
+}
+@media print{
+  header, footer, aside, nav, form, #sidebar, .menu, .hero, .header_section,.chart_father {
+    display: none;
+    visibility: hidden;
+  }
 }

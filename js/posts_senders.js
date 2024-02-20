@@ -1,6 +1,57 @@
 $(".datas").change(function () {
   alterarTabela();
 });
+function procurarVeiculos(inputID){
+  console.log(inputID)
+
+data = {
+
+  pesquisa:$("#"+inputID).val().trim(),
+  data_min:$("#data_minima").val(),
+  data_max:$("#data_maxima").val(),
+  
+}
+if(inputID == "pesquisar_venda_carro"){
+  data["placa"] = true
+}
+$.post("Models/post_receivers/pesquisar_vendas.php",data,(ret)=>{
+  console.log(ret)
+  $("#table_tabela tbody").html(ret)
+  if(inputID == "pesquisar_venda_carro"){
+    $("#pesquisar_venda_cliente").val("")
+    $(".tabela_header span").html("Atendimentos do Veículo: <yellow>"+$("#pesquisar_venda_carro").val().toUpperCase()+"</yellow>")
+
+  }else{
+    $("#pesquisar_venda_carro").val("")
+
+    $(".tabela_header span").html("Atendimentos do(s) Cliente(s): <yellow>"+$("#pesquisar_venda_cliente").val()+"</yellow>")
+
+  }
+})
+}
+$(".pesquisar_venda input").keyup(function(e){
+  if(e.keyCode == 13){
+    procurarVeiculos($(this).attr("id"))
+  }else{
+    $(this).val($(this).val().toUpperCase())
+  }
+})
+function printTable() {
+  $(".chart_father").css("display","none")
+  $("thead th:contains('NFC-e')").css("display","none")
+  $("tbody td").find(".fa-print").parent().css("display","none")
+  $(".gerar_pdf ").css("visibility","hidden")
+  $("#voltar_semana ").css("visibility","hidden")
+  $("#adiantar_semana ").css("visibility","hidden")
+  
+        window.print();
+        $("#voltar_semana ").css("visibility","inherit")
+  $("#adiantar_semana ").css("visibility","inherit")
+  $(".gerar_pdf ").css("visibility","inherit")
+       $("thead th:contains('NFC-e')").css("display","flex")
+  $("tbody td").find(".fa-print").parent().css("display","block")
+ $(".chart_father").css("display","flex")
+     }
 let editando_produto = false
 let id_produto_editando = 0;
 function selecionarAvaiableIDProximo(id) {
@@ -282,6 +333,7 @@ $("#add_produto_opener").click(function () {
 
 })
 $("#ncm_produto_add").mask("0000.00.00")
+$("#pesquisar_venda_carro").mask("AAA-0A00")
 $("#placa_veiculo").mask("AAA-0A00")
 $("#quilometragem").mask("000.000.000.000",{reverse:true})
 $(".porcentagem").mask("00.00%", { reverse: true })
@@ -795,7 +847,7 @@ $(".modal_anotar_pedido").submit(function (e) {
   $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
     console.log(ret)
     alterarTabela();
-    // resetVenda()
+    resetVenda()
   })
 
 });

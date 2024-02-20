@@ -1,17 +1,12 @@
-
-        <?php 
-
+<?php
 include('../../MySql.php');
-
-    $caixa ="";
-
-    $row_vendas = \MySql::conectar()->prepare("SELECT SUM(tb_produtos.valor_venda * `tb_produtos_vendidos`.`quantidade_produto`) as valor_produtos  ,`tb_vendas`.`valor_servico` as valor_servico,`tb_vendas`.`id`,`tb_vendas`.`forma_pagamento`,`tb_vendas`.`quilometragem`,`tb_clientes`.nome as colaborador, `tb_vendas`.`data`, `tb_vendas`.`valor` as total_valor,`tb_vendas`.`placa_carro` as nomes FROM `tb_vendas` INNER JOIN `tb_clientes` ON `tb_vendas`.`id_cliente` = `tb_clientes`.`id` INNER JOIN `tb_produtos_vendidos` ON `tb_vendas`.`id` = `tb_produtos_vendidos`.`id_venda`INNER JOIN `tb_produtos` ON `tb_produtos`.`id` = `tb_produtos_vendidos`.`id_produto` INNER JOIN  `tb_colaboradores` ON `tb_vendas`.`colaborador` = `tb_colaboradores`.`codigo` WHERE DATE(`tb_vendas`.`data`) BETWEEN ? AND ? GROUP BY `tb_vendas`.`data`;");
-
-$row_vendas->execute(array($_POST['data_min'],$_POST['data_max']));
+$pesquisa = '`tb_clientes`.`nome` LIKE "' . $_POST['pesquisa'] . '%"';
+if (isset($_POST['placa']) ) {
+    $pesquisa = '`tb_vendas`.`placa_carro` = "' . $_POST['pesquisa'] . '"';
+}
+$row_vendas = \MySql::conectar()->prepare("SELECT SUM(tb_produtos.valor_venda * `tb_produtos_vendidos`.`quantidade_produto`) as valor_produtos  ,`tb_vendas`.`valor_servico` as valor_servico,`tb_vendas`.`id`,`tb_vendas`.`forma_pagamento`,`tb_vendas`.`quilometragem`,`tb_clientes`.nome as colaborador, `tb_vendas`.`data`, `tb_vendas`.`valor` as total_valor,`tb_vendas`.`placa_carro` as nomes FROM `tb_vendas` INNER JOIN `tb_clientes` ON `tb_vendas`.`id_cliente` = `tb_clientes`.`id` INNER JOIN `tb_produtos_vendidos` ON `tb_vendas`.`id` = `tb_produtos_vendidos`.`id_venda`INNER JOIN `tb_produtos` ON `tb_produtos`.`id` = `tb_produtos_vendidos`.`id_produto` INNER JOIN  `tb_colaboradores` ON `tb_vendas`.`colaborador` = `tb_colaboradores`.`codigo` WHERE $pesquisa GROUP BY `tb_vendas`.`data`;");
+$row_vendas->execute(array());
 $row_vendas = $row_vendas->fetchAll();
-
-
-
 foreach ($row_vendas as $key => $value) {
     $data_banco = $value['data'];
 
@@ -51,11 +46,3 @@ foreach ($row_vendas as $key => $value) {
     
 
 }
-   if(isset($_POST['switch'])) {echo $prefix.'          </tr>
-    </tbody>
-</table>
-</div>
-';}
-?>
-
-  

@@ -15,7 +15,7 @@
       src="https://kit.fontawesome.com/01be29431d.js"
       crossorigin="anonymous"
     ></script>
-    <link rel="stylesheet" href="<?php echo INCLUDE_PATH?>View/pages/style/style.css" />
+    <link rel="stylesheet"  href="<?php echo INCLUDE_PATH?>View/pages/style/style.css" />
     <title>MixSalgados PDV</title>
     <script type="text/javascript" src="<?php echo INCLUDE_PATH?>js/jquery.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">

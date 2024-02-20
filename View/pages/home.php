@@ -276,7 +276,7 @@
     <input type="hidden" id="pedido_id" value="false" disabled>
     <div class="valor_caixa_father input_father">
         <span>Data da Revisão:</span>
-        <input type="datetime-local" name="data_revisao" value="<?php echo (new DateTime())->modify('+30 minutes')->format('Y-m-d\TH:i') ?>" id="data_revisao">
+        <input type="datetime-local" name="data_revisao" value="<?php echo (new DateTime())->format('Y-m-d\TH:i') ?>" id="data_revisao">
 
     </div>
     <div class="first_row">
@@ -556,12 +556,22 @@
 </form>
 <div class="header_section">
     <div class="left_side">
-        <section style="width: 40%;">
+        <section style="width: 100%;">
             Selecione o <red>Período</red>:
             <div class="inputs_header_section">
                 <input type="date" class="datas" name="data_minima" value="<?php echo  date('Y-m-d') ?>" max="<?php echo  date('Y-m-d') ?>" id="data_minima">
                 <input type="date" class="datas" value="<?php echo  date('Y-m-d') ?>" name="data_maxima" max="<?php echo  date('Y-m-d') ?>" id="data_maxima">
 
+            </div>
+        </section>
+        <section class="pesquisar_venda">
+            <div>
+            <label for="pesquisar_venda">Pesquisar <red>Veículo</red> :</label>
+                <input type="text" name="pesquisar_venda_carro" id="pesquisar_venda_carro" placeholder="Placa do carro">
+            </div>
+            <div>
+            <!-- <label for="pesquisar_venda">Pesquisar <red>Cliente</red> :</label> -->
+                <input type="text" name="pesquisar_venda_cliente" id="pesquisar_venda_cliente" placeholder="Nome do cliente">
             </div>
         </section>
 
@@ -593,7 +603,7 @@
 <div class="tabela_father">
     <div class="tabela_header">
 
-        <i id="voltar_semana" onclick="mudarTempo(this)" class="fa-solid fa-angle-left modificadores_tempo "></i> <span> Atendimentos no dia: <yellow> <?php echo date('d/m/Y') ?></yellow> <i onclick='gerarPDFFullFunction(this)' class="gerar_pdf fa-regular fa-file-pdf"></i></span><i onclick="mudarTempo(this)" id='adiantar_semana' class="fa-solid fa-angle-right modificadores_tempo adiantar_semana"></i>
+        <i id="voltar_semana" onclick="mudarTempo(this)" class="fa-solid fa-angle-left modificadores_tempo "></i> <span> Atendimentos no dia: <yellow> <?php echo date('d/m/Y') ?></yellow> <i onclick='printTable();' class="gerar_pdf fa-regular fa-file-pdf"></i></span><i onclick="mudarTempo(this)" id='adiantar_semana' class="fa-solid fa-angle-right modificadores_tempo adiantar_semana"></i>
     </div>
     <table id="table_tabela">
         <thead>

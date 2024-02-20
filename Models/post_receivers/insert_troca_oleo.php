@@ -39,8 +39,9 @@ if($_POST["nome_cliente"] !=''){
 $insert_cliente = \MySql::conectar()->prepare("INSERT INTO tb_clientes (`id`,`nome`,`loja`,`telefone`) VALUES (NULL,?,?,?)");
 $insert_cliente ->execute(array(   $nome_cliente,$select_info_colaborador['caixa'],$_POST["tel_cliente"]));
 $id_cliente =  \MySql::conectar()->lastInsertId();
-$insert_vendas = \MySql::conectar()->prepare("INSERT INTO `tb_vendas` (`id`, `colaborador`, `data`, `valor`, `placa_carro`, `forma_pagamento`, `troco`, `quilometragem`, `id_cliente`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?);");
-$insert_vendas->execute(array($_POST['codigo_colaborador'],$_POST['data_revisao'],floatval(str_replace(",",".",$_POST["valor_mao_obra"]))+$_POST['valor_produtos'],$_POST["placa_veiculo"],$_POST["metodo_pagamento"],0,$_POST["quilometragem"],$id_cliente));
+$insert_vendas = \MySql::conectar()->prepare("INSERT INTO `tb_vendas` (`id`, `colaborador`, `data`, `valor`, `placa_carro`, `forma_pagamento`, `troco`, `quilometragem`, `id_cliente`,
+`valor_servico`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?,?);");
+$insert_vendas->execute(array($_POST['codigo_colaborador'],$_POST['data_revisao'],floatval(str_replace(",",".",$_POST["valor_mao_obra"]))+$_POST['valor_produtos'],$_POST["placa_veiculo"],$_POST["metodo_pagamento"],0,$_POST["quilometragem"],$id_cliente,str_replace(",",".",$_POST["valor_mao_obra"])));
 $id_venda =  \MySql::conectar()->lastInsertId();
 if(!isset($_POST["produtos"])){
     $insert_produtos_vendidos = \MySql::conectar()->prepare("INSERT INTO `tb_produtos_vendidos` (`id`, `id_venda`, `id_produto`, `quantidade_produto`) VALUES (NULL, ?, ?, ?);");
