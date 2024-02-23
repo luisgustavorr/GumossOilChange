@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $newName = $uploadDir . basename($xmlFile["name"]);
 
     
-            $caminho = "C:\\XamppOficial\\htdocs\\mixsalgadosonline\\31240226013236000156550010000886801362857503.xml";
+            $caminho = $tempName ;
             $xmlstring = file_get_contents($caminho);
             $xml = simplexml_load_string($xmlstring, "SimpleXMLElement", LIBXML_NOCDATA);
             $json = json_encode($xml);

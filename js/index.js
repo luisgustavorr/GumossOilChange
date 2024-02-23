@@ -53,21 +53,48 @@ $(".input_valor_pedido_produto").keyup(function () {
     new Intl.NumberFormat("pt-BR", options).format(novoValor)
   );
 });
+function selectTr(){
+  $("body .modal_produtos tbody tr").on("click",function(){
+    $(".modal_produtos tbody tr").removeClass("marked_tr_tabela_produtos")
+  $(this).addClass("marked_tr_tabela_produtos")
+  
+  })
+}
 
-
-
+selectTr()
+shortcut.add("F1",()=>{
+  $(".modal").each(function () {
+    $(this).css("display", "none");
+    $("fundo").css("display", "none");
+  });
+  $("#pre_venda_opener").trigger("click")
+})
+shortcut.add("F2",()=>{
+  $(".modal").each(function () {
+    $(this).css("display", "none");
+    $("fundo").css("display", "none");
+  });
+  $("#troca_oleo").trigger("click")
+})
+shortcut.add("F3",()=>{
+  $(".modal").each(function () {
+    $(this).css("display", "none");
+    $("fundo").css("display", "none");
+  });
+  $("#add_produto_opener").trigger("click")
+})
 
 
 $(".tags_produto_name").keyup(function (e) {
   data = {
-    nome: "o"
+    nome: $("#nome_produto_pedido").val()
   }
   var availableTags = [];
   $.post("Models/post_receivers/select_produto.php", data, (ret) => {
     ret_inJSON = JSON.parse(ret)
 
     ret_inJSON.forEach(e => {
-      produto = { "label": e.nome, "value": { "id": e.id, "preco": e.valor_venda } }
+      produto = { "label": e.nome, "value": { "id": e.id, "preco": e.valor_venda,"estoque":e.quantidade } }
       availableTags.unshift(produto)
     })
   })
@@ -77,6 +104,9 @@ $(".tags_produto_name").keyup(function (e) {
     select: function (event, ui) {
       event.preventDefault()
       let quantidade = parseFloat($("#quantidade_produto_pedido").val())
+      if(quantidade > ui.item.value.estoque ){
+        alert(`Estoque do produto insuficiente, estoque atual : ${ui.item.value.estoque}. Caso isso seja um erro contate o suporte e altere o estoque editando o produto.`)
+      }
       let produto = ui.item.label
       $(".modal_anotar_pedido tbody").append(
         '<tr preco_produto="' + ui.item.value.preco + '" produto="' +
@@ -92,7 +122,7 @@ $(".tags_produto_name").keyup(function (e) {
         "</td><td> " + ui.item.value.preco + "</td><td id='valor_produto_total_" +
         produto.replace(/ /g, "_") +
         "' >" +
-        ui.item.value.preco * quantidade +
+        parseFloat(ui.item.value.preco * quantidade).toFixed(2) +
         '</td> <td produto="' +
         produto.replace(/ /g, "_") +
         '" class="remove_item_pedido ">-</td>'

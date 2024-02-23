@@ -15,7 +15,7 @@
     </div>
 </div> -->
 <form class="modal modal_adicionar_produto">
-
+    <input type="text" name="id_prod_relacionado"hidden id="id_prod_relacionado">
     <input type="file" name="input_file_xml" id="input_file_xml">
 
     <div class="first_input_row">
@@ -228,7 +228,9 @@
 
                 <th>Nome</th>
                 <th>Código</th>
-                <th>Preço</th>
+                <th>Custo</th>
+                <th>V. Venda</th>
+                <th>V. Atacado</th>
                 <th>Estoque</th>
                 <th>Editar</th>
                 <th>Excluir</th>
@@ -238,16 +240,37 @@
         <tbody>
 
             <?php
-            $caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_produtos`");
+            $caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_produtos` ORDER BY relacionado DESC;");
             $caixas->execute();
             $caixas = $caixas->fetchAll();
+            $relacionadosOrange = true;
+            $lastRelacionado = 0;
             foreach ($caixas as $key => $value) {
+                if($value["relacionado"] != ""){
+                    if($relacionadosOrange){
+                    
+                        $icon = '<i class="fa-solid fa-link" style="color: #F53F00;"></i>';
+                    }else{
+                        $icon = '<i class="fa-solid fa-link" style="color: #242424;"></i>';
+
+                    }
+                    if($lastRelacionado == $value["relacionado"]){
+                         $relacionadosOrange = !$relacionadosOrange;
+                    }
+                }else{
+                    $icon = "";
+                }
+       
+                $lastRelacionado = $value["relacionado"];
                 $estoque = $value["quantidade"] != 0 ? $value["quantidade"] : '<i title="Produto sem estoque, caso isso seja um erro altere o estoque no campo Quantidade ao editar se esse produto." class="fa-solid fa-triangle-exclamation fa-beat" style="color: #ff0000;"></i>';
-                echo '<tr class ="produto_' . $value['id'] . '" value="' . $value['id'] . '">
-                                <td class="nome">' . ucfirst($value['nome']) . '</td>
+                echo '<tr class =" produto_' . $value['id'] . '" value="' . $value['id'] . '">
+                                <td class="nome">'.$icon.' ' . ucfirst($value['nome']) . '</td>
                                 <td class="codigo">' . ucfirst($value['codigo']) . '</td>
+                                <td class="preco">R$' . $value["valor_compra"] . '</td>
 
                                 <td class="preco">R$' . $value["valor_venda"] . '</td>
+                                <td class="preco">R$' . $value["valor_atacado"] . '</td>
+
                                 <td class="pesado">' . $estoque . '</td>
                                 <td ><i produto="' . $value['id'] . '" class="fa-solid editar_produto fa-pen"></i></td>
 
@@ -272,7 +295,7 @@
 
 </div>
 <form class="modal modal_anotar_pedido">
-    <input type="hidden" id="editando" value="false" disabled>
+    <input type="hidden" id="pre_venda" value="false" disabled>
     <input type="hidden" id="pedido_id" value="false" disabled>
     <div class="valor_caixa_father input_father">
         <span>Data da Revisão:</span>
@@ -300,19 +323,7 @@
         </div>
 
         <div class="endereco_cliente_father">
-            <div class="pre_venda_father">
-
-                <span>Pré Venda?</span>
-                <div class="prevenda_radios">
-
-                    <label for="yes">Sim</label>
-                    <input type="radio" name="entrega_retirada" required value="1" id="yes">
-                    <label for="no">Não</label>
-                    <input type="radio" name="entrega_retirada" value="0" id="no">
-                </div>
-
-            </div>
-
+ 
             <div class="valor_sangria_father input_father">
                 <span>KM:</span>
                 <input type="text" value="" class="oders_inputs" name="quilometragem" id="quilometragem">
@@ -343,14 +354,24 @@
     <div class="middle_row">
 
         <div class="valor_caixa_father input_father">
-            <span style="" medida="un" class="select_valor_clicker_father" button_identifier="pedido">Placa do Veículo:</span>
-            <input required type="text" class="oders_inputs alvo_valor_balanca pedido_button" name="placa_veiculo" placeholder="AAA-0000" id="placa_veiculo">
+            <span  medida="un" class="select_valor_clicker_father" button_identifier="pedido">Placa do Veículo:</span>
+            <input required type="text" class="oders_inputs pedido_button" name="placa_veiculo" placeholder="AAA-0000" id="placa_veiculo">
+
+        </div>
+        <div class="valor_caixa_father input_father">
+            <span  medida="un" class="select_valor_clicker_father" button_identifier="pedido">Marca do Veículo:</span>
+            <input required type="text" class="oders_inputs pedido_button" name="marca_veiculo" placeholder="Marca" id="marca_veiculo">
+
+        </div>
+        <div class="valor_caixa_father input_father">
+            <span  medida="un" class="select_valor_clicker_father" button_identifier="pedido">Modelo do Veículo:</span>
+            <input required type="text" class="oders_inputs pedido_button" name="modelo_veiculo" placeholder="Modelo" id="modelo_veiculo">
 
         </div>
 
         <div class="valor_caixa_father input_father">
-            <span style="" medida="un" class="select_valor_clicker_father" button_identifier="pedido">Quantidade:</span>
-            <input type="text" class="oders_inputs alvo_valor_balanca pedido_button" name="quantidade_produto_pedido" value="1" id="quantidade_produto_pedido">
+            <span  medida="un" class="select_valor_clicker_father" button_identifier="pedido">Quantidade:</span>
+            <input type="text" class="oders_inputs pedido_button" name="quantidade_produto_pedido" value="1" id="quantidade_produto_pedido">
 
         </div>
         <div class="valor_caixa_father input_father">
@@ -388,9 +409,11 @@
 </form>
 <aside id="sidebar">
     <i class="open_sidebar_arrow fa-solid fa-angles-right"></i>
-    <div class="princip_span" onclick="abrirModal('modal_anotar_pedido')"> <i class="fa-solid fa-oil-can"></i> <span>Cadastrar Troca de Óleo </span> </div>
+    <div class="princip_span" id="pre_venda_opener" onclick="abrirModal('modal_anotar_pedido') ; abrirPreVenda()"> <i class="fa-solid fa-cash-register"></i> <span>Pré-Venda </span> </div>
+    <div class="princip_span" id="troca_oleo" onclick="abrirModal('modal_anotar_pedido'); fecharPreVenda()"> <i class="fa-solid fa-oil-can"></i> <span>Cadastrar Troca de Óleo </span> </div>
+    <div class="princip_span"  id="produtos_opener"><i onclick="abrirModal('modal_produtos');" class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
+  
     <div class="princip_span"> <i onclick="abrirModal('modal_funcionarios')" class="fa-solid fa-user-group"></i> <span>Funcionários </span> </div>
-    <div class="princip_span"><i onclick="abrirModal('modal_produtos')" class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
     <div class="princip_span" id="add_caixa_opener"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
 
 </aside>
@@ -624,11 +647,14 @@
     </table>
 </div>
 <input type="hidden" id="include_path" value="<?php echo INCLUDE_PATH ?>">
+<script src="<?php echo INCLUDE_PATH ?>js/shortcut.js"></script>
+
 <script src="<?php echo INCLUDE_PATH ?>js/criar_pdf_tabela.js"></script>
 <script src="<?php echo INCLUDE_PATH ?>js/atualizar_sistema.js"></script>
 
 <script src="<?php echo INCLUDE_PATH ?>js/index.js"></script>
 <script src="<?php echo INCLUDE_PATH ?>js/graficos.js"></script>
 <script src="<?php echo INCLUDE_PATH ?>js/editar_fechamento.js"></script>
+<script src="<?php echo INCLUDE_PATH ?>js/pre_venda.js"></script>
 
 <script src="<?php echo INCLUDE_PATH ?>js/posts_senders.js"></script>

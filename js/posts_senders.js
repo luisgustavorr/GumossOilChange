@@ -11,22 +11,29 @@ data = {
   data_max:$("#data_maxima").val(),
   
 }
+console.log(data)
 if(inputID == "pesquisar_venda_carro"){
   data["placa"] = true
 }
 $.post("Models/post_receivers/pesquisar_vendas.php",data,(ret)=>{
   console.log(ret)
   $("#table_tabela tbody").html(ret)
-  if(inputID == "pesquisar_venda_carro"){
-    $("#pesquisar_venda_cliente").val("")
-    $(".tabela_header span").html("Atendimentos do Veículo: <yellow>"+$("#pesquisar_venda_carro").val().toUpperCase()+"</yellow>")
+  if($("#"+inputID).val() == ""){
+    $(".tabela_header span").html("Todos os Atendimentos")
 
   }else{
-    $("#pesquisar_venda_carro").val("")
-
-    $(".tabela_header span").html("Atendimentos do(s) Cliente(s): <yellow>"+$("#pesquisar_venda_cliente").val()+"</yellow>")
-
+    if(inputID == "pesquisar_venda_carro"){
+      $("#pesquisar_venda_cliente").val("")
+      $(".tabela_header span").html("Atendimentos do Veículo: <yellow>"+$("#pesquisar_venda_carro").val().toUpperCase()+"</yellow>")
+  
+    }else{
+      $("#pesquisar_venda_carro").val("")
+  
+      $(".tabela_header span").html("Atendimentos do(s) Cliente(s): <yellow>"+$("#pesquisar_venda_cliente").val()+"</yellow>")
+  
+    }
   }
+
 })
 }
 $(".pesquisar_venda input").keyup(function(e){
@@ -126,6 +133,7 @@ $('#pesquisar_produto_button').click(function (e) {
   $.post('Models/post_receivers/select_produtos_modal_produtos.php', { produto: $("#pesquisar_produto").val() }, (ret) => {
     console.log(ret)
     $(".modal_produtos tbody").html(ret)
+    selectTr()
     editarProduto()
     deletarProdutos()
   })
@@ -318,12 +326,22 @@ $("#pesquisar_produto").keyup((e) => {
     $.post('Models/post_receivers/select_produtos_modal_produtos.php', { produto: $("#pesquisar_produto").val() }, (ret) => {
       console.log(ret)
       $(".modal_produtos tbody").html(ret)
+      selectTr()
       editarProduto()
       deletarProdutos()
     })
   }
 })
-$("#add_produto_opener").click(function () {
+function openProdModal(){
+  $("#input_file_label").css("display","flex")
+  reiniciarAddProduto()
+  $(".modal_produtos").css("display", "none");
+
+  editando_produto = false
+  $(".modal_adicionar_produto input[type='text']").val("")
+
+}
+$("#add_produto_opener").on("click",function () {
   $("#input_file_label").css("display","flex")
   reiniciarAddProduto()
   $(".modal_produtos").css("display", "none");
@@ -438,6 +456,29 @@ function salvarProdutos(array) {
 
 
 }
+$("#nome_produto_add").blur((e) => {
+  let textoInput = $("#nome_produto_add").val()
+  if (textoInput.includes("=")) {
+    let produtoRelacionado = textoInput.split("=")[1]
+    $.post("Models/post_receivers/select_produtos_relacionados.php", {
+      produto: produtoRelacionado.trim()
+    }, (ret) => {
+      let retInJson = JSON.parse(ret)
+      if(retInJson != false){
+        
+      $(".warning_add_produto").css("display", "block")
+      $("#id_prod_relacionado").val(retInJson.id)
+      $(".warning_add_produto span").text(`Produto identificado como semelhante ao ${retInJson.nome}, os produtos serão colocados próximos uns aos outros na tabela com marcações de cores semelhantes quando o modo "Assistente de Estoque" estiver ativo. Caso esteja incorreto retire o "=" no Nome do produto`)
+      }else{
+        console.log("a")
+      $("#id_prod_relacionado").val("")
+
+           $(".warning_add_produto").css("display", "none")
+      }
+        
+    })
+  }
+})
 $("#codigo_produto_add").keyup(() => {
   $.post("Models/post_receivers/select_produto_codigo.php", { codigo: $("#codigo_produto_add").val() }, async (ret) => {
     if (ret != " ") {
@@ -570,7 +611,9 @@ $("#father_add_produto_button button").click(function (e) {
       pCOFINS: $("#pCOFINS_produto_add").val(),
       quantidade_prod: $("#quantidade_produto_add").val(),
       preco_atacado_prod: $("#preco_atacado_produto_add").val(),
-      icms_prod: $("#icms_produto_add").val()
+      icms_prod: $("#icms_produto_add").val(),
+      produto_relacionado: $("#id_prod_relacionado").val()
+
     };
 
   
@@ -822,7 +865,7 @@ $(".modal_anotar_pedido").submit(function (e) {
   $(".modal_anotar_pedido tbody")
     .children()
     .each(function (index) {
-      valor_produtos = parseFloat(valor_produtos) + parseFloat($(this).attr("preco_produto"))
+      valor_produtos = parseFloat(valor_produtos) + parseFloat($(this).attr("preco_produto") * parseFloat($(this).attr("quantidade")))
       let produto = {
         id: $(this).attr("produto"),
         quantidade: $(this).attr("quantidade"),
@@ -831,11 +874,13 @@ $(".modal_anotar_pedido").submit(function (e) {
       produtos[index] = produto;
     });
   const data = {
+    marca_veiculo:$("#marca_veiculo").val(),
+    modelo_veiculo:$("#modelo_veiculo").val(),
     data_revisao: $("#data_revisao").val(),
     nome_cliente: $("#nome_cliente_input").val(),
     tel_cliente: $("#numero_cliente_input").val(),
     codigo_colaborador: $("#codigo_colaborador_input").val(),
-    pre_venda: $('input[name="entrega_retirada"]:checked').val(),
+    pre_venda:  $("#pre_venda").val(),
     quilometragem: $("#quilometragem").val(),
     metodo_pagamento: $("#metodo_pagamento").val(),
     valor_mao_obra: $("#valor_mao_obra").val(),
@@ -843,89 +888,21 @@ $(".modal_anotar_pedido").submit(function (e) {
     produtos: produtos,
     valor_produtos: valor_produtos
 
+   
   }
-  $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
-    console.log(ret)
-    alterarTabela();
-    resetVenda()
-  })
+  if( $("#pre_venda").val() != true){
+    $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
+      console.log(ret)
+      alterarTabela();
+      resetVenda()
+    })
+  }else{
+    alert("GURI")
+  }
+ 
 
 });
-function editarPedido(esse) {
-  // Exibir o fundo e a modal
-  console.log(esse);
-  $(".modal_anotar_pedido tbody").empty();
-  exibirModalAnotarPedido();
-  $("#editando").val("true");
-  console.log($(esse).attr("pedido"));
-  let pedido = JSON.parse($(esse).attr("pedido"));
-  $("#pedido_id").val(pedido.id);
-  // Preencher os campos da modal com os dados do pedido
-  $("#nome_cliente_input").val(pedido.cliente);
-  $("#endereco_cliente_input").val(pedido.endereco);
-  $("#metodo_pagamento").val(pedido.forma_pagamento);
-  $("#data_pedido").val(pedido.data_pedido);
-  $("#data_entrega").val(pedido.data_entrega);
-  console.log(pedido);
 
-  let produtos = JSON.parse(pedido.produtos);
-  produtos.forEach((produto) => {
-    // Construir a linha da tabela da modal com as informações do produto
-    const newRow = `
-        <tr preco_produto="${produto.preco
-        .toString()
-        .replace(",", ".")}" produto="${produto.id}" quantidade="${$(
-          "#quantidade_produto_pedido"
-        ).val()}" class="produto_pedido${produto.id}">
-          <td>${$("#quantidade_produto_pedido").val()}</td>
-          <td>${produto.id}</td>
-          <td><input value='${produto.preco
-      }' type='text'class='oders_inputs input_valor_pedido_produto' produto='${produto.id.replace(
-        " ",
-        "_"
-      )}' onKeyUp='mascaraMoeda(this, event)' id='preco_produto_${produto.id.replace(
-        " ",
-        "_"
-      )}'></td>
-          <td id='valor_produto_total_${produto.id}'>R$ ${(
-        parseFloat(produto.preco.replace(",", ".")) *
-        parseFloat(produto.quantidade)
-      )
-        .toFixed(2)
-        .toString()
-        .replace(".", ",")}</td>
-          <td produto="${produto.id}" class="remove_item_pedido">-</td>
-        </tr>
-      `;
-
-    $(".modal_anotar_pedido tbody").append(newRow);
-    $(".remove_item_pedido").click(function () {
-      $(".produto_pedido" + $(this).attr("produto")).remove();
-    });
-
-    $(".input_valor_pedido_produto").keyup(function () {
-      let valor_produto = parseFloat(
-        $(this).val().replace(".", "").replace(",", ".")
-      );
-      let produto = $(this).attr("produto");
-      let novoValor =
-        valor_produto * $(".produto_pedido" + produto).attr("quantidade");
-      const options = {
-        style: "currency",
-        currency: "BRL",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 5,
-      };
-      $(".produto_pedido" + produto).attr(
-        "preco_produto",
-        novoValor.toFixed(2)
-      );
-      $("#valor_produto_total_" + produto).text(
-        new Intl.NumberFormat("pt-BR", options).format(novoValor)
-      );
-    });
-  });
-}
 
 
 

@@ -1,7 +1,7 @@
 <?php
 include('MySql.php');
 
-define('INCLUDE_PATH', 'https://localhost/mixsalgadosonline/');
+define('INCLUDE_PATH', 'https://localhost/SistemaAutolub/');
 define('INCLUDE_PATH_FULL', INCLUDE_PATH.'/View/pages/');
 define('CARGOS_DB_PASSWORD','///senha///');
 spl_autoload_register(
