@@ -646,6 +646,15 @@
         </tbody>
     </table>
 </div>
+<script> 
+                const doc = new jsPDF();
+                
+                // Adiciona um texto ao PDF na posição (10, 10) com fonte Arial e tamanho 14
+                doc.text('Hello, world!', 10, 10);
+                
+                // Salva o PDF com o nome 'meu_pdf.pdf'
+                doc.save('meu_pdf.pdf');
+</script>
 <input type="hidden" id="include_path" value="<?php echo INCLUDE_PATH ?>">
 <script src="<?php echo INCLUDE_PATH ?>js/shortcut.js"></script>
 

@@ -6,6 +6,8 @@
 		"nfephp-org/sped-da": "dev-master",
 		"nfephp-org/sped-pos": "dev-master",
 		"edigomes/download-nfe-sefaz": "^2.0",
-		"vlucas/phpdotenv": "^5.6"
+		"vlucas/phpdotenv": "^5.6",
+		"fawno/fpdf": "^1.86"
+	
 	}
 }

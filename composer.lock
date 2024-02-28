@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5d9808f2fe866055c7779c9021a5cc25",
+    "content-hash": "71ed005b5b2a56756a3f9f6c9cd7b4ba",
     "packages": [
         {
             "name": "edigomes/download-nfe-sefaz",
@@ -42,6 +42,78 @@
                 "source": "https://github.com/edigomes/download-nfe-sefaz/tree/2.0"
             },
             "time": "2018-02-02T14:58:45+00:00"
+        },
+        {
+            "name": "fawno/fpdf",
+            "version": "1.86.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fawno/FPDF.git",
+                "reference": "6ea4dd0aa3444a6d6dfc20aaa747265d50d7bcfe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fawno/FPDF/zipball/6ea4dd0aa3444a6d6dfc20aaa747265d50d7bcfe",
+                "reference": "6ea4dd0aa3444a6d6dfc20aaa747265d50d7bcfe",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "ddn/sapp": "@stable",
+                "phpunit/phpunit": "@stable",
+                "setasign/fpdi": "@stable"
+            },
+            "suggest": {
+                "ext-openssl": "*",
+                "setasign/fpdi": "@stable"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FawnoFPDF": "Fawno\\FPDF\\FawnoFPDF",
+                        "FawnoPDFWrapper ": "Fawno\\FPDF\\PDFWrapper"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Fawno\\FPDF\\": "src/",
+                    "FPDF\\Scripts\\": "scripts/"
+                },
+                "classmap": [
+                    "fpdf/fpdf.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Olivier Plathey",
+                    "email": "oliver@fpdf.org",
+                    "homepage": "http://fpdf.org/"
+                },
+                {
+                    "name": "Fernando Herrero",
+                    "homepage": "https://lab.fawno.com"
+                }
+            ],
+            "description": "FPDF is a PHP class which allows to generate PDF files with pure PHP. F from FPDF stands for Free: you may use it for any kind of usage and modify it to suit your needs.",
+            "homepage": "http://www.fpdf.org",
+            "keywords": [
+                "fpdf",
+                "pdf"
+            ],
+            "support": {
+                "issues": "https://github.com/fawno/FPDF/issues",
+                "source": "https://github.com/fawno/FPDF/tree/1.86.2"
+            },
+            "time": "2024-01-16T22:55:45+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -365,12 +437,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nfephp-org/sped-da.git",
-                "reference": "a7b96dea7de999e778e913b8f94a2366b9c03432"
+                "reference": "6b7f513912dd76034f02e752db4d18747b6a157c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nfephp-org/sped-da/zipball/a7b96dea7de999e778e913b8f94a2366b9c03432",
-                "reference": "a7b96dea7de999e778e913b8f94a2366b9c03432",
+                "url": "https://api.github.com/repos/nfephp-org/sped-da/zipball/6b7f513912dd76034f02e752db4d18747b6a157c",
+                "reference": "6b7f513912dd76034f02e752db4d18747b6a157c",
                 "shasum": ""
             },
             "require": {
@@ -434,7 +506,7 @@
                 "issues": "https://github.com/nfephp-org/sped-da/issues",
                 "source": "https://github.com/nfephp-org/sped-da/tree/master"
             },
-            "time": "2024-01-25T23:11:24+00:00"
+            "time": "2024-01-30T12:13:57+00:00"
         },
         {
             "name": "nfephp-org/sped-gtin",
@@ -520,16 +592,16 @@
         },
         {
             "name": "nfephp-org/sped-nfe",
-            "version": "v5.1.19",
+            "version": "v5.1.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nfephp-org/sped-nfe.git",
-                "reference": "a423a321e3fa84842b693d6c2f4e88404ce49cbd"
+                "reference": "c659273d43f2200f8918d2da7c1f89f05fe8321c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nfephp-org/sped-nfe/zipball/a423a321e3fa84842b693d6c2f4e88404ce49cbd",
-                "reference": "a423a321e3fa84842b693d6c2f4e88404ce49cbd",
+                "url": "https://api.github.com/repos/nfephp-org/sped-nfe/zipball/c659273d43f2200f8918d2da7c1f89f05fe8321c",
+                "reference": "c659273d43f2200f8918d2da7c1f89f05fe8321c",
                 "shasum": ""
             },
             "require": {
@@ -596,9 +668,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nfephp-org/sped-nfe/issues",
-                "source": "https://github.com/nfephp-org/sped-nfe/tree/v5.1.19"
+                "source": "https://github.com/nfephp-org/sped-nfe/tree/v5.1.21"
             },
-            "time": "2023-12-19T20:23:23+00:00"
+            "time": "2024-02-12T15:05:55+00:00"
         },
         {
             "name": "nfephp-org/sped-pos",
