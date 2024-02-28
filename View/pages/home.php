@@ -156,70 +156,17 @@
         </div>
     </section>
 </form>
-<form class="modal modal_funcionarios">
-    <table>
-        <thead>
-            <tr>
-                <th>Codigo</th>
-                <th>Nome</th>
-                <th>Administrador</th>
-                <th>Loja</th>
-                <th>Excluir</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_colaboradores`");
-            $caixas->execute();
-            $caixas = $caixas->fetchAll();
-            foreach ($caixas as $key => $value) {
-                $value['administrador'] == 1 ? $adm = 'Sim' : $adm = 'Não';
-                echo '<tr value="' . $value['codigo'] . '">
-                                <td>' . ucfirst($value['codigo']) . '</td>
-
-                                <td>' . ucfirst($value['nome']) . '</td>
-                                <td>' . $adm . '</td>
-                                <td>' . $value["caixa"] . '</td>
-
-                                <td><i pessoa="' . $value['id'] . '" class="fa-solid fa-trash-can"></i></td>
-
-                                </tr>';
-            }
-            ?>
-        </tbody>
-    </table>
-
-    <div class="inputs_add_usuario">
-        <div class="inputs_father_user">
-            <label for="input_add_usuario_codigo">Código:</label>
-            <input type="text" name="input_add_usuario_codigo" required id="input_add_usuario_codigo" class="oders_inputs">
-        </div>
-        <div class="inputs_father_user">
-            <label for="input_add_usuario_nome">Nome:</label>
-            <input type="text" name="input_add_usuario_nome" required id="input_add_usuario_nome" class="oders_inputs">
-        </div>
-        <span>Loja Destinada : <select name="select_caixa_add_usuario" id="select_caixa_add_usuario">
-
-                <?php
-                $caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_lojas`");
-                $caixas->execute();
-                $caixas = $caixas->fetchAll();
-                foreach ($caixas as $key => $value) {
-                    echo '<option value="' . $value['caixa'] . '">' . ucfirst($value['caixa']) . '</option>';
-                }
-                ?>
-            </select></span>
-        <div class=" input_por_peso">
-            <label for="">Administrador?</label><br />
-            <div class="inputs_radio_father">
-                <label for="sim">Sim</label>
-                <input class="oders_inputs" type="radio" name="add_funcionario" required value="1" id="sim">
-                <label for="nao">Não</label>
-                <input class="oders_inputs" type="radio" name="add_funcionario" value="0" id="nao">
-            </div>
-        </div>
-        <button id="add_usuario">Adicionar</button>
+<form class="modal modal_clientes">
+   <h3>Adicionar <orange>Cliente</orange></h3>
+   <section class="inputs_father_body">
+    <div class="cnpj_selector">
+        <div class="selector">PF</div>
     </div>
+    <div class="input_add_cliente_father">
+        <label for="">Nome Empresa</label>
+        <input type="text" />
+    </div>
+   </section>
 </form>
 <form class="modal modal_produtos">
     <table>
@@ -413,7 +360,7 @@
     <div class="princip_span" id="troca_oleo" onclick="abrirModal('modal_anotar_pedido'); fecharPreVenda()"> <i class="fa-solid fa-oil-can"></i> <span>Cadastrar Troca de Óleo </span> </div>
     <div class="princip_span"  id="produtos_opener"><i onclick="abrirModal('modal_produtos');" class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
   
-    <div class="princip_span"> <i onclick="abrirModal('modal_funcionarios')" class="fa-solid fa-user-group"></i> <span>Funcionários </span> </div>
+    <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_clientes')" > <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
     <div class="princip_span" id="add_caixa_opener"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
 
 </aside>
@@ -638,6 +585,8 @@
                 <th>Cliente</th>
                 <th>NFC-e</th>
                 <th>Método de Pagamento</th>
+                <th>Editar</th>
+                <th>Excluir</th>
             </tr>
         </thead>
         <tbody>
@@ -646,15 +595,7 @@
         </tbody>
     </table>
 </div>
-<script> 
-                const doc = new jsPDF();
-                
-                // Adiciona um texto ao PDF na posição (10, 10) com fonte Arial e tamanho 14
-                doc.text('Hello, world!', 10, 10);
-                
-                // Salva o PDF com o nome 'meu_pdf.pdf'
-                doc.save('meu_pdf.pdf');
-</script>
+
 <input type="hidden" id="include_path" value="<?php echo INCLUDE_PATH ?>">
 <script src="<?php echo INCLUDE_PATH ?>js/shortcut.js"></script>
 

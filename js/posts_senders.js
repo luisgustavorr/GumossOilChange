@@ -1,64 +1,162 @@
+
+
+async function pedirSenha(text) {
+  let aprovado = false
+  const resultado = new Promise((resolve, reject) => {
+    $.confirm({
+      title: 'Código Necessário!',
+      theme: 'supervan',
+      content: '' +
+        '<form id="verificar_senha" action="" class="formName">' +
+        '<div class="form-group">' +
+        '<label>Seu Código</label><br>' +
+        '<input type="text" placeholder="Seu Código" class="name form-control" required />' +
+        '</div>' +
+        '</form>',
+      buttons: {
+        formSubmit: {
+          text: text,
+          btnClass: 'btn-orange',
+          action: function () {
+            var name = this.$content.find('.name').val();
+            if (!name) {
+              $.alert('Favor Insira um Código');
+              resolve()
+
+              return false;
+            }
+            $.post("Models/post_receivers/select_by_senha.php", { codigo: name }, (ret) => {
+              console.log(ret)
+              aprovado = ret
+              resolve()
+
+            })
+
+          }
+        },
+        Cancelar: function () {
+          resolve()
+          console.log("cancelar")
+
+          //close
+        },
+      },
+      onContentReady: function () {
+        // bind to events
+        var jc = this;
+        this.$content.find('form').on('submit', function (e) {
+          // if the user submits the form by pressing enter in the field.
+          e.preventDefault();
+          jc.$$formSubmit.trigger('click'); // reference the button and click it
+        });
+      }
+    });
+  })
+  await resultado.then()
+  console.log(aprovado)
+  return aprovado
+}
+
+
+async function editarPreVenda(elemento) {
+  const aprovado = await pedirSenha("Editar")
+  console.log(aprovado === "true")
+  if (aprovado.trim() === "true") {
+    alert("aprovado")
+  } else {
+    $.alert({
+      title: 'Código Inválido',
+      content: "",
+      boxWidth: '500px',
+      useBootstrap: false,
+    });
+  }
+}
+async function deletaPreVenda(elemento) {
+  const aprovado = await pedirSenha("Excluir")
+  console.log(aprovado === "true")
+  if (aprovado.trim() === "true") {
+    data = {
+
+      pesquisa: "",
+      data_min: $("#data_minima").val(),
+      data_max: $("#data_maxima").val(),
+  
+    }
+    $.post("Models/post_receivers/delete_venda.php", { id: $(elemento).attr("id_venda") }, (ret) => {
+      $(elemento).parent().parent().remove()
+    })
+
+  } else {
+    $.alert({
+      title: 'Código Inválido',
+      content: "",
+      boxWidth: '500px',
+      useBootstrap: false,
+    });
+  }
+}
 $(".datas").change(function () {
   alterarTabela();
 });
-function procurarVeiculos(inputID){
+function procurarVeiculos(inputID) {
   console.log(inputID)
 
-data = {
+  data = {
 
-  pesquisa:$("#"+inputID).val().trim(),
-  data_min:$("#data_minima").val(),
-  data_max:$("#data_maxima").val(),
-  
-}
-console.log(data)
-if(inputID == "pesquisar_venda_carro"){
-  data["placa"] = true
-}
-$.post("Models/post_receivers/pesquisar_vendas.php",data,(ret)=>{
-  console.log(ret)
-  $("#table_tabela tbody").html(ret)
-  if($("#"+inputID).val() == ""){
-    $(".tabela_header span").html("Todos os Atendimentos")
+    pesquisa: $("#" + inputID).val().trim(),
+    data_min: $("#data_minima").val(),
+    data_max: $("#data_maxima").val(),
 
-  }else{
-    if(inputID == "pesquisar_venda_carro"){
-      $("#pesquisar_venda_cliente").val("")
-      $(".tabela_header span").html("Atendimentos do Veículo: <yellow>"+$("#pesquisar_venda_carro").val().toUpperCase()+"</yellow>")
-  
-    }else{
-      $("#pesquisar_venda_carro").val("")
-  
-      $(".tabela_header span").html("Atendimentos do(s) Cliente(s): <yellow>"+$("#pesquisar_venda_cliente").val()+"</yellow>")
-  
-    }
   }
+  console.log(data)
+  if (inputID == "pesquisar_venda_carro") {
+    data["placa"] = true
+  }
+  $.post("Models/post_receivers/pesquisar_vendas.php", data, (ret) => {
+    console.log(ret)
+    $("#table_tabela tbody").html(ret)
+    if ($("#" + inputID).val() == "") {
+      $(".tabela_header span").html("Todos os Atendimentos")
 
-})
+    } else {
+      if (inputID == "pesquisar_venda_carro") {
+        $("#pesquisar_venda_cliente").val("")
+        $(".tabela_header span").html("Atendimentos do Veículo: <yellow>" + $("#pesquisar_venda_carro").val().toUpperCase() + "</yellow>")
+
+      } else {
+        $("#pesquisar_venda_carro").val("")
+
+        $(".tabela_header span").html("Atendimentos do(s) Cliente(s): <yellow>" + $("#pesquisar_venda_cliente").val() + "</yellow>")
+
+      }
+    }
+
+  })
 }
-$(".pesquisar_venda input").keyup(function(e){
-  if(e.keyCode == 13){
+$(".pesquisar_venda input").keyup(function (e) {
+  if (e.keyCode == 13) {
     procurarVeiculos($(this).attr("id"))
-  }else{
+  } else {
     $(this).val($(this).val().toUpperCase())
   }
 })
 function printTable() {
-  $(".chart_father").css("display","none")
-  $("thead th:contains('NFC-e')").css("display","none")
-  $("tbody td").find(".fa-print").parent().css("display","none")
-  $(".gerar_pdf ").css("visibility","hidden")
-  $("#voltar_semana ").css("visibility","hidden")
-  $("#adiantar_semana ").css("visibility","hidden")
-  
-        window.print();
-        $("#voltar_semana ").css("visibility","inherit")
-  $("#adiantar_semana ").css("visibility","inherit")
-  $(".gerar_pdf ").css("visibility","inherit")
-       $("thead th:contains('NFC-e')").css("display","flex")
-  $("tbody td").find(".fa-print").parent().css("display","block")
- $(".chart_father").css("display","flex")
-     }
+  $(".chart_father").css("display", "none")
+  $("thead th:contains('NFC-e')").css("display", "none")
+  $("tbody td").find(".fa-print").parent().css("display", "none")
+  $(".gerar_pdf ").css("visibility", "hidden")
+  $("#voltar_semana ").css("visibility", "hidden")
+  $("#adiantar_semana ").css("visibility", "hidden")
+
+  window.print();
+  $("#voltar_semana ").css("visibility", "inherit")
+  $("#adiantar_semana ").css("visibility", "inherit")
+  $(".gerar_pdf ").css("visibility", "inherit")
+  $("thead th:contains('NFC-e')").css("display", "flex")
+  $("tbody td").find(".fa-print").parent().css("display", "block")
+  $(".chart_father").css("display", "flex")
+}
 let editando_produto = false
 let id_produto_editando = 0;
 function selecionarAvaiableIDProximo(id) {
@@ -74,7 +172,7 @@ let codigo_produto_editando = 0
 function editarProduto() {
   $(".editar_produto").click(function () {
     editando_produto = true
-    $("#input_file_label").css("display","none")
+    $("#input_file_label").css("display", "none")
     console.log('foi')
     const id_produto = $(this).attr('produto')
     id_produto_editando = id_produto
@@ -83,7 +181,7 @@ function editarProduto() {
     const nome_produto = linha_produto.find(".nome").text()
     const codigo_id_produto = linha_produto.find(".codigo_id").text()
     const codigo_produto = linha_produto.find(".codigo").text()
-    const preco_produto = linha_produto.find(".preco").text().replace("R$","")
+    const preco_produto = linha_produto.find(".preco").text().replace("R$", "")
     const produto_pesado = linha_produto.find(".pesado").text()
     codigo_produto_editando = id_produto
     let data = {
@@ -332,8 +430,8 @@ $("#pesquisar_produto").keyup((e) => {
     })
   }
 })
-function openProdModal(){
-  $("#input_file_label").css("display","flex")
+function openProdModal() {
+  $("#input_file_label").css("display", "flex")
   reiniciarAddProduto()
   $(".modal_produtos").css("display", "none");
 
@@ -341,8 +439,8 @@ function openProdModal(){
   $(".modal_adicionar_produto input[type='text']").val("")
 
 }
-$("#add_produto_opener").on("click",function () {
-  $("#input_file_label").css("display","flex")
+$("#add_produto_opener").on("click", function () {
+  $("#input_file_label").css("display", "flex")
   reiniciarAddProduto()
   $(".modal_produtos").css("display", "none");
 
@@ -353,7 +451,7 @@ $("#add_produto_opener").on("click",function () {
 $("#ncm_produto_add").mask("0000.00.00")
 $("#pesquisar_venda_carro").mask("AAA-0A00")
 $("#placa_veiculo").mask("AAA-0A00")
-$("#quilometragem").mask("000.000.000.000",{reverse:true})
+$("#quilometragem").mask("000.000.000.000", { reverse: true })
 $(".porcentagem").mask("00.00%", { reverse: true })
 $(".porcentagem").keyup(function (e) {
 
@@ -381,7 +479,7 @@ function reiniciarAddProduto(fecharModal) {
     $(".modal_adicionar_produto").css("display", "none")
     $(".modal_produtos").css("display", "flex")
   }
-  
+
   $.post('Models/post_receivers/select_produtos_modal_produtos.php', { produto: $("#pesquisar_produto").val() }, (ret) => {
     $(".modal_produtos tbody").html(ret)
     editarProduto()
@@ -434,7 +532,7 @@ $("#input_file_xml").change(function () {
   })
 })
 function salvarProdutos(array) {
-  if(editando_produto){
+  if (editando_produto) {
     array[0]["id_antigo"] = codigo_produto_editando
     console.log(array[0])
     $.post("Models/post_receivers/update_produto.php", array[0], (ret) => {
@@ -443,13 +541,13 @@ function salvarProdutos(array) {
       deletarProdutos()
 
     })
-  }else{
+  } else {
     array.forEach(e => {
       $.post("Models/post_receivers/insert_produto.php", e, (ret) => {
         console.log(ret)
         reiniciarAddProduto(true)
         deletarProdutos()
-  
+
       })
     })
   }
@@ -464,18 +562,18 @@ $("#nome_produto_add").blur((e) => {
       produto: produtoRelacionado.trim()
     }, (ret) => {
       let retInJson = JSON.parse(ret)
-      if(retInJson != false){
-        
-      $(".warning_add_produto").css("display", "block")
-      $("#id_prod_relacionado").val(retInJson.id)
-      $(".warning_add_produto span").text(`Produto identificado como semelhante ao ${retInJson.nome}, os produtos serão colocados próximos uns aos outros na tabela com marcações de cores semelhantes quando o modo "Assistente de Estoque" estiver ativo. Caso esteja incorreto retire o "=" no Nome do produto`)
-      }else{
-        console.log("a")
-      $("#id_prod_relacionado").val("")
+      if (retInJson != false) {
 
-           $(".warning_add_produto").css("display", "none")
+        $(".warning_add_produto").css("display", "block")
+        $("#id_prod_relacionado").val(retInJson.id)
+        $(".warning_add_produto span").text(`Produto identificado como semelhante ao ${retInJson.nome}, os produtos serão colocados próximos uns aos outros na tabela com marcações de cores semelhantes quando o modo "Assistente de Estoque" estiver ativo. Caso esteja incorreto retire o "=" no Nome do produto`)
+      } else {
+        console.log("a")
+        $("#id_prod_relacionado").val("")
+
+        $(".warning_add_produto").css("display", "none")
       }
-        
+
     })
   }
 })
@@ -616,7 +714,7 @@ $("#father_add_produto_button button").click(function (e) {
 
     };
 
-  
+
     produtos_add_array[index] = data_produto
 
     index = index + 1
@@ -669,7 +767,7 @@ $("#father_add_produto_button button").click(function (e) {
       icms_prod: $("#icms_produto_add").val()
     };
 
-  
+
     produtos_add_array[index] = data_produto
 
     index = index - 1
@@ -827,21 +925,21 @@ $(".modal_funcionarios .fa-trash-can").click(function () {
   );
 });
 //TODO ARRUMAR O GERAR CODIGO PHP (QUANDO CLICAR EM ADICIONAR PRODUTO)
-function deletarProdutos(){
-$(".apagar_produto").click(function () {
+function deletarProdutos() {
+  $(".apagar_produto").click(function () {
 
-  let produto_id = $(this).attr("produto");
-  data = {
-    id: produto_id,
-  };
-  $.post(
-    include_path + "Models/post_receivers/delete_produto.php",
-    data,
-    function (ret) {
-      $(".produto_" + produto_id).remove();
-    }
-  );
-});
+    let produto_id = $(this).attr("produto");
+    data = {
+      id: produto_id,
+    };
+    $.post(
+      include_path + "Models/post_receivers/delete_produto.php",
+      data,
+      function (ret) {
+        $(".produto_" + produto_id).remove();
+      }
+    );
+  });
 
 }
 deletarProdutos()
@@ -874,13 +972,13 @@ $(".modal_anotar_pedido").submit(function (e) {
       produtos[index] = produto;
     });
   const data = {
-    marca_veiculo:$("#marca_veiculo").val(),
-    modelo_veiculo:$("#modelo_veiculo").val(),
+    marca_veiculo: $("#marca_veiculo").val(),
+    modelo_veiculo: $("#modelo_veiculo").val(),
     data_revisao: $("#data_revisao").val(),
     nome_cliente: $("#nome_cliente_input").val(),
     tel_cliente: $("#numero_cliente_input").val(),
     codigo_colaborador: $("#codigo_colaborador_input").val(),
-    pre_venda:  $("#pre_venda").val(),
+    pre_venda: $("#pre_venda").val(),
     quilometragem: $("#quilometragem").val(),
     metodo_pagamento: $("#metodo_pagamento").val(),
     valor_mao_obra: $("#valor_mao_obra").val(),
@@ -888,18 +986,18 @@ $(".modal_anotar_pedido").submit(function (e) {
     produtos: produtos,
     valor_produtos: valor_produtos
 
-   
+
   }
-  if( $("#pre_venda").val() != true){
+  if ($("#pre_venda").val() != true) {
     $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
       console.log(ret)
       alterarTabela();
       resetVenda()
     })
-  }else{
+  } else {
     alert("GURI")
   }
- 
+
 
 });
 

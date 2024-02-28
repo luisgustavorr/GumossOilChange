@@ -1491,7 +1491,16 @@ input#valor_entrada {
   flex-direction: column;
   justify-content: space-between;
 }
-
+#verificar_senha input {
+  height: 50px;
+  text-align: center;
+  border-radius: 10px;
+  margin-top: 5px;
+  font-size: 20px;
+}
+.tabela_father tbody i {
+  cursor: pointer;
+}
 .inputs_father_user {
   display: flex;
   flex-direction: column;
@@ -1526,6 +1535,23 @@ input#valor_entrada {
 .modal_produtos .fa-solid.fa-link {
   margin-right: 10px;
 }
+
+
+.jconfirm.jconfirm-my-theme {
+  .jconfirm-bg {
+    background-color: #242424;
+  }
+}
+.jconfirm.jconfirm-supervan .jconfirm-bg { 
+  background-color: #242424 !important;
+
+}
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-orange{
+  background-color: #F53F00 !important;
+}
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-orange:hover{
+  background-color: #000000 !important;
+}
 .modal_produtos table,.modal_funcionarios table {
   display: flex;
   flex-direction: column;
@@ -1548,6 +1574,55 @@ input#valor_entrada {
   right: 2px;
   font-weight: 500;
 }
+.modal_clientes h3 {
+  width: 100%;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 400;
+}
+.cnpj_selector {
+  width: 100px;
+  height: 25px;
+  background: gray;
+  border-radius: 3px;
+  position: relative;
+}
+.selector {
+  width: 50px;
+  height: 100%;
+  background: red;
+  border-radius: 3px;
+  cursor: pointer;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  color: white;
+  font-weight: 500;
+  position: absolute;
+  right:0;
+
+}
+.modal_clientes h3 orange {
+  font-weight: 600;
+  color: #F53F00;
+}
+.input_add_cliente_father {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+.modal_clientes {
+  width: 80%;
+  height: 80%;
+  position: absolute;
+  background: white;
+  transform: translate(-50%,-50%);
+  top: 50%;
+  left: 50%;
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+}
 #troca_oleo::after{
   content: "F2";
   font-size: 10px;
@@ -1558,6 +1633,14 @@ input#valor_entrada {
 }
 #produtos_opener::after{
   content: "F3";
+  font-size: 10px;
+  position: absolute;
+  top: 0;
+  right: 2px;
+  font-weight: 500;
+}
+#clientes_opener::after{
+  content: "F4";
   font-size: 10px;
   position: absolute;
   top: 0;

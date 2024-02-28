@@ -83,6 +83,13 @@ shortcut.add("F3",()=>{
   });
   $("#add_produto_opener").trigger("click")
 })
+shortcut.add("F4",()=>{
+  $(".modal").each(function () {
+    $(this).css("display", "none");
+    $("fundo").css("display", "none");
+  });
+  $("#clientes_opener").trigger("click")
+})
 
 
 $(".tags_produto_name").keyup(function (e) {
