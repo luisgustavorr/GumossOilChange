@@ -84,6 +84,7 @@ async function deletaPreVenda(elemento) {
   
     }
     $.post("Models/post_receivers/delete_venda.php", { id: $(elemento).attr("id_venda") }, (ret) => {
+      gerarGráficos()
       $(elemento).parent().parent().remove()
     })
 
@@ -956,6 +957,40 @@ $("#salvar_caixa").click(function () {
     }
   );
 });
+function gerarNotas(id_venda){
+  $.confirm({
+    title: 'Gerar Notas',
+    content: 'Qual nota deseja gerar ? ',
+      boxWidth: '500px',
+    useBootstrap: false,
+    buttons: {
+        confirm:{
+            text: 'NF-e',
+            btnClass: 'btn-orange',
+    
+            action: function(){
+                $.alert('Something else?');
+            }
+        },
+        cancel: {
+            text: 'NFc-e',
+            btnClass: 'btn-orange',
+ 
+            action: function(){
+                $.alert('Something else?');
+            }
+        },
+        somethingElse: {
+            text: 'Nota Não Fiscal',
+            btnClass: 'btn-orange',
+
+            action: function(){
+                location.href="https://localhost/SistemaAutolub/Models/post_receivers/gerarNota.php?venda="+id_venda
+            }
+        }
+    }
+});
+}
 $(".modal_anotar_pedido").submit(function (e) {
   e.preventDefault()
   let produtos = [];
@@ -984,7 +1019,8 @@ $(".modal_anotar_pedido").submit(function (e) {
     valor_mao_obra: $("#valor_mao_obra").val(),
     placa_veiculo: $("#placa_veiculo").val(),
     produtos: produtos,
-    valor_produtos: valor_produtos
+    valor_produtos: valor_produtos,
+    id_cliente: $("#cliente_id").val()
 
 
   }

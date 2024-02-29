@@ -121,6 +121,7 @@
                 <label for="">Nome</label>
                 <input type="text" name="" id="nome_loja">
             </div>
+            
             <span>Endereço</span>
             <div class="input_father">
                 <label for="">CEP</label>
@@ -157,18 +158,72 @@
     </section>
 </form>
 <form class="modal modal_clientes">
-   <h3>Adicionar <orange>Cliente</orange></h3>
-   <section class="inputs_father_body">
-    <div class="cnpj_selector">
+    <h3>Adicionar <red>Cliente</red>
+    </h3>
+    <section>
+        <div class="left_side">
+        <div class="cnpj_selector">
         <div class="selector">PF</div>
     </div>
-    <div class="input_add_cliente_father">
-        <label for="">Nome Empresa</label>
-        <input type="text" />
-    </div>
-   </section>
+    <span>Identificação</span>
+
+            <div class="input_father">
+                <label for="">Nome</label>
+                <input type="text" name="" id="nome_cliente" required>
+            </div>
+
+            <span>Endereço</span>
+            <div class="input_father">
+                <label for="">CEP</label>
+                <input type="text" name="" id="cep_cliente" required>
+            </div>
+
+
+            <div class="input_father">
+                <label for="">Estado</label>
+                <input type="text" name="" id="uf_cliente" required>
+            </div>
+
+            <div class="input_father">
+                <label for="">Município</label>
+                <input type="text" name="" id="municipio_cliente" required>
+            </div>
+            <div class="input_father">
+                <label for="">Bairro</label>
+                <input type="text" name="" id="bairro_cliente" required>
+            </div>
+            <div class="input_father">
+                <label for="">Rua</label>
+                <input type="text" name="" id="rua_cliente" required>
+            </div>
+            
+            <div class="input_father">
+                <label for="">Número</label>
+                <input type="text" name="" id="numero_cliente" required>
+            </div>
+        </div>
+        <div class="right_side">
+            <span>Dados Fiscais</span>
+            <div class="input_father">
+                <label for="">CPF</label>
+                <input type="text" name="" id="cnpj_cliente" required>
+            </div>
+            <span>Contato</span>
+            <div class="input_father">
+                <label for="">Tel</label>
+                <input type="text" name="" id="tel_cliente" required>
+            </div>
+            <div class="input_father">
+                <label for="">Email</label>
+                <input type="text" name="" id="email_cliente" required>
+            </div>
+            <button>ADICIONAR</button>
+        </div>
+    </section>
 </form>
+
 <form class="modal modal_produtos">
+
     <table>
         <thead>
             <tr>
@@ -242,6 +297,8 @@
 
 </div>
 <form class="modal modal_anotar_pedido">
+<input type="hidden" id="cliente_id" value="false" disabled>
+    
     <input type="hidden" id="pre_venda" value="false" disabled>
     <input type="hidden" id="pedido_id" value="false" disabled>
     <div class="valor_caixa_father input_father">
@@ -358,7 +415,7 @@
     <i class="open_sidebar_arrow fa-solid fa-angles-right"></i>
     <div class="princip_span" id="pre_venda_opener" onclick="abrirModal('modal_anotar_pedido') ; abrirPreVenda()"> <i class="fa-solid fa-cash-register"></i> <span>Pré-Venda </span> </div>
     <div class="princip_span" id="troca_oleo" onclick="abrirModal('modal_anotar_pedido'); fecharPreVenda()"> <i class="fa-solid fa-oil-can"></i> <span>Cadastrar Troca de Óleo </span> </div>
-    <div class="princip_span"  id="produtos_opener"><i onclick="abrirModal('modal_produtos');" class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
+    <div class="princip_span" onclick="abrirModal('modal_produtos');"  id="produtos_opener"><i  class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
   
     <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_clientes')" > <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
     <div class="princip_span" id="add_caixa_opener"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
@@ -583,7 +640,7 @@
                 <th>Placa do Carro</th>
                 <th>Quilometragem do Carro</th>
                 <th>Cliente</th>
-                <th>NFC-e</th>
+                <th>Notas</th>
                 <th>Método de Pagamento</th>
                 <th>Editar</th>
                 <th>Excluir</th>

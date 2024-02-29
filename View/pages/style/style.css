@@ -62,9 +62,10 @@ html {
   transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;
+  height: 80%;
   position: absolute;
   background: white;
-  height: 500px;
+
   border-radius: 12px;
   display: none;
   z-index: 3;
@@ -1555,7 +1556,7 @@ input#valor_entrada {
 .modal_produtos table,.modal_funcionarios table {
   display: flex;
   flex-direction: column;
-  max-height: 450px;
+  max-height: 650px;
   overflow-y: scroll;
 }
 .modal_produtos table thead tr,.modal_funcionarios table thead tr {
@@ -1580,11 +1581,17 @@ input#valor_entrada {
   font-size: 25px;
   font-weight: 400;
 }
+.input_add_cliente_father input {
+  height: 40px;
+  font-size: 15px;
+  padding: 5px;
+}
 .cnpj_selector {
   width: 100px;
   height: 25px;
   background: gray;
   border-radius: 3px;
+  margin-bottom: 20px;
   position: relative;
 }
 .selector {
@@ -1610,9 +1617,10 @@ input#valor_entrada {
   display: flex;
   flex-direction: column;
   width: 30%;
+  margin: 28px 0px;
 }
 .modal_clientes {
-  width: 80%;
+  width: 70%;
   height: 80%;
   position: absolute;
   background: white;
@@ -2256,6 +2264,82 @@ border: 1px solid gray;
 padding: 0 3px ;
 }
 .modal_criar_loja button
+{
+background: #F53F00;
+border: none;
+color: white;
+width: 70%;
+height: 40px;
+border-radius: 5px;
+font-size: 15px;
+font-weight: 500;
+position: absolute;
+bottom: 0;
+}
+.modal_clientes h3
+{
+width: 100%;
+text-align: center;
+font-weight: normal;
+font-size: 25px;
+margin: 0;
+}
+.modal_clientes h3 red
+{
+font-weight: 600;
+color: #F53F00;
+}
+.modal_clientes section
+{
+display: flex;
+flex-direction: row;
+height: 100%;
+width: 100%;
+margin-top: 25px;
+justify-content: center;
+}
+.modal_clientes section .right_side {
+  justify-content: flex-start;
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: end;
+  height: 87%;
+}
+.modal_clientes section .left_side{
+  justify-content: flex-start;
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: start;
+  height: 87%;
+}
+.modal_clientes section .input_father
+{
+display: flex;
+flex-direction: column;
+width: 70%;
+height: auto;
+font-weight: 400;
+margin: 10px 0;
+}
+.modal_clientes span
+{
+font-weight: 500;
+border-bottom: 1px solid;
+width: 70%;
+color: black;
+}
+.modal_clientes section .input_father input
+{
+height: 30px;
+border-radius: 5px;
+border: 1px solid gray;
+padding: 0 3px ;
+}
+.modal_clientes button
 {
 background: #F53F00;
 border: none;

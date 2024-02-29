@@ -37,7 +37,7 @@ class PainelControleModel
                 <td> " . $quilometragem . "  </td>
 
                 <td> " . $value['colaborador'] . " </td>
-                <td> <i produto='" . $value['forma_pagamento'] . "' class='fa-regular fa-file-lines'></i> </td>
+                <td> <i onClick='gerarNotas(".$value["id_venda"].")' produto='" . $value['forma_pagamento'] . "' class='fa-regular fa-file-lines'></i> </td>
 
                 <td> " . $value['forma_pagamento'] . " </td>
                 <td><i id_venda='".$value["id_venda"]."'onClick='editarPreVenda(this)'class='fa-regular fa-pen-to-square'></i></td>

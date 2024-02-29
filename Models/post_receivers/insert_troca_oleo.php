@@ -48,9 +48,8 @@ if ($_POST["nome_cliente"] != '') {
 } else {
     $nome_cliente = "Não informado";
 }
-$insert_cliente = \MySql::conectar()->prepare("INSERT INTO tb_clientes (`id`,`nome`,`loja`,`telefone`) VALUES (NULL,?,?,?)");
-$insert_cliente->execute(array($nome_cliente, $select_info_colaborador['caixa'], $_POST["tel_cliente"]));
-$id_cliente =  \MySql::conectar()->lastInsertId();
+
+$id_cliente  = $_POST["id_cliente"];
 $insert_vendas = \MySql::conectar()->prepare("INSERT INTO `tb_vendas` (`id`, `colaborador`, `data`, `valor`, `placa_carro`, `forma_pagamento`, `troco`, `id_cliente`,
 `valor_servico`,`pre_venda`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?,?,?);");
 $insert_vendas->execute(array($_POST['codigo_colaborador'], $_POST['data_revisao'], floatval(str_replace(",", ".", $_POST["valor_mao_obra"])) + $_POST['valor_produtos'], $_POST["placa_veiculo"], $_POST["metodo_pagamento"], 0, $id_cliente, str_replace(",", ".", $_POST["valor_mao_obra"]), $prevenda));
