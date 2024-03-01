@@ -186,6 +186,8 @@ shortcut.add("F1",()=>{
     $(this).css("display", "none");
     $("fundo").css("display", "none");
   });
+  resetVenda()
+
   $("#pre_venda_opener").trigger("click")
 })
 shortcut.add("F2",()=>{
@@ -193,6 +195,8 @@ shortcut.add("F2",()=>{
     $(this).css("display", "none");
     $("fundo").css("display", "none");
   });
+  resetVenda()
+
   $("#troca_oleo").trigger("click")
 })
 shortcut.add("F3",()=>{
@@ -267,6 +271,7 @@ $(".tags_produto_name").keyup(function (e) {
         alert(`Estoque do produto insuficiente, estoque atual : ${ui.item.value.estoque}. Caso isso seja um erro contate o suporte e altere o estoque editando o produto.`)
       }
       let produto = ui.item.label
+      let disabled = editando_troca_oleo == true ? "" : "disabled"
       $(".modal_anotar_pedido tbody").append(
         '<tr preco_produto="' + ui.item.value.preco + '" produto="' +
         ui.item.value.id +
@@ -274,9 +279,9 @@ $(".tags_produto_name").keyup(function (e) {
         $("#quantidade_produto_pedido").val() +
         '" class="produto_pedido' +
         produto.replace(/ /g, "_") +
-        '"><td>' +
+        '"><td><input class = "quantidade_produto_input"  value="' +
         $("#quantidade_produto_pedido").val() +
-        "</td><td>" +
+        '"</td><td>' +
         produto +
         "</td><td> " + ui.item.value.preco + "</td><td id='valor_produto_total_" +
         produto.replace(/ /g, "_") +
@@ -286,11 +291,11 @@ $(".tags_produto_name").keyup(function (e) {
         produto.replace(/ /g, "_") +
         '" class="remove_item_pedido ">-</td>'
       );
+      alterarValorTotal()
+
       $(".tags_produto_name").val("");
       $("#quantidade_produto_pedido").val("1");
-      $(".remove_item_pedido").click(function () {
-        $(".produto_pedido" + $(this).attr("produto")).remove();
-      });
+
       $(".remove_item_pedido").click(function () {
         $(".produto_pedido" + $(this).attr("produto")).remove();
       });
@@ -468,6 +473,7 @@ $("fundo").click(function () {
   });
 });
 function abrirModal(modal) {
+  resetVenda()
   $("." + modal).css("display", "flex");
   $("fundo").css("display", "flex");
   if (modal == "modal_sangria") {

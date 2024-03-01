@@ -15,7 +15,7 @@
     </div>
 </div> -->
 <form class="modal modal_adicionar_produto">
-    <input type="text" name="id_prod_relacionado"hidden id="id_prod_relacionado">
+    <input type="text" name="id_prod_relacionado" hidden id="id_prod_relacionado">
     <input type="file" name="input_file_xml" id="input_file_xml">
 
     <div class="first_input_row">
@@ -121,7 +121,7 @@
                 <label for="">Nome</label>
                 <input type="text" name="" id="nome_loja">
             </div>
-            
+
             <span>Endereço</span>
             <div class="input_father">
                 <label for="">CEP</label>
@@ -162,10 +162,10 @@
     </h3>
     <section>
         <div class="left_side">
-        <div class="cnpj_selector">
-        <div class="selector">PF</div>
-    </div>
-    <span>Identificação</span>
+            <div class="cnpj_selector">
+                <div class="selector">PF</div>
+            </div>
+            <span>Identificação</span>
 
             <div class="input_father">
                 <label for="">Nome</label>
@@ -196,7 +196,7 @@
                 <label for="">Rua</label>
                 <input type="text" name="" id="rua_cliente" required>
             </div>
-            
+
             <div class="input_father">
                 <label for="">Número</label>
                 <input type="text" name="" id="numero_cliente" required>
@@ -248,25 +248,24 @@
             $relacionadosOrange = true;
             $lastRelacionado = 0;
             foreach ($caixas as $key => $value) {
-                if($value["relacionado"] != ""){
-                    if($relacionadosOrange){
-                    
-                        $icon = '<i class="fa-solid fa-link" style="color: #F53F00;"></i>';
-                    }else{
-                        $icon = '<i class="fa-solid fa-link" style="color: #242424;"></i>';
+                if ($value["relacionado"] != "") {
+                    if ($relacionadosOrange) {
 
+                        $icon = '<i class="fa-solid fa-link" style="color: #F53F00;"></i>';
+                    } else {
+                        $icon = '<i class="fa-solid fa-link" style="color: #242424;"></i>';
                     }
-                    if($lastRelacionado == $value["relacionado"]){
-                         $relacionadosOrange = !$relacionadosOrange;
+                    if ($lastRelacionado == $value["relacionado"]) {
+                        $relacionadosOrange = !$relacionadosOrange;
                     }
-                }else{
+                } else {
                     $icon = "";
                 }
-       
+
                 $lastRelacionado = $value["relacionado"];
                 $estoque = $value["quantidade"] != 0 ? $value["quantidade"] : '<i title="Produto sem estoque, caso isso seja um erro altere o estoque no campo Quantidade ao editar se esse produto." class="fa-solid fa-triangle-exclamation fa-beat" style="color: #ff0000;"></i>';
                 echo '<tr class =" produto_' . $value['id'] . '" value="' . $value['id'] . '">
-                                <td class="nome">'.$icon.' ' . ucfirst($value['nome']) . '</td>
+                                <td class="nome">' . $icon . ' ' . ucfirst($value['nome']) . '</td>
                                 <td class="codigo">' . ucfirst($value['codigo']) . '</td>
                                 <td class="preco">R$' . $value["valor_compra"] . '</td>
 
@@ -297,15 +296,23 @@
 
 </div>
 <form class="modal modal_anotar_pedido">
-<input type="hidden" id="cliente_id" value="false" disabled>
-    
+    <input type="hidden" id="cliente_id" value="false" disabled>
+    <input type="hidden" id="venda_id" value="false" disabled>
+
     <input type="hidden" id="pre_venda" value="false" disabled>
     <input type="hidden" id="pedido_id" value="false" disabled>
-    <div class="valor_caixa_father input_father">
-        <span>Data da Revisão:</span>
-        <input type="datetime-local" name="data_revisao" value="<?php echo (new DateTime())->format('Y-m-d\TH:i') ?>" id="data_revisao">
-
+    <div class="dates_father">
+        <div class="valor_caixa_father input_father">
+            <span>Data da Revisão:</span>
+            <input type="datetime-local" name="data_revisao" value="<?php echo (new DateTime())->format('Y-m-d\TH:i') ?>" id="data_revisao">
+        </div>
+        <div class="subdivision">
+            <span>Prazo em Dias<red>(Opcional)</red></span>
+            <input type="text" name="prazo_cliente" class="oders_inputs" id="prazo_cliente_input" placeholder="Insira o prazo em dias">
+        </div>
     </div>
+
+
     <div class="first_row">
         <div class="colaborador_father input_father">
             <div class="subdivision">
@@ -327,10 +334,10 @@
         </div>
 
         <div class="endereco_cliente_father">
- 
+
             <div class="valor_sangria_father input_father">
                 <span>KM:</span>
-                <input type="text" value="" class="oders_inputs" name="quilometragem" id="quilometragem">
+                <input type="text" value="" placeholder="100.000" class="oders_inputs" name="quilometragem" id="quilometragem">
             </div>
             <div class="input_select">
                 <span>Método de Pagamento:</span>
@@ -346,7 +353,7 @@
             <div class="valor_sangria_father input_father">
 
                 <span>Mão de Obra:</span>
-                <input type="text" value="" onKeyUp="mascaraMoeda(this, event)" class="oders_inputs" name="valor_mao_obra" id="valor_mao_obra">
+                <input type="text" value="" onKeyUp="mascaraMoeda(this, event)" placeholder="10,00" class="oders_inputs" name="valor_mao_obra" id="valor_mao_obra">
             </div>
         </div>
 
@@ -358,23 +365,23 @@
     <div class="middle_row">
 
         <div class="valor_caixa_father input_father">
-            <span  medida="un" class="select_valor_clicker_father" button_identifier="pedido">Placa do Veículo:</span>
+            <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Placa do Veículo:</span>
             <input required type="text" class="oders_inputs pedido_button" name="placa_veiculo" placeholder="AAA-0000" id="placa_veiculo">
 
         </div>
         <div class="valor_caixa_father input_father">
-            <span  medida="un" class="select_valor_clicker_father" button_identifier="pedido">Marca do Veículo:</span>
+            <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Marca do Veículo:</span>
             <input required type="text" class="oders_inputs pedido_button" name="marca_veiculo" placeholder="Marca" id="marca_veiculo">
 
         </div>
         <div class="valor_caixa_father input_father">
-            <span  medida="un" class="select_valor_clicker_father" button_identifier="pedido">Modelo do Veículo:</span>
+            <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Modelo do Veículo:</span>
             <input required type="text" class="oders_inputs pedido_button" name="modelo_veiculo" placeholder="Modelo" id="modelo_veiculo">
 
         </div>
 
         <div class="valor_caixa_father input_father">
-            <span  medida="un" class="select_valor_clicker_father" button_identifier="pedido">Quantidade:</span>
+            <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Quantidade:</span>
             <input type="text" class="oders_inputs pedido_button" name="quantidade_produto_pedido" value="1" id="quantidade_produto_pedido">
 
         </div>
@@ -415,9 +422,9 @@
     <i class="open_sidebar_arrow fa-solid fa-angles-right"></i>
     <div class="princip_span" id="pre_venda_opener" onclick="abrirModal('modal_anotar_pedido') ; abrirPreVenda()"> <i class="fa-solid fa-cash-register"></i> <span>Pré-Venda </span> </div>
     <div class="princip_span" id="troca_oleo" onclick="abrirModal('modal_anotar_pedido'); fecharPreVenda()"> <i class="fa-solid fa-oil-can"></i> <span>Cadastrar Troca de Óleo </span> </div>
-    <div class="princip_span" onclick="abrirModal('modal_produtos');"  id="produtos_opener"><i  class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
-  
-    <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_clientes')" > <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
+    <div class="princip_span" onclick="abrirModal('modal_produtos');" id="produtos_opener"><i class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
+
+    <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_clientes')"> <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
     <div class="princip_span" id="add_caixa_opener"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
 
 </aside>
@@ -593,11 +600,11 @@
         </section>
         <section class="pesquisar_venda">
             <div>
-            <label for="pesquisar_venda">Pesquisar <red>Veículo</red> :</label>
+                <label for="pesquisar_venda">Pesquisar <red>Veículo</red> :</label>
                 <input type="text" name="pesquisar_venda_carro" id="pesquisar_venda_carro" placeholder="Placa do carro">
             </div>
             <div>
-            <!-- <label for="pesquisar_venda">Pesquisar <red>Cliente</red> :</label> -->
+                <!-- <label for="pesquisar_venda">Pesquisar <red>Cliente</red> :</label> -->
                 <input type="text" name="pesquisar_venda_cliente" id="pesquisar_venda_cliente" placeholder="Nome do cliente">
             </div>
         </section>
@@ -644,6 +651,8 @@
                 <th>Método de Pagamento</th>
                 <th>Editar</th>
                 <th>Excluir</th>
+                <th>Fechar Venda</th>
+
             </tr>
         </thead>
         <tbody>

@@ -56,7 +56,14 @@ html {
   color: #F53F00;
   width: auto;
 }
-
+.fechar_venda {
+  border: none;
+  background: #F53F00;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: 600;
+}
 .modal_produtos {
   width: 80%;
   transform: translate(-50%, -50%);
@@ -826,7 +833,7 @@ input#valor_entrada {
   display: flex;
   justify-content: start;
   margin: 10px 0;
-  align-items: center;
+  align-items: end;
 }
 .chart_unic_father{
   width: 1000px;
@@ -860,7 +867,7 @@ input#valor_entrada {
 .modal_anotar_pedido table tbody tr td input {
   text-align: center;
   width: 100%;
-  border: none;
+  border: none !important;
 }
 .orange_tr {
   border-left: 1px solid #F53F00;
@@ -922,7 +929,7 @@ input#valor_entrada {
   padding: 0 5px;
   color: rgb(0, 0, 0);
   font-size: 18px;
-  width: 400px;
+  width: 390px;
 }
 .input_cliente_vai_buscar {
   width: 80%;
@@ -1943,6 +1950,19 @@ header img{
   position: sticky;
   top: 0;
 }
+#prazo_cliente_input {
+  border-radius: 12px;
+  border: 1px solid #F53F00;
+  height: 40px;
+  padding: 0 5px;
+  color: rgb(0, 0, 0);
+  font-size: 18px;
+  width: 190px;
+}
+.dates_father {
+  display: flex;
+  justify-content: space-between;
+}
 .tabela_father table {
   display: flex;
   flex-direction: column;
@@ -1963,6 +1983,10 @@ header img{
   font-size: 13px;
   font-weight: 300;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
 }
 .modal_fechar_caixa {
   display: none;

@@ -3,7 +3,7 @@ require("./tfpdf/tfpdf.php");
 require ('../../MySql.php');
 date_default_timezone_set('America/Sao_Paulo');
 
-$infos_VENDA_CLIENTE = \MySql::conectar()->prepare("SELECT tb_colaboradores.nome as nome_vendedor,`tb_vendas`.colaborador,`tb_vendas`.forma_pagamento,tb_vendas.data,tb_vendas.valor - tb_vendas.valor_servico,`tb_clientes`.* FROM `tb_vendas` INNER JOIN `tb_clientes` ON tb_vendas.id_cliente = tb_clientes.id  INNER JOIN tb_colaboradores ON tb_vendas.colaborador = tb_colaboradores.codigo WHERE `tb_vendas`.id =?");
+$infos_VENDA_CLIENTE = \MySql::conectar()->prepare("SELECT `tb_vendas`.prazo,tb_colaboradores.nome as nome_vendedor,`tb_vendas`.colaborador,`tb_vendas`.forma_pagamento,tb_vendas.data,tb_vendas.valor - tb_vendas.valor_servico,`tb_clientes`.* FROM `tb_vendas` INNER JOIN `tb_clientes` ON tb_vendas.id_cliente = tb_clientes.id  INNER JOIN tb_colaboradores ON tb_vendas.colaborador = tb_colaboradores.codigo WHERE `tb_vendas`.id =?");
 $infos_VENDA_CLIENTE->execute(array($_GET['venda']));
 $infos_VENDA_CLIENTE = $infos_VENDA_CLIENTE->fetch();
 
@@ -37,9 +37,11 @@ $BAIRRO_END_CLIENTE = $infos_VENDA_CLIENTE["bairro"];
 $CPF_CNPJ = $infos_VENDA_CLIENTE["CPF"];
 $TEL_CLIENTE = $infos_VENDA_CLIENTE["tel"];
 $CIDADE_CLIENTE = $infos_VENDA_CLIENTE["municipio"]."/".$infos_VENDA_CLIENTE["estado"];
+
 $CEP_CLIENTE =  $infos_VENDA_CLIENTE["CEP"];
-$PRAZO_DIAS_MIN = 12;
-$PRAZO_DIAS_MAX = 15;
+$PRAZO_DIAS_MAX =  $infos_VENDA_CLIENTE["prazo"];
+
+$PRAZO_DIAS_MIN = $infos_VENDA_CLIENTE["prazo"] - 3;
 // Adiciona uma página ao documento
 $pdf->AddPage();
 
@@ -129,7 +131,11 @@ $pdf->Text($x, $y + 25, "Endereço : $END_CLIENTE ");
 $pdf->Text($x, $y + 35, "Bairro : $BAIRRO_END_CLIENTE ");
 
 $espacamento = $x + $pdf->GetStringWidth("CLIENTE : $CLIENTE ") + 30;
+$pdf->SetFont("Roboto_Bold", "", 8);
+
 $pdf->Text($espacamento, $y + 6, "CPF/CNPJ : $CPF_CNPJ ");
+$pdf->SetFont("Roboto", "", 8);
+
 $pdf->Text($espacamento, $y + 15, "Telefone : $TEL_CLIENTE ");
 $pdf->Text($espacamento, $y + 25, "Cidade : $CIDADE_CLIENTE ");
 $pdf->Text($espacamento, $y + 35, "CEP : $CEP_CLIENTE ");
@@ -152,11 +158,16 @@ $pdf->SetXY($x, $y);
 $pdf->SetFont("Roboto", "", 7);
 $linha= 0;
 $total_calculado = 0;
+$desconto = 0 ;
+$acrescimo = 0;
 foreach ($produtos as $key => $value) {
+    $desconto = $desconto + number_format($value["desconto"],2,".") ;
+$acrescimo = $acrescimo + number_format($value["acrescimo"],2,".") ;
+
     $produto = \MySql::conectar()->prepare("SELECT * FROM tb_produtos WHERE id = ? ");
 $produto->execute(array($value['id_produto']));
 $produto = $produto->fetch();
-$total_produto =  number_format($produto["valor_venda"] *$value["quantidade_produto"],2,".");
+$total_produto =  number_format($produto["valor_venda"] *$value["quantidade_produto"] - $value["desconto"],2,".");
 $total_calculado += $total_produto;
  $pdf->SetXY($x, $y);
 $pdf->Cell(15, 8, $produto["id"], 1, 0, "C");
@@ -164,7 +175,7 @@ $pdf->Cell(80, 8, $produto["nome"], 1, 0, "C");
 $pdf->Cell(31, 8, '0000 - GRADE PADRÃO', 1, 0, "C");
 $pdf->Cell(10, 8, $produto["unid_comercial"], 1, 0, "C");
 $pdf->Cell(10, 8,  $value["quantidade_produto"], 1, 0, "C");
-$pdf->Cell(13, 8, $produto["valor_venda"], 1, 0, "C");
+$pdf->Cell(13, 8, $produto["valor_venda"] , 1, 0, "C");
 $pdf->Cell(10, 8, '0.0', 1, 0, "C");
 $pdf->Cell(21, 8, $total_produto , 1, 0, "C");
 $y = $y + 8;
@@ -208,7 +219,7 @@ $pdf->Text($x, $y, "Desconto : ");
 
 $pdf->SetFont("Roboto", "", 8);
 
-$pdf->Text($distancia, $y, "00,00");
+$pdf->Text($distancia, $y, $desconto);
 
 $y = $y + 6;
 $pdf->SetFont("Roboto_Bold", "", 8);
@@ -216,7 +227,7 @@ $pdf->SetFont("Roboto_Bold", "", 8);
 $pdf->Text($x, $y, "Acréscimo :");
 $pdf->SetFont("Roboto", "", 8);
 
-$pdf->Text($distancia, $y, "00,00");
+$pdf->Text($distancia, $y, $acrescimo);
 
 
 $y = $y + 6;

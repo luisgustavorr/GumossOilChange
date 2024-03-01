@@ -1,5 +1,32 @@
+let editando_troca_oleo = false
 
-
+function alterarValorTotal() {
+  $(".quantidade_produto_input,.input_valor_produto").keyup(function () {
+    let produto = $(this).parent().parent().find(".remove_item_pedido ").attr("produto")
+    let row = $(this).parent().parent()
+    $(this).parent().parent().attr("quantidade", $(row).find(".quantidade_produto_input").val())
+    $(this).parent().parent().attr("preco_produto", $(row).find(".input_valor_produto").val())
+    let valor_total = $(row).find(".quantidade_produto_input").val() * $(row).find(".input_valor_produto").val()
+    $("#valor_produto_total_" + produto).text(parseFloat(valor_total).toFixed(2))
+  })
+}
+function selecionarInfoProdutosEditados() {
+  produtos = []
+  $(".modal_anotar_pedido tbody tr").each(function (e) {
+    let quantidade = $(this).find(".quantidade_produto_input").val()
+    let valor_unit = $(this).find(".input_valor_produto").val()
+    let valor_total = quantidade * valor_unit
+    console.log(valor_total)
+    let produto = {
+      "quantidade": quantidade,
+      "id": $(this).attr("produto"),
+      "valor_unit": valor_unit,
+      "valor_total": valor_total
+    }
+    produtos.unshift(produto)
+  })
+  return produtos
+}
 async function pedirSenha(text) {
   let aprovado = false
   const resultado = new Promise((resolve, reject) => {
@@ -19,12 +46,7 @@ async function pedirSenha(text) {
           btnClass: 'btn-orange',
           action: function () {
             var name = this.$content.find('.name').val();
-            if (!name) {
-              $.alert('Favor Insira um Código');
-              resolve()
 
-              return false;
-            }
             $.post("Models/post_receivers/select_by_senha.php", { codigo: name }, (ret) => {
               console.log(ret)
               aprovado = ret
@@ -57,12 +79,68 @@ async function pedirSenha(text) {
   return aprovado
 }
 
-
 async function editarPreVenda(elemento) {
   const aprovado = await pedirSenha("Editar")
   console.log(aprovado === "true")
+  $("#venda_id").val($(elemento).attr("id_venda"))
   if (aprovado.trim() === "true") {
-    alert("aprovado")
+    $.post("Models/post_receivers/select_troca_oleo.php", { id_venda: $(elemento).attr("id_venda") }, (ret) => {
+      resetVenda()
+      let JSONret = JSON.parse(ret)
+      if (JSONret.pre_venda == 0) {
+        let valor_mao_obra = parseFloat(JSONret.valor) - parseFloat(JSONret.valor_produtos)
+        
+        $("#troca_oleo").trigger("click")
+        $("#quilometragem").val(JSONret.quilometragem)
+        $("#numero_cliente_input").val(JSONret.tel)
+        $("#valor_mao_obra").val(valor_mao_obra)
+        $("#placa_veiculo").val(JSONret.placa_carro)
+        $("#marca_veiculo").val(JSONret.marca)
+        $("#modelo_veiculo").val(JSONret.modelo)
+      } else {
+        $("#pre_venda_opener").trigger("click")
+
+      }
+      editando_troca_oleo = true
+
+      $("#codigo_colaborador_input").val(JSONret.colaborador)
+      $("#prazo_cliente_input").val(JSONret.prazo)
+      $("#cliente_id").val(JSONret.id_cliente)
+      $("#nome_cliente_input").val(JSONret.id_cliente + "-" + JSONret.nome_cliente)
+      $("#metodo_pagamento").val(JSONret.forma_pagamento)
+      JSONret.produtos_vendidos.forEach((e) => {
+        let produto = e.nome
+        console.log(e.valor_venda)
+        $(".modal_anotar_pedido tbody").append(
+          '<tr preco_produto="' + e.valor_venda + '" produto="' +
+          e.id +
+          '" quantidade="' +
+          $("#quantidade_produto_pedido").val() +
+          '" class="produto_pedido' +
+          produto.replace(/ /g, "_") +
+          '"><td> <input class = "quantidade_produto_input" value="' +
+          $("#quantidade_produto_pedido").val() +
+          '"></td><td>' +
+          produto +
+          "</td><td> <input class = 'input_valor_produto' value='" + e.valor_venda + "' > </td><td id='valor_produto_total_" +
+          produto.replace(/ /g, "_") +
+          "' >" +
+          parseFloat(e.valor_venda * e.quantidade).toFixed(2) +
+          '</td> <td produto="' +
+          produto.replace(/ /g, "_") +
+          '" class="remove_item_pedido ">-</td>'
+        );
+      })
+      alterarValorTotal()
+      console.log(selecionarInfoProdutosEditados())
+
+      $(".input_valor_produto").mask("0000000.00", { reverse: true })
+
+      $(".remove_item_pedido").click(function () {
+        $(".produto_pedido" + $(this).attr("produto")).remove();
+      });
+    })
+
   } else {
     $.alert({
       title: 'Código Inválido',
@@ -72,6 +150,24 @@ async function editarPreVenda(elemento) {
     });
   }
 }
+async function fecharVenda(elemento) {
+  const aprovado = await pedirSenha("Fechar Venda")
+  console.log(aprovado)
+  if (aprovado.trim() === "true") {
+    $.post("Models/post_receivers/fechar_venda.php", { id_venda: $(elemento).attr("id_venda") }, (ret) => {
+      console.log(ret)
+    })
+    alterarTabela();
+  } else {
+    $.alert({
+      title: 'Código Inválido',
+      content: "",
+      boxWidth: '500px',
+      useBootstrap: false,
+    });
+  }
+}
+
 async function deletaPreVenda(elemento) {
   const aprovado = await pedirSenha("Excluir")
   console.log(aprovado === "true")
@@ -81,7 +177,7 @@ async function deletaPreVenda(elemento) {
       pesquisa: "",
       data_min: $("#data_minima").val(),
       data_max: $("#data_maxima").val(),
-  
+
     }
     $.post("Models/post_receivers/delete_venda.php", { id: $(elemento).attr("id_venda") }, (ret) => {
       gerarGráficos()
@@ -159,6 +255,7 @@ function printTable() {
   $(".chart_father").css("display", "flex")
 }
 let editando_produto = false
+
 let id_produto_editando = 0;
 function selecionarAvaiableIDProximo(id) {
   return new Promise((resolve, reject) => {
@@ -238,6 +335,7 @@ $('#pesquisar_produto_button').click(function (e) {
   })
 })
 function resetVenda() {
+  editando_troca_oleo = false
   formatoDataHora = function (data) {
     var dia = ('0' + data.getDate()).slice(-2);
     var mes = ('0' + (data.getMonth() + 1)).slice(-2);
@@ -943,6 +1041,7 @@ function deletarProdutos() {
   });
 
 }
+
 deletarProdutos()
 $("#salvar_caixa").click(function () {
   data = {
@@ -957,44 +1056,56 @@ $("#salvar_caixa").click(function () {
     }
   );
 });
-function gerarNotas(id_venda){
+function gerarNotas(id_venda) {
   $.confirm({
     title: 'Gerar Notas',
     content: 'Qual nota deseja gerar ? ',
-      boxWidth: '500px',
+    boxWidth: '500px',
     useBootstrap: false,
     buttons: {
-        confirm:{
-            text: 'NF-e',
-            btnClass: 'btn-orange',
-    
-            action: function(){
-                $.alert('Something else?');
-            }
-        },
-        cancel: {
-            text: 'NFc-e',
-            btnClass: 'btn-orange',
- 
-            action: function(){
-                $.alert('Something else?');
-            }
-        },
-        somethingElse: {
-            text: 'Nota Não Fiscal',
-            btnClass: 'btn-orange',
+      nfe: {
+        text: 'NF-e',
+        btnClass: 'btn-orange',
 
-            action: function(){
-                location.href="https://localhost/SistemaAutolub/Models/post_receivers/gerarNota.php?venda="+id_venda
-            }
+        action: function () {
+          $.alert('Something else?');
         }
+      },
+      nfce: {
+        text: 'NFc-e',
+        btnClass: 'btn-orange',
+
+        action: function () {
+          $.alert('Something else?');
+        }
+      },
+      nnf: {
+        text: 'Nota Não Fiscal',
+        btnClass: 'btn-orange',
+
+        action: function () {
+          location.href = "https://localhost/SistemaAutolub/Models/post_receivers/gerarNota.php?venda=" + id_venda
+        }
+      },
+      cancel: {
+        text: 'Cancelar',
+
+        action: function () {
+
+        }
+      }
     }
-});
+  });
 }
+
 $(".modal_anotar_pedido").submit(function (e) {
   e.preventDefault()
   let produtos = [];
   let valor_produtos = 0;
+  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTOD OTODOTODOTODO
+  //ALTERAR OS ATTR DOS CHILDREN QUANDO MUDAR OS VALORES DE QUANTIDADE E PRECO UNITARIO
+  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+
   $(".modal_anotar_pedido tbody")
     .children()
     .each(function (index) {
@@ -1006,6 +1117,7 @@ $(".modal_anotar_pedido").submit(function (e) {
       };
       produtos[index] = produto;
     });
+
   const data = {
     marca_veiculo: $("#marca_veiculo").val(),
     modelo_veiculo: $("#modelo_veiculo").val(),
@@ -1020,19 +1132,28 @@ $(".modal_anotar_pedido").submit(function (e) {
     placa_veiculo: $("#placa_veiculo").val(),
     produtos: produtos,
     valor_produtos: valor_produtos,
-    id_cliente: $("#cliente_id").val()
-
-
+    id_cliente: $("#cliente_id").val(),
+    prazo: $("#prazo_cliente_input").val()
   }
-  if ($("#pre_venda").val() != true) {
-    $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
+  if (editando_troca_oleo) {
+    data["id_venda"] = $("#venda_id").val()
+    $.post("Models/post_receivers/update_troca_oleo.php", data, function (ret) {
       console.log(ret)
       alterarTabela();
       resetVenda()
     })
-  } else {
-    alert("GURI")
-  }
+  }else{
+
+  // if ($("#pre_venda").val() != true) {
+  //   $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
+  //     console.log(ret)
+  //     alterarTabela();
+  //     resetVenda()
+  //   })
+  // } else {
+  //   alert("GURI")
+  // }
+}
 
 
 });
@@ -1203,3 +1324,8 @@ $("#input_codigo_user").on("input", function () {
     }
   );
 });
+
+
+
+
+
