@@ -102,7 +102,8 @@ async function editarPreVenda(elemento) {
 
       }
       editando_troca_oleo = true
-
+      $("#data_revisao").val(JSONret.data)
+console.log(JSONret)
       $("#codigo_colaborador_input").val(JSONret.colaborador)
       $("#prazo_cliente_input").val(JSONret.prazo)
       $("#cliente_id").val(JSONret.id_cliente)

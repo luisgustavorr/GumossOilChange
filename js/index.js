@@ -283,7 +283,7 @@ $(".tags_produto_name").keyup(function (e) {
         $("#quantidade_produto_pedido").val() +
         '"</td><td>' +
         produto +
-        "</td><td> " + ui.item.value.preco + "</td><td id='valor_produto_total_" +
+        "</td><td> <input class = 'input_valor_produto'  value='  " + ui.item.value.preco + "'></td><td id='valor_produto_total_" +
         produto.replace(/ /g, "_") +
         "' >" +
         parseFloat(ui.item.value.preco * quantidade).toFixed(2) +

@@ -867,6 +867,7 @@ input#valor_entrada {
 .modal_anotar_pedido table tbody tr td input {
   text-align: center;
   width: 100%;
+  font-size: 15px;
   border: none !important;
 }
 .orange_tr {
@@ -1968,7 +1969,7 @@ header img{
   flex-direction: column;
   width: 95%;
   margin: 0 2.5%;
-  height: 600px;
+  max-height: 600px;
   overflow-y: scroll;
 }
 .tabela_father tbody tr {

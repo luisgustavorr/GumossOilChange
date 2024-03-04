@@ -12,6 +12,8 @@ foreach ($selecionar_produtos as $key => $value) {
     $selecionar_produto->execute(array($value["id_produto"]));
     $selecionar_produto = $selecionar_produto->fetch();
     $selecionar_produto["quantidade"] = $value["quantidade_produto"];
+    $selecionar_produto["valor_venda"] = $selecionar_produto["valor_venda"] - $value["desconto"] + $value["acrescimo"];
+
     array_unshift($produtos, $selecionar_produto);
 }
 $selecionar_troca_oleo["produtos_vendidos"] = $produtos;
