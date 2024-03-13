@@ -89,7 +89,7 @@ async function editarPreVenda(elemento) {
       let JSONret = JSON.parse(ret)
       if (JSONret.pre_venda == 0) {
         let valor_mao_obra = parseFloat(JSONret.valor) - parseFloat(JSONret.valor_produtos)
-        
+
         $("#troca_oleo").trigger("click")
         $("#quilometragem").val(JSONret.quilometragem)
         $("#numero_cliente_input").val(JSONret.tel)
@@ -103,7 +103,7 @@ async function editarPreVenda(elemento) {
       }
       editando_troca_oleo = true
       $("#data_revisao").val(JSONret.data)
-console.log(JSONret)
+      console.log(JSONret)
       $("#codigo_colaborador_input").val(JSONret.colaborador)
       $("#prazo_cliente_input").val(JSONret.prazo)
       $("#cliente_id").val(JSONret.id_cliente)
@@ -362,6 +362,8 @@ function resetVenda() {
   $("#finaliza_sangria_button").text("Finalizar Operação")
   $("#finaliza_sangria_button").removeAttr("disabled")
   $(".modal").css("display", 'none')
+  $(".input_ie_father a").css("background", "#757575")
+
   $("fundo").css("display", 'none')
 }
 
@@ -1057,6 +1059,92 @@ $("#salvar_caixa").click(function () {
     }
   );
 });
+function cpfCNPJMask(esseElemento) {
+  $(esseElemento).keydown(function () {
+    try {
+      $(esseElemento).unmask();
+    } catch (e) { }
+
+    var tamanho = $(esseElemento).val().length;
+
+    if (tamanho < 11) {
+      $(esseElemento).mask("999.999.999-99");
+    } else {
+      $(esseElemento).mask("99.999.999/9999-99");
+    }
+
+    // ajustando foco
+    var elem = this;
+    setTimeout(function () {
+      // mudo a posição do seletor
+      elem.selectionStart = elem.selectionEnd = 10000;
+    }, 0);
+    // reaplico o valor para mudar o foco
+    var currentValue = $(this).val();
+    $(this).val('');
+    $(this).val(currentValue);
+  });
+}
+function gerarNFe(id_venda) {
+  console.log(id_venda)
+  $.post("Models/post_receivers/gerarNFE.php", { id_venda: id_venda }, (ret) => {
+    console.log(ret)
+    let retInJson = JSON.parse(ret)
+    console.log(retInJson)
+    $.alert({
+      title: 'Sucesso!',
+      content: "Nota Fsical gerada e enviada para o cliente por email.",
+      boxWidth: '500px',
+      useBootstrap: false,
+    });
+  })
+}
+function gerarNFCe(id_venda) {
+  $.post("Models/post_receivers/select_troca_oleo.php", { id_venda: id_venda }, (ret) => {
+    let retJSON = JSON.parse(ret)
+    console.log(retJSON)
+    if (retJSON.id_cliente != 3) {
+      $.confirm({
+        title: 'Gerar NFC-e',
+        content: '' +
+          '<form id="gerar_nfce" action="" class="formName">' +
+          '<div class="form-group">' +
+          '<div class="input_modal_nfce"><label>Nome (Opcional)</label><br>' +
+          '<input type="text" placeholder="Nome"  value="' + retJSON.nome_cliente + '" class="nome_cliente_modal form-control" required /></div>' +
+          '<div class="input_modal_nfce"><label>CPF (Opcional)</label><br>' +
+          '<input type="text" onKeyUp="  cpfCNPJMask(this)" value="' + retJSON.CPF + '" placeholder="CPF" class="cpf_cliente_modal form-control" required /></div>' +
+          '</div>' +
+          '</form>',
+        boxWidth: '500px',
+        useBootstrap: false,
+        buttons: {
+          nfe: {
+            text: 'Gerar e Imprimir NFC-e',
+            btnClass: 'btn-orange',
+
+            action: function () {
+              $.post("Models/post_receivers/gerarNFCe.php", { "nome_cliente": $(".nome_cliente_modal").val(), "cpf_nfe": $(".cpf_cliente_modal").val(), id_venda: id_venda }, (ret) => {
+                console.log(ret)
+            
+              })
+
+
+            }
+
+          },
+          cancel: {
+            text: 'Cancelar',
+
+            action: function () {
+            }
+          }
+        }
+      });
+
+    }
+
+  })
+}
 function gerarNotas(id_venda) {
   $.confirm({
     title: 'Gerar Notas',
@@ -1069,7 +1157,7 @@ function gerarNotas(id_venda) {
         btnClass: 'btn-orange',
 
         action: function () {
-          $.alert('Something else?');
+          gerarNFe(id_venda)
         }
       },
       nfce: {
@@ -1077,7 +1165,7 @@ function gerarNotas(id_venda) {
         btnClass: 'btn-orange',
 
         action: function () {
-          $.alert('Something else?');
+          gerarNFCe(id_venda)
         }
       },
       nnf: {
@@ -1142,19 +1230,20 @@ $(".modal_anotar_pedido").submit(function (e) {
       console.log(ret)
       alterarTabela();
       resetVenda()
-    })
-  }else{
+      e.preventDefault()
 
-  // if ($("#pre_venda").val() != true) {
-  //   $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
-  //     console.log(ret)
-  //     alterarTabela();
-  //     resetVenda()
-  //   })
-  // } else {
-  //   alert("GURI")
-  // }
-}
+    })
+  } else {
+
+    $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
+      console.log(ret)
+      alterarTabela();
+      resetVenda()
+      e.preventDefault()
+
+    })
+
+  }
 
 
 });

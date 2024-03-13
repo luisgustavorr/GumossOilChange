@@ -1,6 +1,6 @@
 <?php
 require("./tfpdf/tfpdf.php");
-require ('../../MySql.php');
+require('../../MySql.php');
 date_default_timezone_set('America/Sao_Paulo');
 
 $infos_VENDA_CLIENTE = \MySql::conectar()->prepare("SELECT `tb_vendas`.prazo,tb_colaboradores.nome as nome_vendedor,`tb_vendas`.colaborador,`tb_vendas`.forma_pagamento,tb_vendas.data,tb_vendas.valor - tb_vendas.valor_servico,`tb_clientes`.* FROM `tb_vendas` INNER JOIN `tb_clientes` ON tb_vendas.id_cliente = tb_clientes.id  INNER JOIN tb_colaboradores ON tb_vendas.colaborador = tb_colaboradores.codigo WHERE `tb_vendas`.id =?");
@@ -29,14 +29,14 @@ $DATA_EMISSAO = date("d/m/Y");
 $DATA_EMISSAO_S_FORMATACAO = date("Y-m-d");
 
 $HORA_EMISSAO = date("H:m");
-$VENDEDOR = $infos_VENDA_CLIENTE["colaborador"]." - ".$infos_VENDA_CLIENTE["nome_vendedor"];
-$CLIENTE = $infos_VENDA_CLIENTE["id"]." - ".$infos_VENDA_CLIENTE["nome"];
+$VENDEDOR = $infos_VENDA_CLIENTE["colaborador"] . " - " . $infos_VENDA_CLIENTE["nome_vendedor"];
+$CLIENTE = $infos_VENDA_CLIENTE["id"] . " - " . $infos_VENDA_CLIENTE["nome"];
 $NOME_FANTASIA = $infos_VENDA_CLIENTE["nome_fantasia"];
-$END_CLIENTE = $infos_VENDA_CLIENTE["nome_fantasia"].". ".$infos_VENDA_CLIENTE["numero"];
+$END_CLIENTE = $infos_VENDA_CLIENTE["nome_fantasia"] . ". " . $infos_VENDA_CLIENTE["numero"];
 $BAIRRO_END_CLIENTE = $infos_VENDA_CLIENTE["bairro"];
 $CPF_CNPJ = $infos_VENDA_CLIENTE["CPF"];
 $TEL_CLIENTE = $infos_VENDA_CLIENTE["tel"];
-$CIDADE_CLIENTE = $infos_VENDA_CLIENTE["municipio"]."/".$infos_VENDA_CLIENTE["estado"];
+$CIDADE_CLIENTE = $infos_VENDA_CLIENTE["municipio"] . "/" . $infos_VENDA_CLIENTE["estado"];
 
 $CEP_CLIENTE =  $infos_VENDA_CLIENTE["CEP"];
 $PRAZO_DIAS_MAX =  $infos_VENDA_CLIENTE["prazo"];
@@ -67,8 +67,8 @@ $pdf->AddFont('Roboto_Bold', '', 'Roboto-Bold.ttf', true);
 $x = $xInicial + 25; // Define a nova posição x
 $pdf->SetXY($x, $y);
 $pdf->SetFont("Roboto_Bold", "", 15);
-$pdf->Cell(165,25, '', 1, 0, "R");
-$pdf->Text($x + 60 , $y +5, "AUTOLUB");
+$pdf->Cell(165, 25, '', 1, 0, "R");
+$pdf->Text($x + 60, $y + 5, "AUTOLUB");
 
 
 
@@ -96,7 +96,7 @@ $distance_cep = $distance_tel + $pdf->GetStringWidth("TEL : $TEL") + 5;
 $pdf->Text($distance_cep, $y + 12, "CEP : $CEP ");
 
 //Segundo retangulo
-$y = $y +25;
+$y = $y + 25;
 $x = $xInicial;
 $pdf->SetFont("Roboto_Bold", "", 8);
 $pdf->SetXY($x, $y);
@@ -156,32 +156,32 @@ $pdf->Cell(21, 8, 'Total.', 1, 0, "C");
 $y = $y + 8;
 $pdf->SetXY($x, $y);
 $pdf->SetFont("Roboto", "", 7);
-$linha= 0;
+$linha = 0;
 $total_calculado = 0;
-$desconto = 0 ;
+$desconto = 0;
 $acrescimo = 0;
 foreach ($produtos as $key => $value) {
-    $desconto = $desconto + number_format($value["desconto"],2,".") ;
-$acrescimo = $acrescimo + number_format($value["acrescimo"],2,".") ;
+    $desconto = $desconto + number_format($value["desconto"], 2, ".");
+    $acrescimo = $acrescimo + number_format($value["acrescimo"], 2, ".");
 
     $produto = \MySql::conectar()->prepare("SELECT * FROM tb_produtos WHERE id = ? ");
-$produto->execute(array($value['id_produto']));
-$produto = $produto->fetch();
-$total_produto =  number_format($produto["valor_venda"] *$value["quantidade_produto"] - $value["desconto"],2,".");
-$total_calculado += $total_produto;
- $pdf->SetXY($x, $y);
-$pdf->Cell(15, 8, $produto["id"], 1, 0, "C");
-$pdf->Cell(80, 8, $produto["nome"], 1, 0, "C");
-$pdf->Cell(31, 8, '0000 - GRADE PADRÃO', 1, 0, "C");
-$pdf->Cell(10, 8, $produto["unid_comercial"], 1, 0, "C");
-$pdf->Cell(10, 8,  $value["quantidade_produto"], 1, 0, "C");
-$pdf->Cell(13, 8, $produto["valor_venda"] , 1, 0, "C");
-$pdf->Cell(10, 8, '0.0', 1, 0, "C");
-$pdf->Cell(21, 8, $total_produto , 1, 0, "C");
-$y = $y + 8;
-
+    $produto->execute(array($value['id_produto']));
+    $produto = $produto->fetch();
+    $total_produto =  number_format($produto["valor_venda"] * $value["quantidade_produto"], 2, ".");
+    $total_calculado += $total_produto;
+    $pdf->SetXY($x, $y);
+    $pdf->Cell(15, 8, $produto["id"], 1, 0, "C");
+    $pdf->Cell(80, 8, $produto["nome"], 1, 0, "C");
+    $pdf->Cell(31, 8, '0000 - GRADE PADRÃO', 1, 0, "C");
+    $pdf->Cell(10, 8, $produto["unid_comercial"], 1, 0, "C");
+    $pdf->Cell(10, 8,  $value["quantidade_produto"], 1, 0, "C");
+    $pdf->Cell(13, 8, $produto["valor_venda"], 1, 0, "C");
+    $pdf->Cell(10, 8, '0.0', 1, 0, "C");
+    $pdf->Cell(21, 8, $total_produto, 1, 0, "C");
+    $y = $y + 8;
 }
-
+$total_bruto = $total_calculado;
+$total_calculado = number_format($total_calculado - $desconto + $acrescimo, 2, ".");;
 
 $pdf->SetXY($x, $y);
 $pdf->Cell(190, 60, '', 1, 0, "C");
@@ -190,10 +190,10 @@ $pdf->SetFont("Roboto_Bold", "", 8);
 $pdf->Text($x, $y + 6, "Forma de Pagamento :");
 $y = $y + 6;
 $pdf->SetFont("Roboto", "", 8);
-$pdf->Text($x, $y + 6, "Receber  Prazo: $PRAZO_DIAS_MIN-$PRAZO_DIAS_MAX DIAS  Valor: R$".$total_calculado);
+$pdf->Text($x, $y + 6, "Receber  Prazo: $PRAZO_DIAS_MIN-$PRAZO_DIAS_MAX DIAS  Valor: R$" . $total_calculado);
 $pdf->SetFont("Roboto_Bold", "", 8);
 $y = $y + 6;
-$pdf->Text($x, $y + 6, "Vencimento : ".date('d/m/Y', strtotime($DATA_EMISSAO_S_FORMATACAO. ' + '.$PRAZO_DIAS_MAX.' days'))." - R$$total_calculado");
+$pdf->Text($x, $y + 6, "Vencimento : " . date('d/m/Y', strtotime($DATA_EMISSAO_S_FORMATACAO . ' + ' . $PRAZO_DIAS_MAX . ' days')) . " - R$$total_calculado");
 $y = $y + 6;
 $pdf->Text($x, $y + 6, "Observações :");
 
@@ -207,10 +207,8 @@ $pdf->Text($x, $y, "Total Bruto :");
 $pdf->SetFont("Roboto", "", 8);
 
 $distancia = $x + $pdf->GetStringWidth("Total Bruto ") + 10;
-$pdf->Text($distancia, $y, number_format($total_calculado,2,","));
-$desconto = 0;
+$pdf->Text($distancia, $y, number_format($total_bruto , 2, ","));
 
-$acrescimo = 0;
 
 $y = $y + 6;
 $pdf->SetFont("Roboto_Bold", "", 8);
@@ -248,15 +246,15 @@ $y = $y + 6;
 
 $pdf->SetFont("Roboto_Bold", "", 9);
 $pdf->Text($x, $y, "TOTAL : ");
-$pdf->Text($distancia, $y, $total_calculado - $desconto + $acrescimo);
+$pdf->Text($distancia, $y, $total_calculado );
 
 $pdf->SetFont("Roboto", "", 8);
 
-$pdf->Text($x-35, $y+10, "_________________________________________________");
-$pdf->Text($x-10, $y+14, "Assinatura");
+$pdf->Text($x - 35, $y + 10, "_________________________________________________");
+$pdf->Text($x - 10, $y + 14, "Assinatura");
 
-$pdf->Text($x-110, $y+10, "_________/_________/_________");
-$pdf->Text($x-100, $y+14, "Data de Entrega");
+$pdf->Text($x - 110, $y + 10, "_________/_________/_________");
+$pdf->Text($x - 100, $y + 14, "Data de Entrega");
 
 // Especifica o nome do arquivo de saída e exibe o PDF no navegador
 

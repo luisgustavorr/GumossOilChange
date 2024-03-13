@@ -1,3 +1,4 @@
+<?php \Models\LoginModel::enviarFormulario()?>
 
       <div class="bg-img">
          <div class="content_login">
@@ -23,7 +24,6 @@
            
          </div>
       </div>
-  <?php \Models\LoginModel::enviarFormulario()?>
 
   <script src="<?php echo INCLUDE_PATH ?>js/jquery.js" ></script>
 

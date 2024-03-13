@@ -1,4 +1,4 @@
-<?php 
+ <?php 
 include('../../MySql.php');
 $codigo = $_POST["codigo"];
 $codigoDisponível = false;
@@ -15,4 +15,4 @@ while (!$codigoDisponível) {
 }
 print_r($codigo);
 
-?>
+ ?>

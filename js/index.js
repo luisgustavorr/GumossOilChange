@@ -1,3 +1,6 @@
+$("#ie_cliente").mask("0000000000.00-00")
+$(".input_ie_father").parent().css("display","none")
+
 $('#yes').click(function () {
   console.log("a")
   $(".input_endereco_cliente").css('visibility', ' unset')
@@ -12,41 +15,42 @@ let input_codigo_focado = false;
 let condicao_favoravel = true;
 $("#tel_cliente").mask("(00) 00000-0000")
 
-$(".modal_clientes").submit(async (e)=>{
+$(".modal_clientes").submit(async (e) => {
   e.preventDefault()
   let data = {
-  nome:$("#nome_cliente").val(),
-  tel:$("#tel_cliente").val(),
-  CEP:$("#cep_cliente").val(),
-  UF:$("#uf_cliente").val(),
-  municipio:$("#municipio_cliente").val(),
-  bairro:$("#bairro_cliente").val(),
-  rua:$("#rua_cliente").val(),
-  numero:$("#numero_cliente").val(),
-	CPF:$("#cnpj_cliente").val(),
- email:$("#email_cliente").val(),
-}
-if($("#cnpj_cliente").cleanVal().length == 14){
+    nome: $("#nome_cliente").val(),
+    tel: $("#tel_cliente").val(),
+    CEP: $("#cep_cliente").val(),
+    UF: $("#uf_cliente").val(),
+    municipio: $("#municipio_cliente").val(),
+    bairro: $("#bairro_cliente").val(),
+    rua: $("#rua_cliente").val(),
+    numero: $("#numero_cliente").val(),
+    CPF: $("#cnpj_cliente").cleanVal().trim(),
+    IE: $("#ie_cliente").cleanVal(),
+    email: $("#email_cliente").val(),
+  }
+  if ($("#cnpj_cliente").cleanVal().length == 14) {
 
-  await $.get("https://brasilapi.com.br/api/cnpj/v1/"+$("#cnpj_cliente").cleanVal(),(ret)=>{
-    $("#tel_cliente").val($('#tel_cliente').masked(ret.ddd_telefone_1))
-    $("#email_cliente").val(ret.email)
-    data["nome_fantasia"] = ret.nome_fantasia
-    console.log(data)
+    await $.get("https://brasilapi.com.br/api/cnpj/v1/" + $("#cnpj_cliente").cleanVal(), (ret) => {
+      $("#tel_cliente").val($('#tel_cliente').masked(ret.ddd_telefone_1))
+      $("#email_cliente").val(ret.email)
+      data["nome_fantasia"] = ret.nome_fantasia
+      console.log(data)
+    })
+  }
+  $.post("Models/post_receivers/insert_cliente.php", data, (ret) => {
+    $.alert({
+      title: 'Sucesso',
+      content: "Cliente cadastrado!",
+      boxWidth: '500px',
+      useBootstrap: false,
+    });
+    $(".modal_clientes input").val("")
+    $(".modal_clientes").css("display", "none")
+    $("fundo").css("display", "none")
+    console.log(ret)
   })
-}
-$.post("Models/post_receivers/insert_cliente.php",data,(ret)=>{
-  $.alert({
-    title: 'Sucesso',
-    content: "Cliente cadastrado!",
-    boxWidth: '500px',
-    useBootstrap: false,
-  });
-  $(".modal_clientes input").val("")
-$(".modal_clientes").css("display","none")
-$("fundo").css("display","none")
-  console.log(ret)
-})
 })
 
 let alcancou_14_cliente = false
@@ -115,73 +119,85 @@ $(".input_valor_pedido_produto").keyup(function () {
   );
 });
 
-function selectTr(){
-  $("body .modal_produtos tbody tr").on("click",function(){
+function selectTr() {
+  $("body .modal_produtos tbody tr").on("click", function () {
     $(".modal_produtos tbody tr").removeClass("marked_tr_tabela_produtos")
-  $(this).addClass("marked_tr_tabela_produtos")
-  
+    $(this).addClass("marked_tr_tabela_produtos")
+
   })
 }
 $("#cnpj_cliente").mask("000.000.000-00")
 
 let pf = true
-$("#cep_cliente").keyup(function(){
+$("#cep_cliente").keyup(function () {
   pesquisarCEP($(this))
 
 
 })
-function pesquisarCEP(elemento){
-  if($(elemento).val().length == 9){
-    $.get("https://brasilapi.com.br/api/cep/v1/"+$("#cep_cliente").val(),(ret)=>{
-console.log(ret.cep)
-$("#uf_cliente").val(ret.state)
-$("#municipio_cliente").val(ret.city)
-$("#rua_cliente").val(ret.street)
-$("#bairro_cliente").val(ret.neighborhood)
+function pesquisarCEP(elemento) {
+  if ($(elemento).val().length == 9) {
+    $.get(`https://viacep.com.br/ws/${$("#cep_cliente").cleanVal()}/json/`, (ret) => {
+      console.log(ret.cep)
+      $("#uf_cliente").val(ret.uf)
+      $("#municipio_cliente").val(ret.localidade)
+      $("#rua_cliente").val(ret.logradouro)
+      $("#bairro_cliente").val(ret.bairro)
 
-})
+    })
+  }
 }
-}
-$("#cnpj_cliente").keyup(function(){
-  if($(this).cleanVal().length == 14 && pf !=true){
-    $.get("https://brasilapi.com.br/api/cnpj/v1/"+$(this).cleanVal(),(ret)=>{
-      console.log(ret)
+$("#cnpj_cliente").keyup(function () {
+  if ($(this).cleanVal().length == 14 && pf != true) {
+    $.get("https://brasilapi.com.br/api/cnpj/v1/" + $(this).cleanVal(), (ret) => {
+      $(".input_ie_father a").css("background", "red")
+      let cnpj_unmasked = $('#cnpj_cliente').cleanVal();
+      $(".input_ie_father a").attr("href", "https://cnpj.biz/" + cnpj_unmasked)
+      $(".input_ie_father a").attr("target", "_blank")
+
       $("#email_cliente").val(ret.email)
-      if($("#cep_cliente").val() == ""){
-        $("#cep_cliente").val($("#cep_cliente").masked(ret.cep)) 
+      if($("#cep_cliente").val() == "") {
+        $("#cep_cliente").val($("#cep_cliente").masked(ret.cep))
         pesquisarCEP($("#cep_cliente"))
       }
-      if($("#numero_cliente").val() == ""){
-        $("#numero_cliente").val(ret.numero) 
+      if($("#numero_cliente").val() == "") {
+        $("#numero_cliente").val(ret.numero)
       }
-      if($("#nome_cliente").val() == ""){
-        $("#nome_cliente").val(ret.razao_social) 
+      if($("#nome_cliente").val() == "") {
+        $("#nome_cliente").val(ret.razao_social)
       }
     })
   }
+
 })
 
-  $("#cep_cliente").mask("00000-000")
-$(".cnpj_selector").click(function(){
+$("#cep_cliente").mask("00000-000")
+$(".cnpj_selector").click(function () {
   $("#cnpj_cliente").val("")
   console.log("a")
-  if(pf == true){
-        $("#nome_cliente").parent().find("label").text("Razão Social")
-        $("#cnpj_cliente").parent().find("label").text("CNPJ")
-      $("#cnpj_cliente").mask("00.000.000/0000-00")
-  $(".selector").css("right","50px") 
-  $(".selector").text("PJ") 
-  }else{
-$("#nome_cliente").parent().find("label").text("Nome")
+  if (pf == true) {
+    $("#nome_cliente").parent().find("label").text("Razão Social")
+    $("#cnpj_cliente").parent().find("label").text("CNPJ")
+    $("#cnpj_cliente").mask("00.000.000/0000-00")
+    $("#ie_cliente").attr("required",true)
+
+    $(".input_ie_father").parent().css("display","flex")
+    $(".selector").css("right", "50px")
+    $(".selector").text("PJ")
+  } else {
+    $("#nome_cliente").parent().find("label").text("Nome")
     $("#cnpj_cliente").parent().find("label").text("CPF")
-     $("#cnpj_cliente").mask("000.000.000-00")
-  $(".selector").css("right","0") 
-     $(".selector").text("PF") 
+    $("#cnpj_cliente").mask("000.000.000-00")
+    $("#ie_cliente").removeAttr("required")
+    $("#ie_cliente").val("")
+
+    $(".input_ie_father").parent().css("display","none")
+    $(".selector").css("right", "0")
+    $(".selector").text("PF")
   }
   pf = !pf
 })
 selectTr()
-shortcut.add("F1",()=>{
+shortcut.add("F1", () => {
   $(".modal").each(function () {
     $(this).css("display", "none");
     $("fundo").css("display", "none");
@@ -190,7 +206,7 @@ shortcut.add("F1",()=>{
 
   $("#pre_venda_opener").trigger("click")
 })
-shortcut.add("F2",()=>{
+shortcut.add("F2", () => {
   $(".modal").each(function () {
     $(this).css("display", "none");
     $("fundo").css("display", "none");
@@ -199,14 +215,14 @@ shortcut.add("F2",()=>{
 
   $("#troca_oleo").trigger("click")
 })
-shortcut.add("F3",()=>{
+shortcut.add("F3", () => {
   $(".modal").each(function () {
     $(this).css("display", "none");
     $("fundo").css("display", "none");
   });
   $("#add_produto_opener").trigger("click")
 })
-shortcut.add("F4",()=>{
+shortcut.add("F4", () => {
   $(".modal").each(function () {
     $(this).css("display", "none");
     $("fundo").css("display", "none");
@@ -217,7 +233,7 @@ shortcut.add("F4",()=>{
 
 
 $("#nome_cliente_input").keyup(function (e) {
-let availableTags_client = [];
+  let availableTags_client = [];
 
   data = {
     nome: $("#nome_cliente_input").val()
@@ -226,12 +242,12 @@ let availableTags_client = [];
     ret_inJSON = JSON.parse(ret)
 
 
-  ret_inJSON.forEach(e => {
-    produto = { "label": e.id+"-" +e.nome , "value": { "id": e.id, "nome": e.nome } }
-    availableTags_client.unshift(produto)
-  })
+    ret_inJSON.forEach(e => {
+      produto = { "label": e.id + "-" + e.nome, "value": { "id": e.id, "nome": e.nome } }
+      availableTags_client.unshift(produto)
+    })
 
-  
+
   })
   console.log(availableTags_client)
   $("#nome_cliente_input").autocomplete({
@@ -257,7 +273,7 @@ $(".tags_produto_name").keyup(function (e) {
     ret_inJSON = JSON.parse(ret)
 
     ret_inJSON.forEach(e => {
-      produto = { "label": e.nome, "value": { "id": e.id, "preco": e.valor_venda,"estoque":e.quantidade } }
+      produto = { "label": e.nome, "value": { "id": e.id, "preco": e.valor_venda, "estoque": e.quantidade } }
       availableTags.unshift(produto)
     })
   })
@@ -267,7 +283,7 @@ $(".tags_produto_name").keyup(function (e) {
     select: function (event, ui) {
       event.preventDefault()
       let quantidade = parseFloat($("#quantidade_produto_pedido").val())
-      if(quantidade > ui.item.value.estoque ){
+      if (quantidade > ui.item.value.estoque) {
         alert(`Estoque do produto insuficiente, estoque atual : ${ui.item.value.estoque}. Caso isso seja um erro contate o suporte e altere o estoque editando o produto.`)
       }
       let produto = ui.item.label

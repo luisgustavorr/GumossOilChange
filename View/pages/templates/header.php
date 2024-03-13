@@ -48,6 +48,7 @@
 object-fit: contain;" />
       <div class="right_side">
         <span><i class="fa-regular fa-clock"></i> <date_now class=" horario_atual_finder">Seg: 10/07/2023 10h40</date_now></span>
+        <a target="_blank" href="https://localhost/SistemaAutolub/SETUP.rar" download="OctopusXMLPrinter.rar">Baixar Programa Impressora</a>
       </div>
     </header>
     

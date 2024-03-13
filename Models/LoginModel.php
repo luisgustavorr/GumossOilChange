@@ -26,13 +26,13 @@ if( \Painel::logado()==false){
         $_SESSION['user'] = $user;
         $_SESSION['password'] = $senha;
         
-        echo"<script>location.href='Home'</script>";
+        // echo"<script>location.href='Home'</script>";
 
     }
     }
 }else{
     setcookie("login", "true", time()+20*24*60*60);
-    echo"<script>location.href='Home'</script>";
+    // echo"<script>location.href='Home'</script>";
 }
 
         }

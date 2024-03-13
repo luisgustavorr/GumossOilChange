@@ -1960,9 +1960,53 @@ header img{
   font-size: 18px;
   width: 190px;
 }
+.input_ie_father {
+  border-radius: 5px;
+  position: relative;
+  display: flex;
+}
+.input_ie_father a {
+  width: 20%;
+  background: #757575;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: white;
+  border-radius: 0 5px 5px 0;
+}
+#gerar_nfce .form-group {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.input_modal_nfce input {
+  height: 30px;
+  padding: 0 2px;
+  border-radius: 5px;
+  border: 1px solid gray;
+  font-size: 16px;
+}
 .dates_father {
   display: flex;
   justify-content: space-between;
+}
+header .right_side {
+  align-items: center;
+}
+header .right_side a {
+  height: 30px;
+  background: red;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: 400;
+  padding: 0 5px;
+  font-size: 15px;
+  margin: 0 30px;
+justify-content: center;
+display: flex;
+align-items: center;
 }
 .tabela_father table {
   display: flex;
@@ -2376,6 +2420,12 @@ font-size: 15px;
 font-weight: 500;
 position: absolute;
 bottom: 0;
+}
+#ie_cliente {
+  width: 80%;
+  border: 1px solid gray;
+  border-right: none;
+  border-radius: 5px 0 0 5px;
 }
 @media print{
   header, footer, aside, nav, form, #sidebar, .menu, .hero, .header_section,.chart_father {

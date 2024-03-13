@@ -33,7 +33,7 @@ foreach ($row_vendas as $key => $value) {
     echo "
        <tr>
        <td> $data_formatada </td>
-        <td title=' R$" . number_format($value['valor_produtos'],2 ). " em produtos e R$".  $value["valor_servico"]  ." \n pela mão de obra'> R$" . str_replace('.', ',', number_format($valor_venda,2)) . " </td>
+        <td title=' R$" . number_format($value['valor_produtos']-$value["desconto"] + $value["acrescimo"],2 ). " em produtos e R$".  $value["valor_servico"]  ." \n pela mão de obra'> R$" . str_replace('.', ',', number_format($valor_venda,2)) . " </td>
         <td ".$subtitle.">  " .$produto. " </td>
         <td> " . $quilometragem . "  </td>
 

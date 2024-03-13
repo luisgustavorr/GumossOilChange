@@ -208,6 +208,10 @@
                 <label for="">CPF</label>
                 <input type="text" name="" id="cnpj_cliente" required>
             </div>
+            <div class="input_father">
+                <label for="">IE</label>
+                <div class="input_ie_father"><input type="text" name="" id="ie_cliente" > <a><i class="fa-solid fa-magnifying-glass"></i></a></div>
+            </div>
             <span>Contato</span>
             <div class="input_father">
                 <label for="">Tel</label>
@@ -222,7 +226,7 @@
     </section>
 </form>
 
-<form class="modal modal_produtos">
+<form   class="modal modal_produtos">
 
     <table>
         <thead>
@@ -295,7 +299,7 @@
 </form>
 
 </div>
-<form class="modal modal_anotar_pedido">
+<form method="POST" class="modal modal_anotar_pedido" >
     <input type="hidden" id="cliente_id" value="false" disabled>
     <input type="hidden" id="venda_id" value="false" disabled>
 
@@ -323,12 +327,12 @@
             <div class="subdivision">
 
                 <span>Tel. Cliente:</span>
-                <input required type="text" name="numero_cliente" class="oders_inputs" id="numero_cliente_input" placeholder="Insira o numero do cliente">
+                <input  type="text" name="numero_cliente" class="oders_inputs" id="numero_cliente_input" placeholder="Insira o numero do cliente" required>
             </div>
             <div class="subdivision">
 
                 <span>Seu código:</span>
-                <input required type="text" name="codigo_colaborador" value="<?php if (isset($_COOKIE['last_codigo_colaborador'])) echo $_COOKIE['last_codigo_colaborador'] ?>" class="oders_inputs colab_code" id="codigo_colaborador_input" placeholder="Insira o seu código">
+                <input  type="text" name="codigo_colaborador" value="<?php if (isset($_COOKIE['last_codigo_colaborador'])) echo $_COOKIE['last_codigo_colaborador'] ?>" class="oders_inputs colab_code" id="codigo_colaborador_input" placeholder="Insira o seu código">
             </div>
 
         </div>
@@ -366,17 +370,17 @@
 
         <div class="valor_caixa_father input_father">
             <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Placa do Veículo:</span>
-            <input required type="text" class="oders_inputs pedido_button" name="placa_veiculo" placeholder="AAA-0000" id="placa_veiculo">
+            <input  type="text" class="oders_inputs pedido_button" name="placa_veiculo" placeholder="AAA-0000" id="placa_veiculo">
 
         </div>
         <div class="valor_caixa_father input_father">
             <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Marca do Veículo:</span>
-            <input required type="text" class="oders_inputs pedido_button" name="marca_veiculo" placeholder="Marca" id="marca_veiculo">
+            <input  type="text" class="oders_inputs pedido_button" name="marca_veiculo" placeholder="Marca" id="marca_veiculo">
 
         </div>
         <div class="valor_caixa_father input_father">
             <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Modelo do Veículo:</span>
-            <input required type="text" class="oders_inputs pedido_button" name="modelo_veiculo" placeholder="Modelo" id="modelo_veiculo">
+            <input  type="text" class="oders_inputs pedido_button" name="modelo_veiculo" placeholder="Modelo" id="modelo_veiculo">
 
         </div>
 
@@ -387,7 +391,7 @@
         </div>
         <div class="valor_caixa_father input_father">
             <span>Nome produto:</span>
-            <input type="text" class="tags_produto_name oders_inputs" name="nome_produto_pedido" laceholder="Nome do produto" id="nome_produto_pedido">
+            <input type="text" class="tags_produto_name oders_inputs" name="nome_produto_pedido" placeholder="Nome do produto" id="nome_produto_pedido">
 
         </div>
 
@@ -415,7 +419,7 @@
         </tbody>
     </table>
     <div class="button_finalizar_father">
-        <button id="finaliza_sangria_button" class="finalizar_button">Finalizar Operação</button>
+        <button type="submit" id="finaliza_sangria_button" class="finalizar_button">Finalizar Operação</button>
     </div>
 </form>
 <aside id="sidebar">
@@ -424,7 +428,7 @@
     <div class="princip_span" id="troca_oleo" onclick="abrirModal('modal_anotar_pedido'); fecharPreVenda()"> <i class="fa-solid fa-oil-can"></i> <span>Cadastrar Troca de Óleo </span> </div>
     <div class="princip_span" onclick="abrirModal('modal_produtos');" id="produtos_opener"><i class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
 
-    <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_clientes')"> <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
+    <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_clientes');$('.modal_clientes input').val('')"> <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
     <div class="princip_span" id="add_caixa_opener"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
 
 </aside>
