@@ -43,7 +43,7 @@ function findCEST($ncm)
 
 // Percorrer o array para encontrar o objeto com "NCM/SH" igual a "3917"
 
-if (isset($id_venda )) {
+if (isset($id_venda)) {
 
 
     $data_emissao = date('Y-m-d-H-i-s');
@@ -59,7 +59,7 @@ if (isset($id_venda )) {
     $colab->execute(array($cookieteste));
     $colab = $colab->fetch();
 
-    $caixa = \MySql::conectar()->prepare("SELECT * FROM `tb_lojas` WHERE  `caixa` = ?");
+            $caixa = \MySql::conectar()->prepare("SELECT `tb_lojas`.*,`tb_equipamentos`.porta_octopus,`tb_equipamentos`.vID,`tb_equipamentos`.pID FROM `tb_lojas` INNER JOIN `tb_equipamentos` ON `tb_lojas`.`caixa` = `tb_equipamentos`.`caixa`  WHERE  `tb_lojas`.`caixa` = ?");
     $caixa->execute(array($colab['caixa']));
     $caixa = $caixa->fetch();
 
@@ -101,26 +101,14 @@ if (isset($id_venda )) {
     $nfe = new Make();
     $std = new \stdClass();
     // '2023-12-28-09-20-30'
-    function criarArquivoNFe($data_atual, $tipo, $arquivo)
+    function criarArquivoNFe($data, $tipo, $arquivo)
     {
+        if ($tipo == "xml") {
 
-        [$ano, $mes, $dia, $hora, $minuto, $segundos] = explode('-', $data_atual);
-        if (file_exists('../../NotasFiscais/NFe/' . $tipo . '/' . $ano)) {
-
-            if (file_exists('../../NotasFiscais/NFe/' . $tipo . '/' . $ano . '/' . $mes)) {
-                if (file_exists('../../NotasFiscais/NFe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia)) {
-                    file_put_contents('../../NotasFiscais/NFe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia . '/' . $data_atual . '.' . $tipo, $arquivo);
-                } else {
-                    mkdir('../../NotasFiscais/NFe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia, 0777, true);
-                    file_put_contents('../../NotasFiscais/NFe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia . '/' . $data_atual . '.' . $tipo, $arquivo);
-                }
-            } else {
-                mkdir('../../NotasFiscais/NFe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia, 0777, true);
-                file_put_contents('../../NotasFiscais/NFe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia . '/' . $data_atual . '.' . $tipo, $arquivo);
-            }
+            file_put_contents('./temp/nota.xml', $arquivo);
         } else {
-            mkdir('../../NotasFiscais/NFe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia, 0777, true);
-            file_put_contents('../../NotasFiscais/NFe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia . '/' . $data_atual . '.' . $tipo, $arquivo);
+
+            file_put_contents('./temp/nota.pdf', $arquivo);
         }
     };
     $std->versao = '4.00';
@@ -157,7 +145,7 @@ if (isset($id_venda )) {
     $std->CRT = 3;
     $std->CNPJ = $CNPJ;
     $nfe->tagemit($std);
-    $infoEnd = json_decode(file_get_contents("https://viacep.com.br/ws/".$caixa['CEP']."/json/"), true);
+    $infoEnd = json_decode(file_get_contents("https://viacep.com.br/ws/" . $caixa['CEP'] . "/json/"), true);
 
     $std = new \stdClass();
     $std->xLgr = strtoupper($cliente["rua"]);
@@ -410,7 +398,7 @@ if (isset($id_venda )) {
             "proxyPass" => ""
         ]
     ];
-  
+
 
     $configJson = json_encode($config);
     // $certificadoDigital = file_get_contents('certificado.pfx');}
@@ -460,7 +448,7 @@ if (isset($id_venda )) {
         $xml = Complements::toAuthorize($request, $response);
         try {
             criarArquivoNFe($data_emissao, 'xml', $xml);
-            
+
             try {
                 $logo = file_get_contents(realpath(__DIR__ . '/../../img/Logo mix.png'));
                 $danfe = new Danfe($xml);
@@ -484,7 +472,7 @@ if (isset($id_venda )) {
                 $danfe->debugMode(false);
                 $danfe->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
                 //$danfe->epec('891180004131899', '14/08/2018 11:24:45'); //marca como autorizada por EPEC
-        
+
                 // Caso queira mudar a configuracao padrao de impressao
                 /*  $this->printParameters( $orientacao = '', $papel = 'A4', $margSup = 2, $margEsq = 2 ); */
                 // Caso queira sempre ocultar a unidade tributável
@@ -495,20 +483,23 @@ if (isset($id_venda )) {
                 $danfe->logoParameters($logo, 'C', false);
                 //Gera o PDF
                 $pdf = $danfe->render($logo);
-        
+
                 criarArquivoNFe($data_emissao, 'pdf', $pdf);
-        
+
                 // if (file_put_contents('../../NFE/pdf/Nfe_' . $data_emissao . '.pdf', $pdf) !== false) {
                 //     $arrayRetorno['retorno']['PDF'] =  'Sucesso Pdf';
                 // } else {
                 //     $arrayRetorno['retorno']['errorPDF'] = 'Erro ao salvar o XML da NFe.';
                 // }
-        
+
             } catch (InvalidArgumentException $e) {
                 $arrayRetorno['retorno']['error'] = "Ocorreu um erro durante o processamento :" . $e->getMessage();
             }
-            $arrayRetorno['data'] = $data_formatada;
-            \sendNFEMail::enviar($cliente["email"],$cliente["nome"],$data_emissao);
+            $arrayRetorno['porta'] =  $caixa["porta_octopus"];
+            $arrayRetorno['vID'] =  $caixa["vID"];
+            $arrayRetorno['pID'] =  $caixa["pID"];
+            $arrayRetorno['data'] = $data_emissao;
+            \sendNFEMail::enviar($cliente["email"], $cliente["nome"], $data_emissao);
             print_r(json_encode($arrayRetorno));
         } catch (\Exception $e) {
             //aqui você trata possíveis exceptions da assinatura

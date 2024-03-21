@@ -1,5 +1,5 @@
-$("#ie_cliente").mask("0000000000.00-00")
-$(".input_ie_father").parent().css("display","none")
+$("#ie_cliente").mask("000000000.00-00")
+$(".input_ie_father").parent().css("display", "none")
 
 $('#yes').click(function () {
   console.log("a")
@@ -11,11 +11,14 @@ $('#no').click(function () {
 })
 let timeoutId;
 let input_codigo_focado = false;
-
+let editando_cliente = false
 let condicao_favoravel = true;
 $("#tel_cliente").mask("(00) 00000-0000")
+let pf = true
 
 $(".modal_clientes").submit(async (e) => {
+  console.log(editando_cliente)
+
   e.preventDefault()
   let data = {
     nome: $("#nome_cliente").val(),
@@ -30,16 +33,30 @@ $(".modal_clientes").submit(async (e) => {
     IE: $("#ie_cliente").cleanVal(),
     email: $("#email_cliente").val(),
   }
+  if ($("#cnpj_cliente").cleanVal().length < 11) {
+    alert("CPF/CNPJ INVÁLIDO");
+    return
+  }
   if ($("#cnpj_cliente").cleanVal().length == 14) {
-
     await $.get("https://brasilapi.com.br/api/cnpj/v1/" + $("#cnpj_cliente").cleanVal(), (ret) => {
       $("#tel_cliente").val($('#tel_cliente').masked(ret.ddd_telefone_1))
       $("#email_cliente").val(ret.email)
       data["nome_fantasia"] = ret.nome_fantasia
+
       console.log(data)
     })
+      .fail(function () {
+        alert("CNPJ INVÁLIDO");
+        return
+      })
   }
-  $.post("Models/post_receivers/insert_cliente.php", data, (ret) => {
+  let post_target = "insert_cliente"
+  if (editando_cliente) {
+    post_target = "update_cliente"
+    data["id"] = $("#id_cliente").val()
+
+  }
+  $.post(`Models/post_receivers/${post_target}.php`, data, (ret) => {
     $.alert({
       title: 'Sucesso',
       content: "Cliente cadastrado!",
@@ -51,6 +68,8 @@ $(".modal_clientes").submit(async (e) => {
     $("fundo").css("display", "none")
     console.log(ret)
   })
+
+
 })
 
 let alcancou_14_cliente = false
@@ -118,17 +137,60 @@ $(".input_valor_pedido_produto").keyup(function () {
     new Intl.NumberFormat("pt-BR", options).format(novoValor)
   );
 });
+function editarCliente() {
+  $(".editar_cliente").click(function () {
+    editando_cliente = true
 
+    const id_produto = $(this).attr('produto')
+    $("#id_cliente").val(id_produto)
+    let data = {
+      editando_pedido: true,
+      id: id_produto
+    }
+    $.post("Models/post_receivers/select_clientes.php", data, function (ret) {
+      console.log(ret)
+      let json_ret = JSON.parse(ret)
+      $(".modal_clientes").css("display", "flex")
+      $(".modal_lista_clientes").css("display", "none")
+
+      $("#nome_cliente").val(json_ret.nome)
+      $("#cep_cliente").val(json_ret.CEP)
+      $("#numero_cliente").val(json_ret.numero)
+      if ((json_ret.CPF).replace(/\//g, "").replace(/-/g, "").replace(/\./g, "").length == 14) {
+        changeSwitch(true, true)
+        console.log("aqui")
+        $("#ie_cliente").val($("#ie_cliente").masked(json_ret.ie))
+        $(".input_ie_father a").css("background", "red")
+        let cnpj_unmasked = $('#cnpj_cliente').cleanVal();
+        $(".input_ie_father a").attr("href", "https://cnpj.biz/" + cnpj_unmasked)
+        $(".input_ie_father a").attr("target", "_blank")
+      } else {
+        pf = false
+        changeSwitch(false, true)
+        console.log("ali")
+      }
+      $("#cnpj_cliente").val($("#cnpj_cliente").masked(json_ret.CPF))
+      $("#tel_cliente").val(json_ret.telefone)
+      $("#email_cliente").val(json_ret.email)
+
+      pesquisarCEP($("#cep_cliente"))
+
+    })
+
+
+  })
+}
+editarCliente()
 function selectTr() {
-  $("body .modal_produtos tbody tr").on("click", function () {
-    $(".modal_produtos tbody tr").removeClass("marked_tr_tabela_produtos")
+  $("body .modal_produtos tbody tr, body .modal_lista_clientes tbody tr").on("click", function () {
+    $(".modal_produtos tbody tr, .modal_lista_clientes tbody tr").removeClass("marked_tr_tabela_produtos")
     $(this).addClass("marked_tr_tabela_produtos")
 
   })
 }
 $("#cnpj_cliente").mask("000.000.000-00")
 
-let pf = true
+
 $("#cep_cliente").keyup(function () {
   pesquisarCEP($(this))
 
@@ -147,6 +209,7 @@ function pesquisarCEP(elemento) {
   }
 }
 $("#cnpj_cliente").keyup(function () {
+  console.log(pf)
   if ($(this).cleanVal().length == 14 && pf != true) {
     $.get("https://brasilapi.com.br/api/cnpj/v1/" + $(this).cleanVal(), (ret) => {
       $(".input_ie_father a").css("background", "red")
@@ -155,32 +218,30 @@ $("#cnpj_cliente").keyup(function () {
       $(".input_ie_father a").attr("target", "_blank")
 
       $("#email_cliente").val(ret.email)
-      if($("#cep_cliente").val() == "") {
+      if ($("#cep_cliente").val() == "") {
         $("#cep_cliente").val($("#cep_cliente").masked(ret.cep))
         pesquisarCEP($("#cep_cliente"))
       }
-      if($("#numero_cliente").val() == "") {
+      if ($("#numero_cliente").val() == "") {
         $("#numero_cliente").val(ret.numero)
       }
-      if($("#nome_cliente").val() == "") {
+      if ($("#nome_cliente").val() == "") {
         $("#nome_cliente").val(ret.razao_social)
       }
     })
   }
 
 })
-
-$("#cep_cliente").mask("00000-000")
-$(".cnpj_selector").click(function () {
+function changeSwitch(cnpj = false, manual = false) {
   $("#cnpj_cliente").val("")
-  console.log("a")
-  if (pf == true) {
+  console.log(cnpj)
+  if (pf == true || cnpj) {
     $("#nome_cliente").parent().find("label").text("Razão Social")
     $("#cnpj_cliente").parent().find("label").text("CNPJ")
     $("#cnpj_cliente").mask("00.000.000/0000-00")
-    $("#ie_cliente").attr("required",true)
+    $("#ie_cliente").attr("required", true)
 
-    $(".input_ie_father").parent().css("display","flex")
+    $(".input_ie_father").parent().css("display", "flex")
     $(".selector").css("right", "50px")
     $(".selector").text("PJ")
   } else {
@@ -189,12 +250,23 @@ $(".cnpj_selector").click(function () {
     $("#cnpj_cliente").mask("000.000.000-00")
     $("#ie_cliente").removeAttr("required")
     $("#ie_cliente").val("")
+    $(".input_ie_father a").css("background", "gray")
+    $(".input_ie_father a").attr("href", "#")
+    $(".input_ie_father a").attr("target", "")
 
-    $(".input_ie_father").parent().css("display","none")
+    $(".input_ie_father").parent().css("display", "none")
     $(".selector").css("right", "0")
     $(".selector").text("PF")
   }
-  pf = !pf
+  if (!manual) {
+    pf = !pf
+  } else {
+    pf = !cnpj
+  }
+}
+$("#cep_cliente").mask("00000-000")
+$(".cnpj_selector").click(function () {
+  changeSwitch()
 })
 selectTr()
 shortcut.add("F1", () => {
@@ -230,7 +302,10 @@ shortcut.add("F4", () => {
   $("#clientes_opener").trigger("click")
 })
 
+$("#clientes_opener").click(() => {
+  editando_cliente = false
 
+})
 
 $("#nome_cliente_input").keyup(function (e) {
   let availableTags_client = [];
@@ -286,28 +361,41 @@ $(".tags_produto_name").keyup(function (e) {
       if (quantidade > ui.item.value.estoque) {
         alert(`Estoque do produto insuficiente, estoque atual : ${ui.item.value.estoque}. Caso isso seja um erro contate o suporte e altere o estoque editando o produto.`)
       }
+
       let produto = ui.item.label
-      let disabled = editando_troca_oleo == true ? "" : "disabled"
-      $(".modal_anotar_pedido tbody").append(
-        '<tr preco_produto="' + ui.item.value.preco + '" produto="' +
-        ui.item.value.id +
-        '" quantidade="' +
-        $("#quantidade_produto_pedido").val() +
-        '" class="produto_pedido' +
-        produto.replace(/ /g, "_") +
-        '"><td><input class = "quantidade_produto_input"  value="' +
-        $("#quantidade_produto_pedido").val() +
-        '"</td><td>' +
-        produto +
-        "</td><td> <input class = 'input_valor_produto'  value='  " + ui.item.value.preco + "'></td><td id='valor_produto_total_" +
-        produto.replace(/ /g, "_") +
-        "' >" +
-        parseFloat(ui.item.value.preco * quantidade).toFixed(2) +
-        '</td> <td produto="' +
-        produto.replace(/ /g, "_") +
-        '" class="remove_item_pedido ">-</td>'
-      );
-      alterarValorTotal()
+      let row = $(".produto_pedido" + produto.replace(/ /g, "_"))
+      if (row.length > 0) {
+        row.attr("quantidade",row.attr("quantidade") + $("#quantidade_produto_pedido").val())
+       let input_quantidade =  row.find(".quantidade_produto_input")
+       input_quantidade.val(parseFloat(input_quantidade.val() )+ parseFloat($("#quantidade_produto_pedido").val() ))
+       alterarValorTotal()
+       $(".quantidade_produto_input,.input_valor_produto").keyup()
+      } else {
+        $(".modal_anotar_pedido tbody").append(
+          '<tr preco_produto="' + ui.item.value.preco + '" produto="' +
+          ui.item.value.id +
+          '" quantidade="' +
+          $("#quantidade_produto_pedido").val() +
+          '" class="produto_pedido' +
+          produto.replace(/ /g, "_") +
+          '"><td><input class = "quantidade_produto_input"  value="' +
+          $("#quantidade_produto_pedido").val() +
+          '"</td><td>' +
+          produto +
+          "</td><td> <input class = 'input_valor_produto'  value='  " + ui.item.value.preco + "'></td><td id='valor_produto_total_" +
+          produto.replace(/ /g, "_") +
+          "' >" +
+          parseFloat(ui.item.value.preco * quantidade).toFixed(2) +
+          '</td> <td produto="' +
+          produto.replace(/ /g, "_") +
+          '" class="remove_item_pedido ">-</td>'
+        );
+        let disabled = editando_troca_oleo == true ? "" : "disabled"
+
+        alterarValorTotal()
+        $(".quantidade_produto_input,.input_valor_produto").keyup()
+      }
+
 
       $(".tags_produto_name").val("");
       $("#quantidade_produto_pedido").val("1");

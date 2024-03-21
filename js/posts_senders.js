@@ -87,6 +87,8 @@ async function editarPreVenda(elemento) {
     $.post("Models/post_receivers/select_troca_oleo.php", { id_venda: $(elemento).attr("id_venda") }, (ret) => {
       resetVenda()
       let JSONret = JSON.parse(ret)
+      console.log(JSONret)
+
       if (JSONret.pre_venda == 0) {
         let valor_mao_obra = parseFloat(JSONret.valor) - parseFloat(JSONret.valor_produtos)
 
@@ -120,10 +122,10 @@ async function editarPreVenda(elemento) {
           '" class="produto_pedido' +
           produto.replace(/ /g, "_") +
           '"><td> <input class = "quantidade_produto_input" value="' +
-          $("#quantidade_produto_pedido").val() +
+          e.quantidade +
           '"></td><td>' +
           produto +
-          "</td><td> <input class = 'input_valor_produto' value='" + e.valor_venda + "' > </td><td id='valor_produto_total_" +
+          "</td><td> <input class = 'input_valor_produto' value='" + e.valor_venda.toFixed(2) + "' > </td><td id='valor_produto_total_" +
           produto.replace(/ /g, "_") +
           "' >" +
           parseFloat(e.valor_venda * e.quantidade).toFixed(2) +
@@ -268,6 +270,7 @@ function selecionarAvaiableIDProximo(id) {
   });
 }
 let codigo_produto_editando = 0
+
 function editarProduto() {
   $(".editar_produto").click(function () {
     editando_produto = true
@@ -325,7 +328,28 @@ editarProduto()
 $('#select_caixa').change(function () {
   alterarTabela();
 });
+$('#clientes_opener').click(function (e) {
+  e.preventDefault()
+  $.post('Models/post_receivers/select_clientes.php', {}, (ret) => {
+    console.log(ret)
+    $(".modal_lista_clientes tbody").html(ret)
+editarCliente() 
+
+    selectTr()
+
+  })
+})
 $('#pesquisar_produto_button').click(function (e) {
+  e.preventDefault()
+  $.post('Models/post_receivers/select_produtos_modal_produtos.php', { produto: $("#pesquisar_produto").val() }, (ret) => {
+    console.log(ret)
+    $(".modal_produtos tbody").html(ret)
+    selectTr()
+    editarProduto()
+    deletarProdutos()
+  })
+})
+$('#produtos_opener').click(function (e) {
   e.preventDefault()
   $.post('Models/post_receivers/select_produtos_modal_produtos.php', { produto: $("#pesquisar_produto").val() }, (ret) => {
     console.log(ret)
@@ -1087,16 +1111,38 @@ function cpfCNPJMask(esseElemento) {
 }
 function gerarNFe(id_venda) {
   console.log(id_venda)
-  $.post("Models/post_receivers/gerarNFE.php", { id_venda: id_venda }, (ret) => {
+  $.post("Models/post_receivers/gerarNFE.php", { id_venda: id_venda },async (ret) => {
     console.log(ret)
-    let retInJson = JSON.parse(ret)
-    console.log(retInJson)
-    $.alert({
-      title: 'Sucesso!',
-      content: "Nota Fsical gerada e enviada para o cliente por email.",
-      boxWidth: '500px',
-      useBootstrap: false,
-    });
+    let dadosRecebidos = JSON.parse(ret)
+    let octopus =  new OctopusXML()
+    let xml = await octopus.saveFile("xml",dadosRecebidos.data,dadosRecebidos.porta)
+    let pdf = await octopus.saveFile("pdf",dadosRecebidos.data,dadosRecebidos.porta)
+    console.log(pdf)
+    if(xml && pdf){
+      let print = await octopus.printFile(dadosRecebidos.porta,dadosRecebidos.data,dadosRecebidos.vID,dadosRecebidos.pID)
+      console.log(print)
+      if(print){
+        console.log(ret)
+        let retInJson = JSON.parse(ret)
+        console.log(retInJson)
+        $.alert({
+          title: 'Sucesso!',
+          content: "Nota Fsical gerada e enviada para o cliente por email.",
+          boxWidth: '500px',
+          useBootstrap: false,
+        });
+        $(".modal").each(function () {
+          $(this).css("display", "none");
+          $("fundo").css("display", "none");
+        });
+        $(".modal_imp_nfe button").html('IMPRIMIR')
+      }
+  
+    }else{
+      alert(`Erro ao gerar ou imprimir Nfe XML: ${xml}, PDF :${pdf}`)
+    }
+
+ 
   })
 }
 function gerarNFCe(id_venda) {

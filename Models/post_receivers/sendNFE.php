@@ -13,20 +13,12 @@ class sendNFEMail
         $mail = new PHPMailer(true);
         $empresa = "AutoLub";
         $nome_nota = "Nota Fiscal $empresa";
-
         $data = explode("-", $dh_emi);
-
-        $ano = $data[0];
-        $mes = $data[1];
-        $dia = $data[2];
-        $hora = $data[3];
         $data_formatada = $data[0] . "/" . $data[1] . "/" . $data[2] . "/" . $data[3];
-        $minuto = $data[4];
-        $segundo = $data[5];
         $horario = $data[3] . ":" . $data[4] . ":" . $data[5];
         try {
             //Server settings
-            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+            //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
             $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
             $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
@@ -38,7 +30,7 @@ class sendNFEMail
             $mail->setFrom('ahristocrat4@gmail.com', 'AutoLub');
             $mail->addAddress($email_cliente, $nome_cliente);     //Add a recipient
             //Attachments
-            $mail->addAttachment("../../NotasFiscais/NFe/pdf/$ano/$mes/$dia/$ano-$mes-$dia-$hora-$minuto-$segundo.pdf", $nome_nota . '.pdf');    //Optional name
+            $mail->addAttachment("./temp/nota.pdf", $nome_nota . '.pdf');    //Optional name
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
             $mail->Subject = "Nota Fiscal $data_formatada";

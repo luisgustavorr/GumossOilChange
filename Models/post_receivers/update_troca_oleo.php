@@ -37,8 +37,8 @@ foreach ($_POST["produtos"] as $key => $value) {
     $diminuirEstoque = \MySql::conectar()->prepare("UPDATE tb_produtos_vendidos SET quantidade_produto = ?, $alteracao = ? WHERE id_produto = ? AND id_venda = ?");
     $diminuirEstoque->execute(array($value['quantidade'], $desconto_acrescimo,$value["id"] ,$_POST['id_venda']));
 
-    $insert_vendas = \MySql::conectar()->prepare("UPDATE `tb_vendas` SET  `colaborador` = ?,`data` = ?,`valor` = ?,`placa_carro` = ?,`forma_pagamento` = ?,`troco` = ?,`id_cliente` = ?,`valor_servico` = ?,`pre_venda` = ?,`prazo` = ? ");
-    $insert_vendas->execute(array($_POST['codigo_colaborador'], $_POST['data_revisao'], floatval(str_replace(",", ".", $_POST["valor_mao_obra"])) + $_POST['valor_produtos'], $_POST["placa_veiculo"], $_POST["metodo_pagamento"], 0, $_POST["id_cliente"], str_replace(",", ".", $_POST["valor_mao_obra"]), $select_venda["pre_venda"],$_POST["prazo"]));
+    $insert_vendas = \MySql::conectar()->prepare("UPDATE `tb_vendas` SET  `colaborador` = ?,`data` = ?,`valor` = ?,`placa_carro` = ?,`forma_pagamento` = ?,`troco` = ?,`id_cliente` = ?,`valor_servico` = ?,`pre_venda` = ?,`prazo` = ? WHERE id =?");
+    $insert_vendas->execute(array($_POST['codigo_colaborador'], $_POST['data_revisao'], floatval(str_replace(",", ".", $_POST["valor_mao_obra"])) + $_POST['valor_produtos'], $_POST["placa_veiculo"], $_POST["metodo_pagamento"], 0, $_POST["id_cliente"], str_replace(",", ".", $_POST["valor_mao_obra"]), $select_venda["pre_venda"],$_POST["prazo"],$_POST["id_venda"]));
 }
 
 

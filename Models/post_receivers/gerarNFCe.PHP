@@ -101,29 +101,16 @@ $select_nfe = $select_nfe->fetchAll();
 //     exit;
 // }
 
-function criarArquivoNFe($data_atual, $tipo, $arquivo)
+function criarArquivoNFe($data, $tipo, $arquivo)
 {
+    if ($tipo == "xml") {
 
-    [$ano, $mes, $dia, $hora, $minuto, $segundos] = explode('-', $data_atual);
-    if (file_exists('../../NotasFiscais/NFCe/' . $tipo . '/' . $ano)) {
-
-        if (file_exists('../../NotasFiscais/NFCe/' . $tipo . '/' . $ano . '/' . $mes)) {
-            if (file_exists('../../NotasFiscais/NFCe  /' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia)) {
-                file_put_contents('../../NotasFiscais/NFCe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia . '/' . $data_atual . '.' . $tipo, $arquivo);
-            } else {
-                mkdir('../../NotasFiscais/NFCe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia, 0777, true);
-                file_put_contents('../../NotasFiscais/NFCe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia . '/' . $data_atual . '.' . $tipo, $arquivo);
-            }
-        } else {
-            mkdir('../../NotasFiscais/NFCe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia, 0777, true);
-            file_put_contents('../../NotasFiscais/NFCe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia . '/' . $data_atual . '.' . $tipo, $arquivo);
-        }
+        file_put_contents('./temp/nota.xml', $arquivo);
     } else {
-        mkdir('../../NotasFiscais/NFCe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia, 0777, true);
-        file_put_contents('../../NotasFiscais/NFCe/' . $tipo . '/' . $ano . '/' . $mes . '/' . $dia . '/' . $data_atual . '.' . $tipo, $arquivo);
+
+        file_put_contents('./temp/nota.pdf', $arquivo);
     }
 };
-
 
 $tools = new Tools($configJson, Certificate::readPfx($pfxcontent, $senha_certificado));
 //$tools->disableCertValidation(true); //tem que desabilitar

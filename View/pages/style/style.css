@@ -1485,7 +1485,7 @@ input#valor_entrada {
   color: #F53F00;
   text-decoration: underline;
 }
-.modal_funcionarios {
+.modal_lista_clientes {
   width: 80%;
   transform: translate(-50%, -50%);
   top: 50%;
@@ -1534,7 +1534,7 @@ input#valor_entrada {
   color: #393939;
 }
 
-.modal_produtos table thead,.modal_funcionarios table thead {
+.modal_produtos table thead,.modal_lista_clientes table thead {
   background: #F53F00;
   border-radius: 12px 12px 0 0;
   color: white;
@@ -1561,13 +1561,13 @@ input#valor_entrada {
 .jconfirm .jconfirm-box .jconfirm-buttons button.btn-orange:hover{
   background-color: #000000 !important;
 }
-.modal_produtos table,.modal_funcionarios table {
+.modal_produtos table,.modal_lista_clientes table {
   display: flex;
   flex-direction: column;
   max-height: 650px;
   overflow-y: scroll;
 }
-.modal_produtos table thead tr,.modal_funcionarios table thead tr {
+.modal_produtos table thead tr,.modal_lista_clientes table thead tr {
   display: flex;
   justify-content: space-around;
   width: 100%;
@@ -1667,22 +1667,22 @@ input#valor_entrada {
   background: #000000cf;
   color: white;
 }
-.modal_produtos table thead tr th,.modal_funcionarios table thead tr th {
+.modal_produtos table thead tr th,.modal_lista_clientes table thead tr th {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 25%;
 }
-.modal_produtos table tbody tr td,.modal_funcionarios table tbody tr td {
+.modal_produtos table tbody tr td,.modal_lista_clientes table tbody tr td {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 25%;
 }
-.modal_produtos table tbody tr i,.modal_funcionarios table tbody tr i {
+.modal_produtos table tbody tr i,.modal_lista_clientes table tbody tr i {
   cursor: pointer;
 }
-.modal_produtos table  tbody tr,.modal_funcionarios table tbody tr {
+.modal_produtos table  tbody tr,.modal_lista_clientes table tbody tr {
   display: flex;
   justify-content: space-around;
   width: 100%;
@@ -1719,6 +1719,15 @@ input#valor_entrada {
   cursor: pointer;
 }
 #add_produto_opener {
+  cursor: pointer;
+  background: #F53F00;
+  color: white;
+  border: none;
+  height: 25px;
+  padding: 0 10px;
+  border-radius: 5px;
+}
+#add_cliente_opener {
   cursor: pointer;
   background: #F53F00;
   color: white;

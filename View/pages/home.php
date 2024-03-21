@@ -158,6 +158,7 @@
     </section>
 </form>
 <form class="modal modal_clientes">
+    <input type="text" id="id_cliente" hidden disabled>
     <h3>Adicionar <red>Cliente</red>
     </h3>
     <section>
@@ -226,6 +227,36 @@
     </section>
 </form>
 
+<form   class="modal modal_lista_clientes">
+
+    <table>
+        <thead>
+            <tr>
+
+                <th>Nome</th>
+                <th>Código</th>
+                <th>Telefone</th>
+                <th>Editar</th>
+                <th>Excluir</th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+    
+        </tbody>
+    </table>
+
+    <div class="inputs_add_produto">
+
+        <span id="add_cliente_opener" onclick="abrirModal('modal_clientes')">Adicionar Cliente</span>
+        <div class="input_pesquisar_produto_father">
+            <input type="text" placeholder="Pesquisar Produto" id="pesquisar_produto">
+            <div id="pesquisar_produto_button"><i class="fa-solid fa-magnifying-glass"></i></div>
+        </div>
+    </div>
+
+</form>
 <form   class="modal modal_produtos">
 
     <table>
@@ -245,45 +276,7 @@
         </thead>
         <tbody>
 
-            <?php
-            $caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_produtos` ORDER BY relacionado DESC;");
-            $caixas->execute();
-            $caixas = $caixas->fetchAll();
-            $relacionadosOrange = true;
-            $lastRelacionado = 0;
-            foreach ($caixas as $key => $value) {
-                if ($value["relacionado"] != "") {
-                    if ($relacionadosOrange) {
 
-                        $icon = '<i class="fa-solid fa-link" style="color: #F53F00;"></i>';
-                    } else {
-                        $icon = '<i class="fa-solid fa-link" style="color: #242424;"></i>';
-                    }
-                    if ($lastRelacionado == $value["relacionado"]) {
-                        $relacionadosOrange = !$relacionadosOrange;
-                    }
-                } else {
-                    $icon = "";
-                }
-
-                $lastRelacionado = $value["relacionado"];
-                $estoque = $value["quantidade"] != 0 ? $value["quantidade"] : '<i title="Produto sem estoque, caso isso seja um erro altere o estoque no campo Quantidade ao editar se esse produto." class="fa-solid fa-triangle-exclamation fa-beat" style="color: #ff0000;"></i>';
-                echo '<tr class =" produto_' . $value['id'] . '" value="' . $value['id'] . '">
-                                <td class="nome">' . $icon . ' ' . ucfirst($value['nome']) . '</td>
-                                <td class="codigo">' . ucfirst($value['codigo']) . '</td>
-                                <td class="preco">R$' . $value["valor_compra"] . '</td>
-
-                                <td class="preco">R$' . $value["valor_venda"] . '</td>
-                                <td class="preco">R$' . $value["valor_atacado"] . '</td>
-
-                                <td class="pesado">' . $estoque . '</td>
-                                <td ><i produto="' . $value['id'] . '" class="fa-solid editar_produto fa-pen"></i></td>
-
-                                <td><i title="Excluir Permanentemente" produto="' . $value['id'] . '" class="fa-solid apagar_produto fa-trash-can"></i></td>
-
-                                </tr>';
-            }
-            ?>
         </tbody>
     </table>
 
@@ -427,10 +420,8 @@
     <div class="princip_span" id="pre_venda_opener" onclick="abrirModal('modal_anotar_pedido') ; abrirPreVenda()"> <i class="fa-solid fa-cash-register"></i> <span>Pré-Venda </span> </div>
     <div class="princip_span" id="troca_oleo" onclick="abrirModal('modal_anotar_pedido'); fecharPreVenda()"> <i class="fa-solid fa-oil-can"></i> <span>Cadastrar Troca de Óleo </span> </div>
     <div class="princip_span" onclick="abrirModal('modal_produtos');" id="produtos_opener"><i class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
-
-    <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_clientes');$('.modal_clientes input').val('')"> <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
+    <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_lista_clientes');$('.modal_clientes input').val('')"> <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
     <div class="princip_span" id="add_caixa_opener"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
-
 </aside>
 <fundo></fundo>
 <form action="" class="modal modal_fechar_caixa">
@@ -667,6 +658,8 @@
 </div>
 
 <input type="hidden" id="include_path" value="<?php echo INCLUDE_PATH ?>">
+<script src="<?php echo INCLUDE_PATH ?>js/OctopusXML.js"></script>
+
 <script src="<?php echo INCLUDE_PATH ?>js/shortcut.js"></script>
 
 <script src="<?php echo INCLUDE_PATH ?>js/criar_pdf_tabela.js"></script>
