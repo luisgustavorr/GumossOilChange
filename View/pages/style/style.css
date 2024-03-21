@@ -1335,6 +1335,7 @@ input#valor_entrada {
   position: fixed;
   width: 100%;
   top: 0;
+  z-index: 99;
 }
 .bg-img:after {
   position: absolute;
@@ -1371,7 +1372,7 @@ input#valor_entrada {
   background: none;
 }
 .content_login header .yellow {
-  color: #fdc918 !important;
+  color: #F53F00 !important;
 }
 .input_endereco_cliente {
   width: 60%;
@@ -1745,7 +1746,7 @@ input#valor_entrada {
   margin-bottom: 5px;
 }
 .field input[type="submit"] {
-  background: #fdc918;
+  background: #242424;
   color: white;
   font-size: 18px;
   letter-spacing: 1px;
@@ -1754,7 +1755,7 @@ input#valor_entrada {
   font-family: "Montserrat", sans-serif;
 }
 .field input[type="submit"]:hover {
-  background: #ddaf12;
+  background: #242424;
 }
 .login {
   color: white;
@@ -1787,7 +1788,7 @@ i span {
   font-family: "Poppins", sans-serif;
 }
 .signup a {
-  color: #fdc918;
+  color: #000000;
   text-decoration: none;
 }
 .signup a:hover {

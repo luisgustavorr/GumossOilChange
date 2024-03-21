@@ -10,7 +10,7 @@
                </div>
                <div class="field space">
                   <span class="fa fa-lock"></span>
-                  <input type="password" name="senha" class="pass-key" required placeholder="Código">
+                  <input type="password" name="senha" class="pass-key" required placeholder="Senha">
                   <span class="show">Mostrar</span>
                </div>
                <div class="pass">

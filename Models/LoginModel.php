@@ -18,21 +18,24 @@ if( \Painel::logado()==false){
     $user = $_POST['login'];
     $senha = $_POST['senha'];
 
-    $logar = \MySql::conectar()->prepare('SELECT * FROM  `tb_colaboradores` WHERE `nome` = ? AND `administrador` = 1');
-    $logar->execute(array($user));
+    $logar = \MySql::conectar()->prepare('SELECT * FROM  `tb_colaboradores` WHERE `nome` = ? AND `senha` = ?');
+    $logar->execute(array($user,$senha ));
     $logar = $logar->fetch();
-    if($logar['codigo'] == $senha){
-        setcookie("login", "true", time()+20*24*60*60);
-        $_SESSION['user'] = $user;
-        $_SESSION['password'] = $senha;
-        
-        // echo"<script>location.href='Home'</script>";
-
+    if($logar != false){
+            setcookie("negal_ctaide", "true", time()+20*24*60*60);
+            setcookie("zotmassael_usot", $logar["administrador"], time()+20*24*60*60);
+            //zenit_polar
+            $_SESSION['user'] = $user;
+            $_SESSION['password'] = $senha;
+            
+            echo"<script>location.href='Home'</script>";
+    
     }
+  
     }
 }else{
-    setcookie("login", "true", time()+20*24*60*60);
-    // echo"<script>location.href='Home'</script>";
+    setcookie("negal_ctaide", "true", time()+20*24*60*60);
+    echo"<script>location.href='Home'</script>";
 }
 
         }

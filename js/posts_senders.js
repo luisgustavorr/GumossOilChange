@@ -95,7 +95,9 @@ async function editarPreVenda(elemento) {
         $("#troca_oleo").trigger("click")
         $("#quilometragem").val(JSONret.quilometragem)
         $("#numero_cliente_input").val(JSONret.tel)
-        $("#valor_mao_obra").val(valor_mao_obra)
+  $("#valor_mao_obra").mask("000.000.000,00",{reverse:true})
+
+        $("#valor_mao_obra").val($("#valor_mao_obra").masked(valor_mao_obra.toFixed(2)))
         $("#placa_veiculo").val(JSONret.placa_carro)
         $("#marca_veiculo").val(JSONret.marca)
         $("#modelo_veiculo").val(JSONret.modelo)
@@ -159,8 +161,9 @@ async function fecharVenda(elemento) {
   if (aprovado.trim() === "true") {
     $.post("Models/post_receivers/fechar_venda.php", { id_venda: $(elemento).attr("id_venda") }, (ret) => {
       console.log(ret)
-    })
     alterarTabela();
+
+    })
   } else {
     $.alert({
       title: 'Código Inválido',
@@ -957,8 +960,14 @@ $("#adicionar_caixa").submit(function (e) {
     }
   );
 });
-$(".modal_criar_loja").submit(function (e) {
+$(".modal_criar_loja").submit(async function (e) {
   e.preventDefault()
+  let municipio = ""
+  let uf = ""
+  await $.get(`https://viacep.com.br/ws/${$("#cep_loja").val()}/json/`, (ret) => {
+    municipio = ret.localidade
+    uf = ret.uf
+   } )
   let data = {
     nome_loja: $("#nome_loja").val(),
     cep_loja: $("#cep_loja").val(),
@@ -966,7 +975,11 @@ $(".modal_criar_loja").submit(function (e) {
     cMun_loja: $("#cMun_loja").val(),
     cUF: $("#cUF_loja").val(),
     IE_loja: $("#ie_loja").val(),
-    CNPJ_loja: $("#cnpj_loja").val()
+    CNPJ_loja: $("#cnpj_loja").val(),
+    csc_loja:$("#csc_loja").val(),
+    token_loja:$("#token_loja").val(),
+    uf:uf,
+    municipio:municipio
   }
   $.post(include_path + "Models/post_receivers/insert_caixa.php", data, (ret) => {
     console.log(ret)
@@ -1191,21 +1204,34 @@ function gerarNFCe(id_venda) {
 
   })
 }
-function gerarNotas(id_venda) {
+function gerarNotas(id_venda,id_cliente) {
+  let nfeObj = {
+    nfe: {
+      text: 'NF-e',
+      btnClass: 'btn-orange',
+
+      action: function () {
+        gerarNFe(id_venda)
+      }
+    }
+  }
+  if(id_cliente == 0){
+    nfeObj = {
+      nfe: {
+        text: 'NF-e',
+        action: function () {
+          alertar("Cliente não informado, impossível gerar NFe, edite a venda e coloque um cliente para gerar uma Nota Fiscal.","Erro!","500px","fa-solid fa-triangle-exclamation")
+        }
+      }
+    }
+  }
   $.confirm({
     title: 'Gerar Notas',
     content: 'Qual nota deseja gerar ? ',
     boxWidth: '500px',
     useBootstrap: false,
     buttons: {
-      nfe: {
-        text: 'NF-e',
-        btnClass: 'btn-orange',
-
-        action: function () {
-          gerarNFe(id_venda)
-        }
-      },
+      ...nfeObj,
       nfce: {
         text: 'NFc-e',
         btnClass: 'btn-orange',

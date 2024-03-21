@@ -10,7 +10,7 @@ class HomeController
     }
     public function executar()
     {
-        isset($_COOKIE['login']) ?  $this->view = new \View\MainView('home') :  $this->view = new \View\MainView('login');
+        isset($_COOKIE['negal_ctaide']) ?  $this->view = new \View\MainView('home') :  $this->view = new \View\MainView('login');
       
        
         

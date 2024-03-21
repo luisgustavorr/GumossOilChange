@@ -264,6 +264,8 @@ function changeSwitch(cnpj = false, manual = false) {
     pf = !cnpj
   }
 }
+$("#cep_loja").mask("00000-000")
+
 $("#cep_cliente").mask("00000-000")
 $(".cnpj_selector").click(function () {
   changeSwitch()
@@ -637,21 +639,22 @@ String.prototype.reverse = function () {
 };
 
 function mascaraMoeda(campo, evento) {
-  var tecla = !evento ? window.event.keyCode : evento.which;
-  var valor = campo.value.replace(/[^\d]+/gi, "").reverse();
-  var resultado = "";
-  var mascara = "##.###.###,##".reverse();
-  for (var x = 0, y = 0; x < mascara.length && y < valor.length;) {
-    if (mascara.charAt(x) != "#") {
-      resultado += mascara.charAt(x);
-      x++;
-    } else {
-      resultado += valor.charAt(y);
-      y++;
-      x++;
-    }
-  }
-  campo.value = resultado.reverse();
+  $(campo).mask("000.000.000,00",{reverse:true})
+  // var tecla = !evento ? window.event.keyCode : evento.which;
+  // var valor = campo.value.replace(/[^\d]+/gi, "").reverse();
+  // var resultado = "";
+  // var mascara = "##.###.###,##".reverse();
+  // for (var x = 0, y = 0; x < mascara.length && y < valor.length;) {
+  //   if (mascara.charAt(x) != "#") {
+  //     resultado += mascara.charAt(x);
+  //     x++;
+  //   } else {
+  //     resultado += valor.charAt(y);
+  //     y++;
+  //     x++;
+  //   }
+  // }
+  // campo.value = resultado.reverse();
 }
 function mascaraMoedaSemSeparacaoMilhar(campo, evento) {
 

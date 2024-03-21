@@ -153,6 +153,14 @@
                 <label for="">CNPJ</label>
                 <input type="text" name="" id="cnpj_loja">
             </div>
+            <div class="input_father">
+                <label for="">CSC</label>
+                <input type="text" name="" id="csc_loja">
+            </div>
+            <div class="input_father">
+                <label for="">Token</label>
+                <input type="text" name="" id="token_loja">
+            </div>
             <button>ADICIONAR</button>
         </div>
     </section>
@@ -211,7 +219,7 @@
             </div>
             <div class="input_father">
                 <label for="">IE</label>
-                <div class="input_ie_father"><input type="text" name="" id="ie_cliente" > <a><i class="fa-solid fa-magnifying-glass"></i></a></div>
+                <div class="input_ie_father"><input type="text" name="" id="ie_cliente"> <a><i class="fa-solid fa-magnifying-glass"></i></a></div>
             </div>
             <span>Contato</span>
             <div class="input_father">
@@ -227,7 +235,7 @@
     </section>
 </form>
 
-<form   class="modal modal_lista_clientes">
+<form class="modal modal_lista_clientes">
 
     <table>
         <thead>
@@ -243,7 +251,7 @@
         </thead>
         <tbody>
 
-    
+
         </tbody>
     </table>
 
@@ -257,7 +265,7 @@
     </div>
 
 </form>
-<form   class="modal modal_produtos">
+<form class="modal modal_produtos">
 
     <table>
         <thead>
@@ -292,7 +300,7 @@
 </form>
 
 </div>
-<form method="POST" class="modal modal_anotar_pedido" >
+<form method="POST" class="modal modal_anotar_pedido">
     <input type="hidden" id="cliente_id" value="false" disabled>
     <input type="hidden" id="venda_id" value="false" disabled>
 
@@ -320,12 +328,12 @@
             <div class="subdivision">
 
                 <span>Tel. Cliente:</span>
-                <input  type="text" name="numero_cliente" class="oders_inputs" id="numero_cliente_input" placeholder="Insira o numero do cliente" required>
+                <input type="text" name="numero_cliente" class="oders_inputs" id="numero_cliente_input" placeholder="Insira o numero do cliente" required>
             </div>
             <div class="subdivision">
 
                 <span>Seu código:</span>
-                <input  type="text" name="codigo_colaborador" value="<?php if (isset($_COOKIE['last_codigo_colaborador'])) echo $_COOKIE['last_codigo_colaborador'] ?>" class="oders_inputs colab_code" id="codigo_colaborador_input" placeholder="Insira o seu código">
+                <input type="text" name="codigo_colaborador" value="<?php if (isset($_COOKIE['last_codigo_colaborador'])) echo $_COOKIE['last_codigo_colaborador'] ?>" class="oders_inputs colab_code" id="codigo_colaborador_input" placeholder="Insira o seu código">
             </div>
 
         </div>
@@ -363,17 +371,17 @@
 
         <div class="valor_caixa_father input_father">
             <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Placa do Veículo:</span>
-            <input  type="text" class="oders_inputs pedido_button" name="placa_veiculo" placeholder="AAA-0000" id="placa_veiculo">
+            <input type="text" class="oders_inputs pedido_button" name="placa_veiculo" placeholder="AAA-0000" id="placa_veiculo">
 
         </div>
         <div class="valor_caixa_father input_father">
             <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Marca do Veículo:</span>
-            <input  type="text" class="oders_inputs pedido_button" name="marca_veiculo" placeholder="Marca" id="marca_veiculo">
+            <input type="text" class="oders_inputs pedido_button" name="marca_veiculo" placeholder="Marca" id="marca_veiculo">
 
         </div>
         <div class="valor_caixa_father input_father">
             <span medida="un" class="select_valor_clicker_father" button_identifier="pedido">Modelo do Veículo:</span>
-            <input  type="text" class="oders_inputs pedido_button" name="modelo_veiculo" placeholder="Modelo" id="modelo_veiculo">
+            <input type="text" class="oders_inputs pedido_button" name="modelo_veiculo" placeholder="Modelo" id="modelo_veiculo">
 
         </div>
 
@@ -418,10 +426,16 @@
 <aside id="sidebar">
     <i class="open_sidebar_arrow fa-solid fa-angles-right"></i>
     <div class="princip_span" id="pre_venda_opener" onclick="abrirModal('modal_anotar_pedido') ; abrirPreVenda()"> <i class="fa-solid fa-cash-register"></i> <span>Pré-Venda </span> </div>
-    <div class="princip_span" id="troca_oleo" onclick="abrirModal('modal_anotar_pedido'); fecharPreVenda()"> <i class="fa-solid fa-oil-can"></i> <span>Cadastrar Troca de Óleo </span> </div>
+    <div class="princip_span" id="troca_oleo" onclick="abrirModal('modal_anotar_pedido'); fecharPreVenda()"> <i class="fa-solid fa-oil-can"></i><span>Cadastrar Troca de Óleo </span> </div>
     <div class="princip_span" onclick="abrirModal('modal_produtos');" id="produtos_opener"><i class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
     <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_lista_clientes');$('.modal_clientes input').val('')"> <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
+    <?php
+            if ($_COOKIE["zotmassael_usot"] == 1) {
+            ?> 
     <div class="princip_span" id="add_caixa_opener"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
+    <?php 
+            }
+    ?> 
 </aside>
 <fundo></fundo>
 <form action="" class="modal modal_fechar_caixa">
@@ -458,29 +472,41 @@
                 $valores_informados_de_hoje->execute(array());
                 $valores_informados_de_hoje = $valores_informados_de_hoje->fetch();
                 $valores_apurados_de_hoje = \MySql::conectar()->prepare("SELECT 
-   (SELECT SUM(`valor`)
-    FROM `tb_vendas`
-    WHERE DATE(`data`) = CURDATE()
-    AND (`forma_pagamento` = 'Cartão Crédito' OR `forma_pagamento` = 'Cartão Débito') GROUP BY DATE(`data`) 
-    ) AS cartao,
-    (SELECT SUM(`valor`)
-    FROM `tb_vendas`
-    WHERE DATE(`data`) = CURDATE()
-    AND `forma_pagamento` = 'Dinheiro' GROUP BY DATE(`data`) 
-    ) AS dinheiro,
-      (SELECT SUM(`valor`)
-    FROM `tb_vendas`
-    WHERE DATE(`data`) = CURDATE()
-    AND `forma_pagamento` = 'Pix' GROUP BY DATE(`data`) 
-    ) AS pix,
-    (SELECT SUM(`valor`)
-    FROM `tb_sangrias`
-    WHERE DATE(`data`) = CURDATE() GROUP BY DATE(`data`) 
-    ) AS sangria,
-    (SELECT `moeda_apurada` FROM `tb_fechamento` WHERE DATE(`data`) = CURDATE() GROUP BY DATE(`data`) ) AS moeda");
+                (SELECT ROUND(SUM(`valor`),2) 
+                 FROM `tb_vendas`
+                 WHERE DATE(`data`) = CURDATE()
+                 AND (`forma_pagamento` = 'Cartão Crédito' OR `forma_pagamento` = 'Cartão Débito') GROUP BY DATE(`data`) 
+                 ) AS cartao,
+                 (SELECT ROUND(SUM(`valor`),2) +0
+                 FROM `tb_vendas`
+                 WHERE DATE(`data`) = CURDATE()
+                 AND `forma_pagamento` = 'Dinheiro' GROUP BY DATE(`data`) 
+                 ) AS dinheiro,
+                   (SELECT ROUND(SUM(`valor`),2)
+                 FROM `tb_vendas`
+                 WHERE DATE(`data`) = CURDATE()
+                 AND `forma_pagamento` = 'Pix' GROUP BY DATE(`data`) 
+                 ) AS pix,
+                 (SELECT ROUND(SUM(`valor`),2)
+                 FROM `tb_sangrias`
+                 WHERE DATE(`data`) = CURDATE() GROUP BY DATE(`data`) 
+                 ) AS sangria,
+                 (SELECT `moeda_apurada` FROM `tb_fechamento` WHERE DATE(`data`) = CURDATE() GROUP BY DATE(`data`) ) AS moeda;");
                 $valores_apurados_de_hoje->execute();
                 $valores_apurados_de_hoje = $valores_apurados_de_hoje->fetch();
-                $total_valores_informados_de_hoje = $valores_informados_de_hoje['dinheiro'] + $valores_informados_de_hoje['moeda'] + $valores_informados_de_hoje['pix'] + $valores_informados_de_hoje['cartao'] - $valores_informados_de_hoje['sangria'];
+                $total_valores_informados_de_hoje = 0;
+
+                if ($total_valores_informados_de_hoje != false) {
+                    $total_valores_informados_de_hoje = $valores_informados_de_hoje['dinheiro'] + $valores_informados_de_hoje['moeda'] + $valores_informados_de_hoje['pix'] + $valores_informados_de_hoje['cartao'] - $valores_informados_de_hoje['sangria'];
+                } else {
+                    $valores_informados_de_hoje = [
+                        "dinheiro" => 0,
+                        "moeda" => 0,
+                        "pix" => 0,
+                        "cartao" => 0,
+                        "sangria" => 0,
+                    ];
+                }
                 $total_valores_apurados_de_hoje = $valores_apurados_de_hoje['dinheiro'] + $valores_apurados_de_hoje['moeda'] + $valores_apurados_de_hoje['pix'] + $valores_apurados_de_hoje['cartao'] - $valores_apurados_de_hoje['sangria'];
 
                 ?>
@@ -620,7 +646,19 @@
         <div class="left_subdivision">
             <h3>Realizar Fechamento do caixa</h3>
             <span>Do dia <?php echo date('d/m/Y') ?></span>
-            <button onclick="abrirModal('modal_fechar_caixa')"><i class="fa-solid fa-cart-shopping"></i> Fechar Caixa</button>
+            <?php
+            if ($_COOKIE["zotmassael_usot"] == 1) {
+            ?> 
+                <button onclick="abrirModal('modal_fechar_caixa')"><i class="fa-solid fa-cart-shopping"></i> Fechamentos</button>
+            
+            <?php
+            } else {
+            ?>
+                <button onclick="abrirModal('modal_fechar_caixa')"><i class="fa-solid fa-cart-shopping"></i> Fechar Caixa</button>
+
+            <?php
+            }
+            ?>
 
         </div>
     </div>
@@ -658,6 +696,8 @@
 </div>
 
 <input type="hidden" id="include_path" value="<?php echo INCLUDE_PATH ?>">
+<script src="<?php echo INCLUDE_PATH ?>js/alertar.js"></script>
+
 <script src="<?php echo INCLUDE_PATH ?>js/OctopusXML.js"></script>
 
 <script src="<?php echo INCLUDE_PATH ?>js/shortcut.js"></script>
