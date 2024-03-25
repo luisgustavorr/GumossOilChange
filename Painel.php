@@ -28,7 +28,7 @@
 
 		public static function logado(){
 			@session_start();
-			return isset($_COOKIE['login']) ? true : false;
+			return isset($_COOKIE['negal_ctaide']) ? true : false;
 
 			
 		}

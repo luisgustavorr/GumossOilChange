@@ -14,14 +14,11 @@ class OctopusXML {
                 if (xhr.status === 200) {
                     // Arquivo baixado com sucesso
                     let blob = xhr.response;
-
                     // Crie um novo objeto de tipo de arquivo
                     let arquivo = new File([blob], 'nota.xml');
-
                     let formData = new FormData();
                     formData.append('file' + type.toUpperCase(), arquivo); // Adiciona o arquivo
-                    formData.append('dataXML', date); // Adiciona o texto
-
+                    formData.append('dataXML', date); // Adiciona o text
                     // Faça a requisição AJAX usando jQuery
                     $.ajax({
                         url: "http://localhost:" + port + "/save" + type.toUpperCase(), // URL do seu endpoint
@@ -50,17 +47,14 @@ class OctopusXML {
                 console.error('Erro de rede');
                 reject('Erro de rede');
             };
-
             // Envie a requisição para baixar o arquivo
             xhr.send();
         });
-
         return sucesso;
     }
     async printFile(port, date, vID, pID) {
         let sucesso = false;
         const sendRequest = await new Promise((resolve, reject) => {
-
             const data = {
                 "dataXML": date,
                 "vID": vID,
@@ -81,7 +75,6 @@ class OctopusXML {
 
         })
         return sucesso;
-
     }
     async printSangria(data, vID, pID, port) {
         let sucesso = false;
@@ -102,7 +95,6 @@ class OctopusXML {
               });
         })
         return sucesso;
-
     }
     async printLastVenda(data, vID, pID, port) {
         let sucesso = false;

@@ -26,8 +26,11 @@ foreach ($caixas as $key => $value) {
     echo '<tr class =" produto_' . $value['id'] . '" value="' . $value['id'] . '">
                     <td class="nome">'.$icon.' ' . ucfirst($value['nome']) . '</td>
                     <td class="codigo">' . ucfirst($value['codigo']) . '</td>
+                    <td class="preco">R$' . $value["valor_compra"] . '</td>
 
                     <td class="preco">R$' . $value["valor_venda"] . '</td>
+                    <td class="preco">R$' . $value["valor_atacado"] . '</td>
+
                     <td class="pesado">' . $estoque . '</td>
                     <td ><i produto="' . $value['id'] . '" class="fa-solid editar_produto fa-pen"></i></td>
 

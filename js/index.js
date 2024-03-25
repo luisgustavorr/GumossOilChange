@@ -1,3 +1,5 @@
+var availableTags = [];
+
 $("#ie_cliente").mask("000000000.00-00")
 $(".input_ie_father").parent().css("display", "none")
 
@@ -138,9 +140,10 @@ $(".input_valor_pedido_produto").keyup(function () {
   );
 });
 function editarCliente() {
-  $(".editar_cliente").click(function () {
+  $(".editar_cliente").click( async function () {
     editando_cliente = true
-
+    const aprovado = await pedirSenha("Editar")
+    if (aprovado.trim() === "true"){
     const id_produto = $(this).attr('produto')
     $("#id_cliente").val(id_produto)
     let data = {
@@ -170,7 +173,7 @@ function editarCliente() {
         console.log("ali")
       }
       $("#cnpj_cliente").val($("#cnpj_cliente").masked(json_ret.CPF))
-      $("#tel_cliente").val(json_ret.telefone)
+      $("#tel_cliente").val(json_ret.tel)
       $("#email_cliente").val(json_ret.email)
 
       pesquisarCEP($("#cep_cliente"))
@@ -178,7 +181,14 @@ function editarCliente() {
     })
 
 
-  })
+}else{
+  $.alert({
+    title: 'Código Inválido',
+    content: "",
+    boxWidth: '500px',
+    useBootstrap: false,
+  });
+}})
 }
 editarCliente()
 function selectTr() {
@@ -303,50 +313,54 @@ shortcut.add("F4", () => {
   });
   $("#clientes_opener").trigger("click")
 })
+shortcut.add("F5", () => {
+  $(".modal").each(function () {
+    $(this).css("display", "none");
+    $("fundo").css("display", "none");
+  });
+  $("#add_caixa_opener").trigger("click")
+})
 
 $("#clientes_opener").click(() => {
   editando_cliente = false
 
 })
-
-$("#nome_cliente_input").keyup(function (e) {
-  let availableTags_client = [];
-
-  data = {
-    nome: $("#nome_cliente_input").val()
-  }
-  $.post("Models/post_receivers/select_cliente.php", data, (ret) => {
-    ret_inJSON = JSON.parse(ret)
-
-
-    ret_inJSON.forEach(e => {
-      produto = { "label": e.id + "-" + e.nome, "value": { "id": e.id, "nome": e.nome } }
-      availableTags_client.unshift(produto)
-    })
-
-
+let availableTags_client = [];
+data = {
+  nome: ""
+}
+$.post("Models/post_receivers/select_cliente.php", data, (ret) => {
+  ret_inJSON = JSON.parse(ret)
+  ret_inJSON.forEach(e => {
+    produto = { "label": e.id + "-" + e.nome, "value": { "id": e.id, "nome": e.nome.replace(/=/g, ""), "tel": e.tel } }
+    availableTags_client.unshift(produto)
   })
-  console.log(availableTags_client)
-  $("#nome_cliente_input").autocomplete({
-    source: availableTags_client,
-    select: function (event, ui) {
-      event.preventDefault()
-      console.log(ui.item.value)
-      $("#cliente_id").val(ui.item.value.id)
-      $("#nome_cliente_input").val(ui.item.label)
-    }
-  });
+})
+console.log(availableTags_client)
+$("#nome_cliente_input").autocomplete({
+  source: availableTags_client,
+  focus: function( event, ui ) {
+    event.preventDefault()
+    $("#nome_cliente_input,#numero_cliente_input").css("color","gray")
+    $("#cliente_id").val(ui.item.value.id)
+    $("#nome_cliente_input").val(ui.item.label)
+    $("#numero_cliente_input").val(ui.item.value.tel)
+  },
+  select: function (event, ui) {
+    $("#nome_cliente_input,#numero_cliente_input").css("color","black")
 
-
-
+    event.preventDefault()
+    console.log(ui.item.value)
+    $("#cliente_id").val(ui.item.value.id)
+    $("#nome_cliente_input").val(ui.item.label)
+    $("#numero_cliente_input").val(ui.item.value.tel)
+  }
 });
 
-$(".tags_produto_name").keyup(function (e) {
-  data = {
-    nome: $("#nome_produto_pedido").val()
-  }
-  var availableTags = [];
-  $.post("Models/post_receivers/select_produto.php", data, (ret) => {
+
+
+  $.post("Models/post_receivers/select_produto.php", {}, (ret) => {
+    console.log(ret)
     ret_inJSON = JSON.parse(ret)
 
     ret_inJSON.forEach(e => {
@@ -357,6 +371,9 @@ $(".tags_produto_name").keyup(function (e) {
   console.log(availableTags)
   $("#nome_produto_pedido").autocomplete({
     source: availableTags,
+    focus: function( event, ui ) {
+      event.preventDefault()
+    },
     select: function (event, ui) {
       event.preventDefault()
       let quantidade = parseFloat($("#quantidade_produto_pedido").val())
@@ -365,13 +382,13 @@ $(".tags_produto_name").keyup(function (e) {
       }
 
       let produto = ui.item.label
-      let row = $(".produto_pedido" + produto.replace(/ /g, "_"))
+      let row = $(".produto_pedido" + produto.replace(/ /g, "_").replace(/=/g, ""))
       if (row.length > 0) {
-        row.attr("quantidade",row.attr("quantidade") + $("#quantidade_produto_pedido").val())
-       let input_quantidade =  row.find(".quantidade_produto_input")
-       input_quantidade.val(parseFloat(input_quantidade.val() )+ parseFloat($("#quantidade_produto_pedido").val() ))
-       alterarValorTotal()
-       $(".quantidade_produto_input,.input_valor_produto").keyup()
+        row.attr("quantidade", row.attr("quantidade") + $("#quantidade_produto_pedido").val())
+        let input_quantidade = row.find(".quantidade_produto_input")
+        input_quantidade.val(parseFloat(input_quantidade.val()) + parseFloat($("#quantidade_produto_pedido").val()))
+        alterarValorTotal()
+        $(".quantidade_produto_input,.input_valor_produto").keyup()
       } else {
         $(".modal_anotar_pedido tbody").append(
           '<tr preco_produto="' + ui.item.value.preco + '" produto="' +
@@ -379,17 +396,17 @@ $(".tags_produto_name").keyup(function (e) {
           '" quantidade="' +
           $("#quantidade_produto_pedido").val() +
           '" class="produto_pedido' +
-          produto.replace(/ /g, "_") +
+          produto.replace(/ /g, "_").replace(/=/g, "") +
           '"><td><input class = "quantidade_produto_input"  value="' +
           $("#quantidade_produto_pedido").val() +
           '"</td><td>' +
           produto +
           "</td><td> <input class = 'input_valor_produto'  value='  " + ui.item.value.preco + "'></td><td id='valor_produto_total_" +
-          produto.replace(/ /g, "_") +
+          produto.replace(/ /g, "_").replace(/=/g, "") +
           "' >" +
           parseFloat(ui.item.value.preco * quantidade).toFixed(2) +
           '</td> <td produto="' +
-          produto.replace(/ /g, "_") +
+          produto.replace(/ /g, "_").replace(/=/g, "") +
           '" class="remove_item_pedido ">-</td>'
         );
         let disabled = editando_troca_oleo == true ? "" : "disabled"
@@ -431,7 +448,6 @@ $(".tags_produto_name").keyup(function (e) {
 
 
 
-});
 let caixa = getCookie("last_codigo_colaborador");
 function setCaixa(code, callback) {
   console.log(code);
@@ -639,7 +655,7 @@ String.prototype.reverse = function () {
 };
 
 function mascaraMoeda(campo, evento) {
-  $(campo).mask("000.000.000,00",{reverse:true})
+  $(campo).mask("000.000.000,00", { reverse: true })
   // var tecla = !evento ? window.event.keyCode : evento.which;
   // var valor = campo.value.replace(/[^\d]+/gi, "").reverse();
   // var resultado = "";

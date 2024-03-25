@@ -19,7 +19,7 @@ foreach ($row_vendas as $key => $value) {
     $valor_venda = $value['total_valor'];
     $produto = $value['nomes'] != "" ? strtoupper($value['nomes']) : "Pré Venda";
     $quilometragem = $value['quilometragem'] != "" ? $value['quilometragem']."KM" : "Pré Venda";
-    $edit = $value["venda_fechada"]  == 0  ?"<i id_venda='".$value["id_venda"]."'onClick='editarPreVenda(this)'class='fa-regular fa-pen-to-square'></i>" : '<i class="fa-solid fa-xmark"></i>';
+    $edit = $value["venda_fechada"]  == 0  ?"<i id_venda='".$value["id_venda"]."'onClick='editarPreVenda(this)'class=' fa-regular fa-pen-to-square'></i>" : '<i class="fa-solid fa-xmark"></i>';
     $venda_fechada =  $value["venda_fechada"]  == 0 ? "<button id_venda='".$value["id_venda"]."' onClick='fecharVenda(this)' fechada = '".$value["venda_fechada"]."' class='fechar_venda'>FECHAR</button>" : "<button fechada = '".$value["venda_fechada"]."' class='fechar_venda'>FECHADA</button>" ;
     if($value["nomes"] !=""){
         $subtitle ="title='Marca: ".$value['marca'].", Modelo: ".$value["modelo"]." e Placa: " . str_replace('_',' ',$value['nomes']) . "'";
@@ -35,12 +35,12 @@ foreach ($row_vendas as $key => $value) {
         <td> " . $quilometragem . "  </td>
 
         <td> " . $value['colaborador'] . " </td>
-        <td> <i onClick='gerarNotas(".$value["id_venda"].",".$value["id_cliente"].")' produto='" . $value['forma_pagamento'] . "' class='fa-regular fa-file-lines'></i> </td>
+        <td class='hide_on_pdf'> <i onClick='gerarNotas(".$value["id_venda"].",".$value["id_cliente"].")' produto='" . $value['forma_pagamento'] . "' class='fa-regular fa-file-lines'></i> </td>
 
         <td> " . $value['forma_pagamento'] . " </td>
-        <td>$edit</td>
-        <td><i id_venda='".$value["id_venda"]."' onClick='deletaPreVenda(this)'class='fa-regular fa-trash-can'></i></td>
-        <td>$venda_fechada</td>
+        <td class='hide_on_pdf'>$edit</td>
+        <td class='hide_on_pdf'><i id_venda='".$value["id_venda"]."' onClick='deletaPreVenda(this)'class='fa-regular fa-trash-can'></i></td>
+        <td class='hide_on_pdf'>$venda_fechada</td>
 
 
         

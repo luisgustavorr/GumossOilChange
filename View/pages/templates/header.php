@@ -48,7 +48,23 @@
 object-fit: contain;" />
       <div class="right_side">
         <span><i class="fa-regular fa-clock"></i> <date_now class=" horario_atual_finder">Seg: 10/07/2023 10h40</date_now></span>
-        <a target="_blank" href="https://localhost/SistemaAutolub/SETUP.rar" download="OctopusXMLPrinter.rar">Baixar Programa Impressora</a>
+        <a target="_blank" href="https://localhost/SistemaAutolub/SETUP.rar" download="OctopusXMLPrinter.rar">Baixar Sistema Impressora</a>
+        
+        <?php 
+          if(isset($_COOKIE["chilgo_zotmassael"])){
+            $modo_atual = "Caixa";
+
+            if($_COOKIE["zotmassael_usot"] == 1){
+              $modo_atual = "Administrador";
+
+            }
+
+          if($_COOKIE["chilgo_zotmassael"] == 1){
+        ?>
+        <i title="Trocar Visualização | * Modo Atual : <?php echo   $modo_atual;?> *" id="chilgo_zotmassael" class="fa-solid fa-arrows-rotate"></i>
+        <?php }?>
+        <i title="Sair" id="logout" class="fa-solid fa-right-from-bracket"></i>
+        <?php }?>
       </div>
     </header>
     

@@ -133,7 +133,6 @@ fundo {
 }
 #numero_cliente_input {
   border-radius: 12px;
-  border: 1px solid #F53F00;
   height: 40px;
   padding: 0 5px;
   color: rgb(0, 0, 0);
@@ -635,7 +634,7 @@ fundo {
 .right_side {
   display: flex;
   justify-content: space-between;
-
+  width: 40%;
 }
 .right_side span {
   font-weight: 300;
@@ -665,7 +664,6 @@ fundo {
 #quilometragem,#valor_mao_obra
 {
   height: 40px;
-  border: 1px solid #F53F00;
   border-radius: 12px;
   padding: 5px;
   color: rgb(0, 0, 0);
@@ -736,7 +734,6 @@ fundo {
 }
 .modal_anotar_pedido #codigo_colaborador_input {
   height: 40px;
-  border: 1px solid #F53F00;
   border-radius: 12px;
   padding: 5px;
   color: rgb(9, 7, 7);
@@ -875,7 +872,7 @@ input#valor_entrada {
 } 
 .modal_anotar_pedido input
 {
-  border: 1px solid black !important;
+  border: 1px solid black ;
 }
 #select_caixa_add_usuario {
   background: none;
@@ -925,7 +922,6 @@ input#valor_entrada {
 }
 #nome_cliente_input {
   border-radius: 12px;
-  border: 1px solid #F53F00;
   height: 40px;
   padding: 0 5px;
   color: rgb(0, 0, 0);
@@ -1640,6 +1636,14 @@ input#valor_entrada {
   display: none;
   flex-direction: column;
 }
+#add_caixa_opener::after{
+  content: "F5";
+  font-size: 10px;
+  position: absolute;
+  top: 0;
+  right: 2px;
+  font-weight: 500;
+}
 #troca_oleo::after{
   content: "F2";
   font-size: 10px;
@@ -1963,7 +1967,6 @@ header img{
 }
 #prazo_cliente_input {
   border-radius: 12px;
-  border: 1px solid #F53F00;
   height: 40px;
   padding: 0 5px;
   color: rgb(0, 0, 0);
@@ -2437,9 +2440,212 @@ bottom: 0;
   border-right: none;
   border-radius: 5px 0 0 5px;
 }
+.modal_user_version {
+  display: none;
+  position: absolute;
+  width: 800px;
+  max-height: 700px;
+  background: white;
+  border-radius: 12px;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+  flex-direction: column;
+  padding: 2% 0;
+  z-index: 3;
+}
+.modal_user_version h3 {
+  font-size: 25px;
+  font-weight: 400;
+  width: 100%;
+  text-align: center;
+}
+.modal_user_version h3 red {
+  font-weight: 500;
+}
+.modal_user_version .first_row .left_side {
+  color: gray;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+}
+.modal_user_version .first_row .right_side {
+  width: 60%;
+  background: rgb(217, 217, 217);
+  border-radius: 10px 0 0 10px;
+  height: 100px;
+  color: gray;
+  display: flex;
+  justify-content: space-around;
+}
+.modal_user_version .first_row .right_side .input_codigo_user_father {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.modal_user_version .first_row .right_side .input_nome_user_father {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.modal_user_version .first_row .right_side input {
+  outline: none;
+  height: 40px;
+  color: #F53F00;
+  padding: 4px;
+  font-size: 20px;
+}
+.modal_user_version .first_row {
+  display: flex;
+  margin-top: 30px;
+}
+.modal_user_version .first_row .left_side span {
+  color: #F53F00;
+  border: 1px solid gray;
+  padding: 10px 25px;
+}
+.modal_user_version .valores_informados_box {
+  width: 90%;
+  margin: 30px 5%;
+  height: 200px;
+  border: 1px solid gray;
+  flex-direction: column;
+  display: flex;
+  border-radius: 12px;
+}
+.modal_user_version .valores_informados_box .valores_informados_title {
+  background: #F53F00;
+  height: 15%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+  color: white;
+  border-radius: 50px;
+  top: -15px;
+  position: relative;
+  left: 15px;
+  width: 180px;
+}
+.modal_user_version .valores_informados_box .valores_informados_footer red {
+  margin-left: 5px;
+}
+.modal_user_version .valores_informados_box .valores_informados_footer {
+  height: 15%;
+  position: relative;
+  display: flex;
+  bottom: -8%;
+  background: #242424;
+  color: white;
+  padding: 0 15px;
+  justify-content: center;
+  align-items: center;
+  left: 60%;
+  border-radius: 7px;
+  width: 200px;
+}
+.modal_user_version .valores_informados_box .valores_apurados_footer red {
+  margin-left: 5px;
+}
+#chilgo_zotmassael {
+  color: white;
+  cursor: pointer;
+}
+#logout{
+  color: white;
+  cursor: pointer;
+}
+.modal_user_version .valores_informados_box .valores_apurados_footer {
+  height: 15%;
+  position: relative;
+  display: flex;
+  bottom: -8%;
+  background: #242424;
+  color: white;
+  padding: 0 15px;
+  justify-content: center;
+  align-items: center;
+  left: 60%;
+  border-radius: 7px;
+  width: 200px;
+}
+.modal_user_version .valores_informados_box .body_valores {
+  height: 70%;
+  display: flex;
+  justify-content: space-between;
+}
+.modal_user_version .valores_informados_box .body_valores .input_princip {
+  border-radius: 12px 0 0 12px;
+  border: 1px solid gray;
+  padding: 0 5px;
+  border-right: 0;
+  height: 30px;
+}
+.modal_user_version
+  .valores_informados_box
+  .body_valores
+  .input_princip_completo {
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid gray;
+  width: 200px;
+  padding: 0 5px;
+}
+.modal_user_version .valores_informados_box .first_column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 100%;
+  width: 47%;
+  align-items: end;
+}
+.modal_user_version .valores_informados_box .first_column .qtd {
+  color: gray;
+  font-size: 13px;
+  margin: 0 13px;
+}
+.modal_user_version .valores_informados_box .first_column .quantidade {
+  background: #F53F00;
+  color: white;
+  padding: 0 10px;
+  border-radius: 0 12px 12px 0;
+  display: flex;
+  justify-content: center;
+  height: 30px;
+  width: 40px;
+  border: none;
+  align-items: center;
+}
+.modal_user_version .body_valores .first_column .input_valores {
+  display: flex;
+  align-items: center;
+}
+.modal_user_version .body_valores .first_column .input_valores label {
+  margin-right: 5px;
+}
+#salvar_fechamento_funcionario {
+  width: 100px;
+  color: white;
+  background: #F53F00;
+  border: none;
+  border-radius: 4px;
+  font-size: 20px;
+  padding: 5px 0;
+}
 @media print{
-  header, footer, aside, nav, form, #sidebar, .menu, .hero, .header_section,.chart_father {
-    display: none;
+  header, footer, aside, nav, form, #sidebar, .menu, .hero, .header_section,.chart_father,.hide_on_pdf,.sr-only {
+    display: none !important;
     visibility: hidden;
   }
+  html, body {
+    height:100%; 
+    margin: 0 !important; 
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
 }

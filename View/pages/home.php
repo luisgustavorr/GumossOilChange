@@ -1,8 +1,4 @@
-<script>
-    $(function() {
-        $(document).tooltip();
-    });
-</script>
+
 <!-- <div class="saving_products">
 
     <h3 class="saving_header">
@@ -127,7 +123,6 @@
                 <label for="">CEP</label>
                 <input type="text" name="" id="cep_loja">
             </div>
-
             <div class="input_father">
                 <label for="">Número</label>
                 <input type="text" name="" id="numero_loja">
@@ -432,13 +427,16 @@
     <?php
             if ($_COOKIE["zotmassael_usot"] == 1) {
             ?> 
-    <div class="princip_span" id="add_caixa_opener"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
+    <div class="princip_span" id="add_caixa_opener" onclick="abrirModal('modal_criar_loja');"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
     <?php 
             }
     ?> 
 </aside>
 <fundo></fundo>
-<form action="" class="modal modal_fechar_caixa">
+<?php 
+if($_COOKIE["zotmassael_usot"] == 1){
+ ?> 
+ <form action="" class="modal modal_fechar_caixa modal_admin_caixa">
     <!-- <i id="print_fechamento" class="fa-solid fa-print"></i> -->
     <div class="header_modal_fechar_caixa" style="display: flex;">
         <h3> Funcionário(a): <red><select id="caixa_ser_fechado">
@@ -459,9 +457,6 @@
 
         </div>
     </div>
-
-
-
     <div class="valores_informados_box">
         <span class="valores_informados_title">Valores Informados/Apurados:</span>
         <div class="body_valores">
@@ -564,51 +559,62 @@
 
     </div>
     <span class="edit_fechamento_button" onclick="editarFechamento(this)">Editar fechamento </span>
-
-    <!-- <h4 id="mostrar">Mostrar valores apurados</h4>
-    <div class="valores_informados_box">
-        <span class="valores_informados_title">Valores Apurados:</span>
+    <button id="salvar_form_fechamento_caixa">Salvar</button>
+</form>
+ <?php
+}else{
+?>
+<form class="modal modal_fechar_caixa modal_user_version" style="align-items: center;">
+<div class="valores_informados_box">
+        <span class="valores_informados_title">Valores Informados:</span>
         <div class="body_valores">
             <div class="first_column">
+
+                <input type="hidden"  value="<?php print_r($_COOKIE['caixa']); ?>" name="caixa_alvo">
                 <div class="input_valores">
-                    <label for="troco_inicial_fechar">Troco Inicial: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class=" input_princip_completo_apurados oders_inputs" name="troco_inicial_fechar" id="troco_inicial_fechar">
+                    <label for="dinheiro_informadas">Dinheiro: </label>
+                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="dinheiro_informadas" id="dinheiro_informadas">
                 </div>
                 <div class="input_valores">
-                    <label for="total_vendas">Total de Vendas: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class=" input_princip_completo_apurados oders_inputs" name="total_vendas" id="total_vendas">
+                    <label for="moedas_informadas">Moeda: </label>
+                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="moedas_informadas" id="moedas_informadas">
                 </div>
                 <div class="input_valores">
-                    <label for="troco_final">Troco Final: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class=" input_princip_completo_apurados oders_inputs" name="troco_final" id="troco_final">
+                    <label for="pix_informadas">Pix: </label>
+                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="pix_informadas" id="pix_informadas">
                 </div>
             </div>
             <div class="first_column">
                 <div class="input_valores">
-                    <label for="total_apurado">Total Apurado: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="input_princip_completo_apurados oders_inputs" name="total_apurado" id="total_apurado">
+                    <label for="cartao_informadas">Cartão: </label>
+                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="cartao_informadas" id="cartao_informadas">
+                </div>
+
+                <!-- <div class="input_valores">
+                    <label for="pix_informadas">Vale-Ticket </label>
+                    <input onKeyUp="mascaraMoeda(this, event)"type="text" class="input_princip others_inputs"name="pix_informadas" id="pix_informadas">
+                    <input onKeyUp="mascaraMoeda(this, event)"type="text"  class="quantidade quantidade_pix others_inputs">
+                </div> -->
+                <div class="input_valores">
+                    <label for="sangria_informadas">Sangria: </label>
+                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="sangria_informadas" id="sangria_informadas">
                 </div>
                 <div class="input_valores">
-                    <label for="total_informado">Total Informado: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="input_princip_completo_apurados oders_inputs" name="total_informado" id="total_informado">
-                </div>
-                <div class="input_valores">
-                    <label for="diferenca">Diferença: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="input_princip_completo_apurados oders_inputs" name="diferenca" id="diferenca">
+                    <label for="codigo_colaborador_informado_fechamento">Colaborador: </label>
+                    <input  type="text" class="valores_informados input_princip_completo others_inputs colab_code" name="codigo_colaborador_informado_fechamento" id="codigo_colaborador_informado_fechamento">
                 </div>
             </div>
             <div class="second_column">
 
             </div>
         </div>
-        <span class="valores_apurados_footer">Valor Total: <red> R$00,00</red> </span>
-    </div> -->
-    <!-- <div class="valores_apurados_box">
-        <span class="valores_apurados_title">Valores Informados:</span>
-        <span class="valores_apurados_footer">Valor Total: <red> R$00,00</red></span>
-    </div> -->
-    <button id="salvar_form_fechamento_caixa">Salvar</button>
+        <span class="valores_informados_footer">Valor Total: <red> R$00,00</red></span>
+    </div>
+    <button id="salvar_fechamento_funcionario">Salvar</button>
 </form>
+<?php 
+}
+?>
 <div class="header_section">
     <div class="left_side">
         <section style="width: 100%;">
@@ -637,7 +643,7 @@
             <span>Tipo de Pagamento mais recorrente:</span>
             <red class="pagamento_recorrente"><?php \Models\PainelControleModel::buscarDados('formaPagamentoMaisRepetida') ?></red>
             <span>Quantidade de Atendimentos no período:</span>
-            <red class="quant_vendas"><?php \Models\PainelControleModel::buscarDados('quantidadeVendas') ?> Atendimentos</red>
+            <red class="quant_vendas"><?php \Models\PainelControleModel::buscarDados('quantidadeVendas') ?> Vendas</red>
             <span>Veículo Mais Atendido no Período:</span>
             <red class="top_produto"><?php \Models\PainelControleModel::buscarDados('produtoMaisVendido') ?></red>
             <span>Valor Total de Atendimentos:</span>
@@ -670,7 +676,7 @@
 <div class="tabela_father">
     <div class="tabela_header">
 
-        <i id="voltar_semana" onclick="mudarTempo(this)" class="fa-solid fa-angle-left modificadores_tempo "></i> <span> Atendimentos no dia: <yellow> <?php echo date('d/m/Y') ?></yellow> <i onclick='printTable();' class="gerar_pdf fa-regular fa-file-pdf"></i></span><i onclick="mudarTempo(this)" id='adiantar_semana' class="fa-solid fa-angle-right modificadores_tempo adiantar_semana"></i>
+        <i id="voltar_semana" onclick="mudarTempo(this)" class="fa-solid fa-angle-left modificadores_tempo "></i> <span> Vendas no dia: <yellow> <?php echo date('d/m/Y') ?></yellow> <i onclick='printTable();' class="gerar_pdf fa-solid fa-print"></i></span><i onclick="mudarTempo(this)" id='adiantar_semana' class="fa-solid fa-angle-right modificadores_tempo adiantar_semana"></i>
     </div>
     <table id="table_tabela">
         <thead>
@@ -680,11 +686,11 @@
                 <th>Placa do Carro</th>
                 <th>Quilometragem do Carro</th>
                 <th>Cliente</th>
-                <th>Notas</th>
+                <th class='hide_on_pdf'>Notas</th>
                 <th>Método de Pagamento</th>
-                <th>Editar</th>
-                <th>Excluir</th>
-                <th>Fechar Venda</th>
+                <th  class='hide_on_pdf'>Editar</th>
+                <th  class='hide_on_pdf'>Excluir</th>
+                <th  class='hide_on_pdf'>Fechar Venda</th>
 
             </tr>
         </thead>
@@ -696,6 +702,8 @@
 </div>
 
 <input type="hidden" id="include_path" value="<?php echo INCLUDE_PATH ?>">
+<script src="<?php echo INCLUDE_PATH ?>js/jquery.cookie-1.4.1.min.js"></script>
+
 <script src="<?php echo INCLUDE_PATH ?>js/alertar.js"></script>
 
 <script src="<?php echo INCLUDE_PATH ?>js/OctopusXML.js"></script>

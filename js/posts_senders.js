@@ -1,5 +1,40 @@
 let editando_troca_oleo = false
+$("#chilgo_zotmassael").click(() => {
+  if ($.cookie("chilgo_zotmassael") == 1) {
 
+    let valor_atual = $.cookie("zotmassael_usot")
+    if (valor_atual == 0) {
+      valor_atual = 1
+    } else {
+      valor_atual = 0
+
+    }
+    $.cookie('zotmassael_usot', valor_atual, { expires: 30, path: '/' });
+    location.reload()
+  } else {
+    alertar("Usuário sem permissão")
+  }
+
+})
+$("#logout").click(() => {
+  $.removeCookie('chilgo_zotmassael')
+  $.removeCookie('zotmassael_usot')
+  $.removeCookie('negal_ctaide')
+  $.removeCookie('caixa')
+  $.removeCookie('last_codigo_colaborador')
+
+  location.reload()
+
+})
+$(document).ready(() => {
+  $(function () {
+    $(document).tooltip({
+      content: function (callback) {
+        callback($(this).prop('title').replace('|', '<br />'));
+      }
+    });
+  });
+})
 function alterarValorTotal() {
   $(".quantidade_produto_input,.input_valor_produto").keyup(function () {
     let produto = $(this).parent().parent().find(".remove_item_pedido ").attr("produto")
@@ -37,7 +72,7 @@ async function pedirSenha(text) {
         '<form id="verificar_senha" action="" class="formName">' +
         '<div class="form-group">' +
         '<label>Seu Código</label><br>' +
-        '<input type="text" placeholder="Seu Código" class="name form-control" required />' +
+        '<input class="form_senha_input" type="text" placeholder="Seu Código" class="name form-control" required />' +
         '</div>' +
         '</form>',
       buttons: {
@@ -66,8 +101,11 @@ async function pedirSenha(text) {
       onContentReady: function () {
         // bind to events
         var jc = this;
+        $(".form_senha_input").focus()
+
         this.$content.find('form').on('submit', function (e) {
           // if the user submits the form by pressing enter in the field.
+
           e.preventDefault();
           jc.$$formSubmit.trigger('click'); // reference the button and click it
         });
@@ -78,14 +116,30 @@ async function pedirSenha(text) {
   console.log(aprovado)
   return aprovado
 }
+function bloquearInputs(bloquear) {
+  if (bloquear) {
+    $(".modal_anotar_pedido input, .modal_anotar_pedido select").attr("disabled", "true")
+    $("#nome_cliente_input , #numero_cliente_input").removeAttr("disabled")
+    $("#nome_cliente_input , #numero_cliente_input").css("border", "2px solid red")
 
+  } else {
+    $(".modal_anotar_pedido input, .modal_anotar_pedido select").removeAttr("disabled")
+    $("#nome_cliente_input , #numero_cliente_input").css("border", "1px solid black")
+
+  }
+
+
+}
 async function editarPreVenda(elemento) {
   const aprovado = await pedirSenha("Editar")
   console.log(aprovado === "true")
+  bloquearInputs(false)
+
   $("#venda_id").val($(elemento).attr("id_venda"))
   if (aprovado.trim() === "true") {
     $.post("Models/post_receivers/select_troca_oleo.php", { id_venda: $(elemento).attr("id_venda") }, (ret) => {
       resetVenda()
+      console.log(ret)
       let JSONret = JSON.parse(ret)
       console.log(JSONret)
 
@@ -95,7 +149,7 @@ async function editarPreVenda(elemento) {
         $("#troca_oleo").trigger("click")
         $("#quilometragem").val(JSONret.quilometragem)
         $("#numero_cliente_input").val(JSONret.tel)
-  $("#valor_mao_obra").mask("000.000.000,00",{reverse:true})
+        $("#valor_mao_obra").mask("000.000.000,00", { reverse: true })
 
         $("#valor_mao_obra").val($("#valor_mao_obra").masked(valor_mao_obra.toFixed(2)))
         $("#placa_veiculo").val(JSONret.placa_carro)
@@ -104,6 +158,9 @@ async function editarPreVenda(elemento) {
       } else {
         $("#pre_venda_opener").trigger("click")
 
+      }
+      if ($(elemento).attr("id_cliente") == 0) {
+        bloquearInputs(true)
       }
       editando_troca_oleo = true
       $("#data_revisao").val(JSONret.data)
@@ -122,17 +179,17 @@ async function editarPreVenda(elemento) {
           '" quantidade="' +
           $("#quantidade_produto_pedido").val() +
           '" class="produto_pedido' +
-          produto.replace(/ /g, "_") +
+          produto.replace(/ /g, "_").replace(/=/g, "_") +
           '"><td> <input class = "quantidade_produto_input" value="' +
           e.quantidade +
           '"></td><td>' +
           produto +
           "</td><td> <input class = 'input_valor_produto' value='" + e.valor_venda.toFixed(2) + "' > </td><td id='valor_produto_total_" +
-          produto.replace(/ /g, "_") +
+          produto.replace(/ /g, "_").replace(/=/g, "_") +
           "' >" +
           parseFloat(e.valor_venda * e.quantidade).toFixed(2) +
           '</td> <td produto="' +
-          produto.replace(/ /g, "_") +
+          produto.replace(/ /g, "_").replace(/=/g, "_") +
           '" class="remove_item_pedido ">-</td>'
         );
       })
@@ -161,7 +218,7 @@ async function fecharVenda(elemento) {
   if (aprovado.trim() === "true") {
     $.post("Models/post_receivers/fechar_venda.php", { id_venda: $(elemento).attr("id_venda") }, (ret) => {
       console.log(ret)
-    alterarTabela();
+      alterarTabela();
 
     })
   } else {
@@ -218,11 +275,11 @@ function procurarVeiculos(inputID) {
   }
   $.post("Models/post_receivers/pesquisar_vendas.php", data, (ret) => {
     console.log(ret)
-    $("#table_tabela tbody").html(ret)
     if ($("#" + inputID).val() == "") {
-      $(".tabela_header span").html("Todos os Atendimentos")
-
+      alterarTabela()
     } else {
+      $("#table_tabela tbody").html(ret)
+
       if (inputID == "pesquisar_venda_carro") {
         $("#pesquisar_venda_cliente").val("")
         $(".tabela_header span").html("Atendimentos do Veículo: <yellow>" + $("#pesquisar_venda_carro").val().toUpperCase() + "</yellow>")
@@ -336,10 +393,22 @@ $('#clientes_opener').click(function (e) {
   $.post('Models/post_receivers/select_clientes.php', {}, (ret) => {
     console.log(ret)
     $(".modal_lista_clientes tbody").html(ret)
-editarCliente() 
+    editarCliente()
+    deletarClientes()
 
     selectTr()
 
+  })
+})
+$('#pesquisar_clientes_button').click(function (e) {
+  e.preventDefault()
+  $.post('Models/post_receivers/select_clientes_modal_clientes.php', { produto: $("#pesquisar_cliente").val() }, (ret) => {
+    console.log(ret)
+    $(".modal_produtos tbody").html(ret)
+    selectTr()
+    editarCliente()
+
+    deletarProdutos()
   })
 })
 $('#pesquisar_produto_button').click(function (e) {
@@ -401,7 +470,32 @@ function numberFormat(numero, casasDecimais = 2, separadorMilhar = ',', separado
   }
   return parseFloat(verdadeiro_numero).toFixed(casasDecimais).replace(/\d(?=(\d{3})+\.)/g, '$&' + separadorMilhar).replace('.', separadorDecimal);
 }
-$(".modal_fechar_caixa").submit(function (e) {
+$(".modal_user_version").submit(function (e) {
+  e.preventDefault();
+  var formData = new FormData(this);
+  console.log(formData)
+  let octopus = new OctopusXML()
+
+  $.ajax({
+    type: "POST",
+    url: "Models/post_receivers/insert_fechamento.php",
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: async function (data) {
+      console.log(data);
+      if (data != ' ') {
+        alert(data)
+      } else {
+        await octopus.printFechamento(formData, $("#vID").val(), $("#pID").val(), $("#portOcotpus").val())
+      }
+    },
+  });
+
+
+});
+
+$(".modal_admin_caixa").submit(function (e) {
   e.preventDefault()
   data = {
     data_fechamento: $('#data_fechamento_funcionario').val(),
@@ -419,7 +513,7 @@ $(".modal_fechar_caixa").submit(function (e) {
     function (ret) {
       console.log(ret)
       if (ret == ' ') {
-        alert('Fechamento realizado com sucesso!');
+        alertar('Fechamento realizado com sucesso!');
       }
     })
 })
@@ -967,7 +1061,7 @@ $(".modal_criar_loja").submit(async function (e) {
   await $.get(`https://viacep.com.br/ws/${$("#cep_loja").val()}/json/`, (ret) => {
     municipio = ret.localidade
     uf = ret.uf
-   } )
+  })
   let data = {
     nome_loja: $("#nome_loja").val(),
     cep_loja: $("#cep_loja").val(),
@@ -976,20 +1070,16 @@ $(".modal_criar_loja").submit(async function (e) {
     cUF: $("#cUF_loja").val(),
     IE_loja: $("#ie_loja").val(),
     CNPJ_loja: $("#cnpj_loja").val(),
-    csc_loja:$("#csc_loja").val(),
-    token_loja:$("#token_loja").val(),
-    uf:uf,
-    municipio:municipio
+    csc_loja: $("#csc_loja").val(),
+    token_loja: $("#token_loja").val(),
+    uf: uf,
+    municipio: municipio
   }
   $.post(include_path + "Models/post_receivers/insert_caixa.php", data, (ret) => {
     console.log(ret)
   })
 })
-$("#add_caixa_opener").click(function () {
-  $(".modal_criar_loja").css("display", "flex")
-  $("fundo").css("display", "flex")
 
-});
 $("#form_equip").submit(function (e) {
   e.preventDefault();
   data = {
@@ -1081,7 +1171,37 @@ function deletarProdutos() {
   });
 
 }
+function deletarClientes() {
+  $(".apagar_cliente").click(async function () {
+    const aprovado = await pedirSenha("Excluir")
+    if (aprovado.trim() === "true") {
 
+      let produto_id = $(this).attr("produto");
+      data = {
+        id: produto_id,
+      };
+      $.post(
+        include_path + "Models/post_receivers/delete_cliente.php",
+        data,
+        function (ret) {
+          console.log(ret)
+          $(".cliente_" + produto_id).remove();
+        }
+      );
+    } else {
+      $.alert({
+        title: 'Código Inválido',
+        content: "",
+        boxWidth: '500px',
+        useBootstrap: false,
+      });
+    }
+
+  });
+
+
+}
+deletarClientes()
 deletarProdutos()
 $("#salvar_caixa").click(function () {
   data = {
@@ -1124,17 +1244,17 @@ function cpfCNPJMask(esseElemento) {
 }
 function gerarNFe(id_venda) {
   console.log(id_venda)
-  $.post("Models/post_receivers/gerarNFE.php", { id_venda: id_venda },async (ret) => {
+  $.post("Models/post_receivers/gerarNFE.php", { id_venda: id_venda }, async (ret) => {
     console.log(ret)
     let dadosRecebidos = JSON.parse(ret)
-    let octopus =  new OctopusXML()
-    let xml = await octopus.saveFile("xml",dadosRecebidos.data,dadosRecebidos.porta)
-    let pdf = await octopus.saveFile("pdf",dadosRecebidos.data,dadosRecebidos.porta)
+    let octopus = new OctopusXML()
+    let xml = await octopus.saveFile("xml", dadosRecebidos.data, dadosRecebidos.porta)
+    let pdf = await octopus.saveFile("pdf", dadosRecebidos.data, dadosRecebidos.porta)
     console.log(pdf)
-    if(xml && pdf){
-      let print = await octopus.printFile(dadosRecebidos.porta,dadosRecebidos.data,dadosRecebidos.vID,dadosRecebidos.pID)
+    if (xml && pdf) {
+      let print = await octopus.printFile(dadosRecebidos.porta, dadosRecebidos.data, dadosRecebidos.vID, dadosRecebidos.pID)
       console.log(print)
-      if(print){
+      if (print) {
         console.log(ret)
         let retInJson = JSON.parse(ret)
         console.log(retInJson)
@@ -1150,12 +1270,12 @@ function gerarNFe(id_venda) {
         });
         $(".modal_imp_nfe button").html('IMPRIMIR')
       }
-  
-    }else{
+
+    } else {
       alert(`Erro ao gerar ou imprimir Nfe XML: ${xml}, PDF :${pdf}`)
     }
 
- 
+
   })
 }
 function gerarNFCe(id_venda) {
@@ -1184,7 +1304,7 @@ function gerarNFCe(id_venda) {
             action: function () {
               $.post("Models/post_receivers/gerarNFCe.php", { "nome_cliente": $(".nome_cliente_modal").val(), "cpf_nfe": $(".cpf_cliente_modal").val(), id_venda: id_venda }, (ret) => {
                 console.log(ret)
-            
+
               })
 
 
@@ -1204,7 +1324,7 @@ function gerarNFCe(id_venda) {
 
   })
 }
-function gerarNotas(id_venda,id_cliente) {
+function gerarNotas(id_venda, id_cliente) {
   let nfeObj = {
     nfe: {
       text: 'NF-e',
@@ -1215,12 +1335,12 @@ function gerarNotas(id_venda,id_cliente) {
       }
     }
   }
-  if(id_cliente == 0){
+  if (id_cliente == 0) {
     nfeObj = {
       nfe: {
         text: 'NF-e',
         action: function () {
-          alertar("Cliente não informado, impossível gerar NFe, edite a venda e coloque um cliente para gerar uma Nota Fiscal.","Erro!","500px","fa-solid fa-triangle-exclamation")
+          alertar("Cliente não informado, impossível gerar NFe, edite a venda e coloque um cliente para gerar uma Nota Fiscal.", "Erro!", "500px", "fa-solid fa-triangle-exclamation")
         }
       }
     }
@@ -1358,7 +1478,21 @@ function mudarTempo(esse) {
 
 function alterarTabela() {
   gerarGráficos()
+  $.post("Models/post_receivers/select_cliente.php", {}, (ret) => {
+    ret_inJSON = JSON.parse(ret)
+    ret_inJSON.forEach(e => {
+      produto = { "label": e.id + "-" + e.nome, "value": { "id": e.id, "nome": e.nome.replace(/=/g, ""), "tel": e.telefone } }
+      availableTags_client.unshift(produto)
+    })
+  })
+  $.post("Models/post_receivers/select_produto.php", {}, (ret) => {
+    ret_inJSON = JSON.parse(ret)
 
+    ret_inJSON.forEach(e => {
+      produto = { "label": e.nome, "value": { "id": e.id, "preco": e.valor_venda, "estoque": e.quantidade } }
+      availableTags.unshift(produto)
+    })
+  })
   data = {
     data_min: $("#data_minima").val(),
     data_max: $("#data_maxima").val(),
@@ -1374,7 +1508,7 @@ function alterarTabela() {
       let valorTotalMetricas =
         parseFloat(row.totalValor) ? parseFloat(row.totalValor).toFixed(2) : "00,00";
       $(".pagamento_recorrente").text(row.formaPagamentoMaisRepetida);
-      $(".quant_vendas").text(row.quantidadeVendas);
+      $(".quant_vendas").text(row.quantidadeVendas + " Vendas");
       $(".top_produto").text(row.produtoMaisVendido);
       console.log(valorTotalMetricas)
       $(".right_subdivision .valor_total").text("R$" + valorTotalMetricas);
@@ -1398,7 +1532,7 @@ function alterarTabela() {
         $(".tabela_header span").html(
           " Vendas no dia: <yellow>" +
           novaDataFormatada +
-          "</yellow> <i onclick='gerarPDFFullFunction(this)' class='gerar_pdf fa-regular fa-file-pdf'></i>"
+          "</yellow> <i onclick='printTable()' class='gerar_pdf fa-regular fa-file-pdf'></i>"
         );
       } else {
         var dataMomentMAX = moment($("#data_maxima").val(), "YYYY-MM-DD");
@@ -1410,7 +1544,7 @@ function alterarTabela() {
           dataMINFormatada +
           "</yellow> até <yellow>" +
           dataMAXFormatada +
-          "</yellow> <i onclick='gerarPDFFullFunction()'  class='gerar_pdf fa-regular fa-file-pdf'></i>"
+          "</yellow> <i onclick='printTable()'  class='gerar_pdf fa-regular fa-file-pdf'></i>"
         );
       }
     }
@@ -1441,7 +1575,7 @@ $("switch").click(function () {
           dataMINFormatada +
           "</yellow> até <yellow>" +
           dataMAXFormatada +
-          "</yellow> <i onclick='gerarPDFFullFunction()'class='gerar_pdf fa-regular fa-file-pdf'></i>"
+          "</yellow> <i onclick='printTable()'class='gerar_pdf fa-regular fa-file-pdf'></i>"
         );
       }
     );
@@ -1468,7 +1602,7 @@ $("switch").click(function () {
           dataMINFormatada +
           "</yellow> até <yellow>" +
           dataMAXFormatada +
-          "</yellow> <i onclick='gerarPDFFullFunction()' class='gerar_pdf fa-regular fa-file-pdf'></i>"
+          "</yellow> <i onclick='printTable()' class='gerar_pdf fa-regular fa-file-pdf'></i>"
         );
       }
     );

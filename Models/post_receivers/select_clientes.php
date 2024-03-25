@@ -13,10 +13,10 @@ if(isset($_POST['id'])){
     $relacionadosOrange = true;
     $lastRelacionado = 0;
     foreach ($caixas as $key => $value) {
-        echo '<tr class =" produto_' . $value['id'] . '" value="' . $value['id'] . '">
+        echo '<tr class =" cliente_' . $value['id'] . '" value="' . $value['id'] . '">
                         <td class="nome">'. ucfirst($value['nome']) . '</td>
                         <td class="codigo">' . ucfirst($value['id']) . '</td>
-                        <td class="codigo">' . ucfirst($value['telefone']) . '</td>
+                        <td class="codigo">' . ucfirst($value['tel']) . '</td>
                         <td ><i produto="' . $value['id'] . '" class="fa-solid editar_cliente fa-pen"></i></td>
                         <td><i title="Excluir Permanentemente" produto="' . $value['id'] . '" class="fa-solid apagar_cliente fa-trash-can"></i></td>
                         </tr>';
