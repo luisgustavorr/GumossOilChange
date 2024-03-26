@@ -32,7 +32,7 @@ $HORA_EMISSAO = date("H:m");
 $VENDEDOR = $infos_VENDA_CLIENTE["colaborador"] . " - " . $infos_VENDA_CLIENTE["nome_vendedor"];
 $CLIENTE = $infos_VENDA_CLIENTE["id"] . " - " . $infos_VENDA_CLIENTE["nome"];
 $NOME_FANTASIA = $infos_VENDA_CLIENTE["nome_fantasia"];
-$END_CLIENTE = $infos_VENDA_CLIENTE["nome_fantasia"] . ". " . $infos_VENDA_CLIENTE["numero"];
+$END_CLIENTE = $infos_VENDA_CLIENTE["rua"] . ". " . $infos_VENDA_CLIENTE["numero"];
 $BAIRRO_END_CLIENTE = $infos_VENDA_CLIENTE["bairro"];
 $CPF_CNPJ = $infos_VENDA_CLIENTE["CPF"];
 $TEL_CLIENTE = $infos_VENDA_CLIENTE["tel"];
@@ -40,8 +40,11 @@ $CIDADE_CLIENTE = $infos_VENDA_CLIENTE["municipio"] . "/" . $infos_VENDA_CLIENTE
 
 $CEP_CLIENTE =  $infos_VENDA_CLIENTE["CEP"];
 $PRAZO_DIAS_MAX =  $infos_VENDA_CLIENTE["prazo"];
-
 $PRAZO_DIAS_MIN = $infos_VENDA_CLIENTE["prazo"] - 3;
+
+if ($PRAZO_DIAS_MAX <= 3) {
+    $PRAZO_DIAS_MIN = 0;
+}
 // Adiciona uma página ao documento
 $pdf->AddPage();
 
@@ -119,13 +122,11 @@ $pdf->Text($distance_hora, $y + 4, "Vendedor : $VENDEDOR");
 $y = $y + 6;
 $x = $xInicial;
 $pdf->SetXY($x, $y);
-
-
 $x = $x + 10;
 $pdf->Cell(190, 40, '', 1, 1, "L");
 $pdf->SetFont("Roboto_Bold", "", 8);
 $pdf->Text($x, $y + 6, "CLIENTE : $CLIENTE ");
-$pdf->Text($x, $y + 15, "NOME_FANTASIA : $NOME_FANTASIA ");
+$pdf->Text($x, $y + 15, "NOME FANTASIA : $NOME_FANTASIA ");
 $pdf->SetFont("Roboto", "", 8);
 $pdf->Text($x, $y + 25, "Endereço : $END_CLIENTE ");
 $pdf->Text($x, $y + 35, "Bairro : $BAIRRO_END_CLIENTE ");
@@ -146,13 +147,15 @@ $x = $xInicial;
 $pdf->SetXY($x, $y);
 $pdf->SetFont("Roboto_Bold", "", 8);
 $pdf->Cell(15, 8, 'Cód.', 1, 0, "C");
-$pdf->Cell(80, 8, 'Descrição', 1, 0, "C");
+$pdf->Cell(74, 8, 'Descrição', 1, 0, "C");
 $pdf->Cell(31, 8, 'Grade', 1, 0, "C");
 $pdf->Cell(10, 8, 'Unid.', 1, 0, "C");
 $pdf->Cell(10, 8, 'Qtde.', 1, 0, "C");
 $pdf->Cell(13, 8, 'Preço.', 1, 0, "C");
+$pdf->Cell(12, 8, 'Acresc.', 1, 0, "C");
+
 $pdf->Cell(10, 8, 'Desc.', 1, 0, "C");
-$pdf->Cell(21, 8, 'Total.', 1, 0, "C");
+$pdf->Cell(15, 8, 'Total.', 1, 0, "C");
 $y = $y + 8;
 $pdf->SetXY($x, $y);
 $pdf->SetFont("Roboto", "", 7);
@@ -160,28 +163,48 @@ $linha = 0;
 $total_calculado = 0;
 $desconto = 0;
 $acrescimo = 0;
+function reduzirString($nome, $pdf,$tamanho_maximo)
+{
+    if ($pdf->GetStringWidth( $nome) > $tamanho_maximo) {
+        $nome = str_split($nome, 1);
+        while ($pdf->GetStringWidth(implode("", $nome)) > $tamanho_maximo ) {
+            array_pop($nome);
+        }
+        array_push($nome, ".", ".", ".");
+        $nome = implode("", $nome);
+    }
+    return $nome;
+
+}
+
 foreach ($produtos as $key => $value) {
-    $desconto = $desconto + number_format($value["desconto"], 2, ".");
-    $acrescimo = $acrescimo + number_format($value["acrescimo"], 2, ".");
+    $desconto_produto = (number_format($value["desconto"], 2, ".") * $value["quantidade_produto"]);
+    $acrescimo_produto =  (number_format($value["acrescimo"], 2, ".")  * $value["quantidade_produto"]);
+
+    $desconto = $desconto + $desconto_produto ;
+    $acrescimo = $acrescimo + $acrescimo_produto;
 
     $produto = \MySql::conectar()->prepare("SELECT * FROM tb_produtos WHERE id = ? ");
     $produto->execute(array($value['id_produto']));
     $produto = $produto->fetch();
     $total_produto =  number_format($produto["valor_venda"] * $value["quantidade_produto"], 2, ".");
     $total_calculado += $total_produto;
+    $nome_produto = $produto["nome"];
+    $nome_produto = reduzirString($nome_produto, $pdf,70);
     $pdf->SetXY($x, $y);
     $pdf->Cell(15, 8, $produto["id"], 1, 0, "C");
-    $pdf->Cell(80, 8, $produto["nome"], 1, 0, "C");
+    $pdf->Cell(74, 8, $nome_produto, 1, 0, "C");
     $pdf->Cell(31, 8, '0000 - GRADE PADRÃO', 1, 0, "C");
     $pdf->Cell(10, 8, $produto["unid_comercial"], 1, 0, "C");
     $pdf->Cell(10, 8,  $value["quantidade_produto"], 1, 0, "C");
     $pdf->Cell(13, 8, $produto["valor_venda"], 1, 0, "C");
-    $pdf->Cell(10, 8, '0.0', 1, 0, "C");
-    $pdf->Cell(21, 8, $total_produto, 1, 0, "C");
+    $pdf->Cell(12, 8, $value["acrescimo"], 1, 0, "C");
+    $pdf->Cell(10, 8, $value["desconto"], 1, 0, "C");
+    $pdf->Cell(15, 8, number_format($total_produto + ( $acrescimo_produto - $desconto_produto), 2), 1, 0, "C");
     $y = $y + 8;
 }
 $total_bruto = $total_calculado;
-$total_calculado = number_format($total_calculado - $desconto + $acrescimo, 2, ".");;
+$total_calculado = number_format($total_calculado  + ( $acrescimo - $desconto), 2, ".");;
 
 $pdf->SetXY($x, $y);
 $pdf->Cell(190, 60, '', 1, 0, "C");
@@ -190,7 +213,11 @@ $pdf->SetFont("Roboto_Bold", "", 8);
 $pdf->Text($x, $y + 6, "Forma de Pagamento :");
 $y = $y + 6;
 $pdf->SetFont("Roboto", "", 8);
-$pdf->Text($x, $y + 6, "Receber  Prazo: $PRAZO_DIAS_MIN-$PRAZO_DIAS_MAX DIAS  Valor: R$" . $total_calculado);
+if ($PRAZO_DIAS_MAX == 0) {
+    $pdf->Text($x, $y + 6, "Receber à Vista | Valor: R$" . $total_calculado);
+} else {
+    $pdf->Text($x, $y + 6, "Receber à Prazo: $PRAZO_DIAS_MIN-$PRAZO_DIAS_MAX DIAS | Valor: R$" . $total_calculado);
+}
 $pdf->SetFont("Roboto_Bold", "", 8);
 $y = $y + 6;
 $pdf->Text($x, $y + 6, "Vencimento : " . date('d/m/Y', strtotime($DATA_EMISSAO_S_FORMATACAO . ' + ' . $PRAZO_DIAS_MAX . ' days')) . " - R$$total_calculado");
@@ -207,7 +234,7 @@ $pdf->Text($x, $y, "Total Bruto :");
 $pdf->SetFont("Roboto", "", 8);
 
 $distancia = $x + $pdf->GetStringWidth("Total Bruto ") + 10;
-$pdf->Text($distancia, $y, number_format($total_bruto , 2, ","));
+$pdf->Text($distancia, $y, number_format($total_bruto, 2, ","));
 
 
 $y = $y + 6;
@@ -225,7 +252,7 @@ $pdf->SetFont("Roboto_Bold", "", 8);
 $pdf->Text($x, $y, "Acréscimo :");
 $pdf->SetFont("Roboto", "", 8);
 
-$pdf->Text($distancia, $y, $acrescimo);
+$pdf->Text($distancia, $y, number_format($acrescimo, 2));
 
 
 $y = $y + 6;
@@ -234,19 +261,19 @@ $pdf->SetFont("Roboto_Bold", "", 8);
 $pdf->Text($x, $y, "Frete :");
 $pdf->SetFont("Roboto", "", 8);
 
-$pdf->Text($distancia, $y, "00,00");
+$pdf->Text($distancia, $y, "0.00");
 
 $y = $y + 6;
 $pdf->SetFont("Roboto_Bold", "", 8);
 $pdf->Text($x, $y, "*Peso :");
 $pdf->SetFont("Roboto", "", 8);
 
-$pdf->Text($distancia, $y, "00.00");
+$pdf->Text($distancia, $y, "0.00");
 $y = $y + 6;
 
 $pdf->SetFont("Roboto_Bold", "", 9);
 $pdf->Text($x, $y, "TOTAL : ");
-$pdf->Text($distancia, $y, $total_calculado );
+$pdf->Text($distancia, $y, $total_calculado);
 
 $pdf->SetFont("Roboto", "", 8);
 
@@ -258,4 +285,4 @@ $pdf->Text($x - 100, $y + 14, "Data de Entrega");
 
 // Especifica o nome do arquivo de saída e exibe o PDF no navegador
 
-$pdf->Output("./meu_pdf.pdf", "I");
+$pdf->Output("Venda N. " . $_GET["venda"] . ".pdf", "I");

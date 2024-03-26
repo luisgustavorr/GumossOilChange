@@ -7,7 +7,6 @@ $("#chilgo_zotmassael").click(() => {
       valor_atual = 1
     } else {
       valor_atual = 0
-
     }
     $.cookie('zotmassael_usot', valor_atual, { expires: 30, path: '/' });
     location.reload()
@@ -16,15 +15,80 @@ $("#chilgo_zotmassael").click(() => {
   }
 
 })
+let can_see = false
+function changePasswordFuncionario() {
+  console.log($(this))
+  if (can_see) {
+    $("#see_password_funcionario").removeClass("fa-eye")
+    $("#see_password_funcionario").addClass("fa-eye-slash")
+    $("#input_add_usuario_senha").attr("type", "password")
+
+  } else {
+    $("#see_password_funcionario").addClass("fa-eye")
+    $("#see_password_funcionario").removeClass("fa-eye-slash")
+    $("#input_add_usuario_senha").attr("type", "text")
+
+  }
+  can_see = !can_see
+}
+function atualizarTabelaFuncionário() {
+  $.post("Models/post_receivers/select_colaboradores.php", {}, (ret) => {
+    $(".modal_funcionarios tbody").html(ret)
+    selectTr()
+    alterarTabela();
+  })
+}
+async function deleteProduto(id_colaborador) {
+  const aprovado = await pedirSenha("Excluir")
+
+  if (aprovado.trim() === "true") {
+    $.post("Models/post_receivers/delete_colaborador.php", { id: id_colaborador }, (ret) => {
+      atualizarTabelaFuncionário()
+    })
+  } else {
+    $.alert({
+      title: 'Código Inválido',
+      content: "",
+      boxWidth: '500px',
+      useBootstrap: false,
+    });
+  }
+
+}
+
+$(".modal_funcionarios").submit(function (e) {
+  e.preventDefault();
+  data = {
+    adm: $('input[name="add_funcionario"]:checked').val(),
+    nome: $("#input_add_usuario_nome").val(),
+    codigo: $("#input_add_usuario_codigo").val(),
+    caixa: $("#select_caixa_add_usuario").val(),
+    senha: $("#input_add_usuario_senha").val()
+  };
+  $.post(
+    include_path + "Models/post_receivers/insert_colaborador.php",
+    data,
+    function (ret) {
+      console.log(ret);
+      if (ret != "ERROR") {
+        $(".modal_funcionarios input[type='text']").each(function () {
+          console.log($(this).val());
+          $(this).val("")
+        });
+        atualizarTabelaFuncionário()
+      } else {
+        alert("Código já cadastrado");
+      }
+    }
+  );
+});
 $("#logout").click(() => {
-  $.removeCookie('chilgo_zotmassael')
-  $.removeCookie('zotmassael_usot')
-  $.removeCookie('negal_ctaide')
-  $.removeCookie('caixa')
-  $.removeCookie('last_codigo_colaborador')
-
+  $.removeCookie('chilgo_zotmassael', { path: '/' })
+  $.removeCookie('zotmassael_usot', { path: '/' })
+  $.removeCookie('negal_ctaide', { path: '/' })
+  $.removeCookie('caixa', { path: '/' })
+  $.removeCookie('last_codigo_colaborador', { path: '/' })
   location.reload()
-
 })
 $(document).ready(() => {
   $(function () {
@@ -45,6 +109,7 @@ function alterarValorTotal() {
     $("#valor_produto_total_" + produto).text(parseFloat(valor_total).toFixed(2))
   })
 }
+$("#input_add_usuario_codigo").mask("000000000000")
 function selecionarInfoProdutosEditados() {
   produtos = []
   $(".modal_anotar_pedido tbody tr").each(function (e) {
@@ -71,8 +136,8 @@ async function pedirSenha(text) {
       content: '' +
         '<form id="verificar_senha" action="" class="formName">' +
         '<div class="form-group">' +
-        '<label>Seu Código</label><br>' +
-        '<input class="form_senha_input" type="text" placeholder="Seu Código" class="name form-control" required />' +
+        '<label>Sua Senha</label><br>' +
+        '<input  type="text" placeholder="Sua Senha" class="form_senha_input name form-control" required />' +
         '</div>' +
         '</form>',
       buttons: {
@@ -124,7 +189,7 @@ function bloquearInputs(bloquear) {
 
   } else {
     $(".modal_anotar_pedido input, .modal_anotar_pedido select").removeAttr("disabled")
-    $("#nome_cliente_input , #numero_cliente_input").css("border", "1px solid black")
+    $("#nome_cliente_input , t").css("border", "1px solid black")
 
   }
 
@@ -1015,30 +1080,6 @@ $(".pedido_feito").change(function () {
   );
 });
 
-$(".modal_funcionarios").submit(function (e) {
-  e.preventDefault();
-  data = {
-    adm: $('input[name="add_funcionario"]:checked').val(),
-    nome: $("#input_add_usuario_nome").val(),
-    codigo: $("#input_add_usuario_codigo").val(),
-    caixa: $("#select_caixa_add_usuario").val(),
-  };
-  $.post(
-    include_path + "Models/post_receivers/insert_colaborador.php",
-    data,
-    function (ret) {
-      console.log(ret);
-      if (ret != "ERROR") {
-        $(".modal_adicionar_produto input").each(function () {
-          console.log($(this).val());
-        });
-        location.reload();
-      } else {
-        alert("Código já cadastrado");
-      }
-    }
-  );
-});
 $("#adicionar_caixa").submit(function (e) {
   e.preventDefault();
   data = {
@@ -1379,63 +1420,72 @@ function gerarNotas(id_venda, id_cliente) {
   });
 }
 
-$(".modal_anotar_pedido").submit(function (e) {
+$(".modal_anotar_pedido").submit(async function (e) {
+
   e.preventDefault()
-  let produtos = [];
-  let valor_produtos = 0;
-  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTOD OTODOTODOTODO
-  //ALTERAR OS ATTR DOS CHILDREN QUANDO MUDAR OS VALORES DE QUANTIDADE E PRECO UNITARIO
-  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+  $.post("Models/post_receivers/select_colaborador.php", { blue_sky: true, colaborador: $("#codigo_colaborador_input").val() }, (ret) => {
+    if (ret.trim() == ``) {
+      alertar("Código inválido")
+      return false
+    } else {
+      let produtos = [];
+      let valor_produtos = 0;
+      //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTOD OTODOTODOTODO
+      //ALTERAR OS ATTR DOS CHILDREN QUANDO MUDAR OS VALORES DE QUANTIDADE E PRECO UNITARIO
+      //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
 
-  $(".modal_anotar_pedido tbody")
-    .children()
-    .each(function (index) {
-      valor_produtos = parseFloat(valor_produtos) + parseFloat($(this).attr("preco_produto") * parseFloat($(this).attr("quantidade")))
-      let produto = {
-        id: $(this).attr("produto"),
-        quantidade: $(this).attr("quantidade"),
-        preco: $(this).attr("preco_produto"),
-      };
-      produtos[index] = produto;
-    });
+      $(".modal_anotar_pedido tbody")
+        .children()
+        .each(function (index) {
+          valor_produtos = parseFloat(valor_produtos) + parseFloat($(this).attr("preco_produto") * parseFloat($(this).attr("quantidade")))
+          let produto = {
+            id: $(this).attr("produto"),
+            quantidade: $(this).attr("quantidade"),
+            preco: $(this).attr("preco_produto"),
+          };
+          produtos[index] = produto;
+        });
 
-  const data = {
-    marca_veiculo: $("#marca_veiculo").val(),
-    modelo_veiculo: $("#modelo_veiculo").val(),
-    data_revisao: $("#data_revisao").val(),
-    nome_cliente: $("#nome_cliente_input").val(),
-    tel_cliente: $("#numero_cliente_input").val(),
-    codigo_colaborador: $("#codigo_colaborador_input").val(),
-    pre_venda: $("#pre_venda").val(),
-    quilometragem: $("#quilometragem").val(),
-    metodo_pagamento: $("#metodo_pagamento").val(),
-    valor_mao_obra: $("#valor_mao_obra").val(),
-    placa_veiculo: $("#placa_veiculo").val(),
-    produtos: produtos,
-    valor_produtos: valor_produtos,
-    id_cliente: $("#cliente_id").val(),
-    prazo: $("#prazo_cliente_input").val()
-  }
-  if (editando_troca_oleo) {
-    data["id_venda"] = $("#venda_id").val()
-    $.post("Models/post_receivers/update_troca_oleo.php", data, function (ret) {
-      console.log(ret)
-      alterarTabela();
-      resetVenda()
-      e.preventDefault()
+      const data = {
+        marca_veiculo: $("#marca_veiculo").val(),
+        modelo_veiculo: $("#modelo_veiculo").val(),
+        data_revisao: $("#data_revisao").val(),
+        nome_cliente: $("#nome_cliente_input").val(),
+        tel_cliente: $("#numero_cliente_input").val(),
+        codigo_colaborador: $("#codigo_colaborador_input").val(),
+        pre_venda: $("#pre_venda").val(),
+        quilometragem: $("#quilometragem").val(),
+        metodo_pagamento: $("#metodo_pagamento").val(),
+        valor_mao_obra: $("#valor_mao_obra").val(),
+        placa_veiculo: $("#placa_veiculo").val(),
+        produtos: produtos,
+        valor_produtos: valor_produtos,
+        id_cliente: $("#cliente_id").val(),
+        prazo: $("#prazo_cliente_input").val()
+      }
+      if (editando_troca_oleo) {
+        data["id_venda"] = $("#venda_id").val()
+        $.post("Models/post_receivers/update_troca_oleo.php", data, function (ret) {
+          console.log(ret)
+          alterarTabela();
+          resetVenda()
+          e.preventDefault()
 
-    })
-  } else {
+        })
+      } else {
 
-    $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
-      console.log(ret)
-      alterarTabela();
-      resetVenda()
-      e.preventDefault()
+        $.post("Models/post_receivers/insert_troca_oleo.php", data, function (ret) {
+          console.log(ret)
+          alterarTabela();
+          resetVenda()
+          e.preventDefault()
 
-    })
+        })
 
-  }
+      }
+    }
+  })
+
 
 
 });
@@ -1532,7 +1582,7 @@ function alterarTabela() {
         $(".tabela_header span").html(
           " Vendas no dia: <yellow>" +
           novaDataFormatada +
-          "</yellow> <i onclick='printTable()' class='gerar_pdf fa-regular fa-file-pdf'></i>"
+          "</yellow> <i onclick='printTable()' class='gerar_pdf fa-solid fa-print'></i>"
         );
       } else {
         var dataMomentMAX = moment($("#data_maxima").val(), "YYYY-MM-DD");
@@ -1544,7 +1594,7 @@ function alterarTabela() {
           dataMINFormatada +
           "</yellow> até <yellow>" +
           dataMAXFormatada +
-          "</yellow> <i onclick='printTable()'  class='gerar_pdf fa-regular fa-file-pdf'></i>"
+          "</yellow> <i onclick='printTable()'  class='gerar_pdf fa-solid fa-print'></i>"
         );
       }
     }
@@ -1575,7 +1625,7 @@ $("switch").click(function () {
           dataMINFormatada +
           "</yellow> até <yellow>" +
           dataMAXFormatada +
-          "</yellow> <i onclick='printTable()'class='gerar_pdf fa-regular fa-file-pdf'></i>"
+          "</yellow> <i onclick='printTable()'class='gerar_pdf fa-solid fa-print'></i>"
         );
       }
     );
@@ -1602,7 +1652,7 @@ $("switch").click(function () {
           dataMINFormatada +
           "</yellow> até <yellow>" +
           dataMAXFormatada +
-          "</yellow> <i onclick='printTable()' class='gerar_pdf fa-regular fa-file-pdf'></i>"
+          "</yellow> <i onclick='printTable()' class='gerar_pdf fa-solid fa-print'></i>"
         );
       }
     );

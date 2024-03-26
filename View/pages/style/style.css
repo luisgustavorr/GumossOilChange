@@ -1518,10 +1518,11 @@ input#valor_entrada {
   padding: 10px 20px;
   border-radius: 10px;
 }
-.inputs_father_user input[type="text"] {
+.inputs_father_user input[type="text"],.inputs_father_user input[type="password"] {
   height: 30px;
   border-radius: 10px;
   border: 1px solid gray;
+  padding: 5px;
 }
 .inputs_add_usuario {
   display: flex;
@@ -1538,11 +1539,25 @@ input#valor_entrada {
   height: 30px;
   display: flex;
 }
+
 .modal_produtos .fa-solid.fa-link {
   margin-right: 10px;
 }
-
-
+#input_add_usuario_senha {
+  border: none;
+  width: 150px;
+}
+#senha_user_input_father {
+  border: 1px solid gray;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 5px;
+}
+#see_password{
+  cursor: pointer;
+}
 .jconfirm.jconfirm-my-theme {
   .jconfirm-bg {
     background-color: #242424;
@@ -1636,8 +1651,72 @@ input#valor_entrada {
   display: none;
   flex-direction: column;
 }
+.modal_funcionarios {
+  width: 80%;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  background: white;
+  height: 500px;
+  border-radius: 12px;
+  display: none;
+  z-index: 3;
+  padding-bottom: 5%;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.modal_produtos table thead,.modal_funcionarios table thead {
+  background: red;
+  border-radius: 12px 12px 0 0;
+  color: white;
+  height: auto;
+  padding: 10px 0;
+  display: flex;
+}
+.modal_produtos table,.modal_funcionarios table {
+  display: flex;
+  flex-direction: column;
+  max-height: 90%;
+  overflow-y: scroll;
+}
+.modal_produtos table thead tr,.modal_funcionarios table thead tr {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+.modal_produtos table thead tr th,.modal_funcionarios table thead tr th {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+}
+.modal_produtos table tbody tr td,.modal_funcionarios table tbody tr td {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+}
+.modal_produtos table tbody tr i,.modal_funcionarios table tbody tr i {
+  cursor: pointer;
+}
+.modal_produtos table  tbody tr,.modal_funcionarios table tbody tr {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  padding: 7px;
+  border-bottom: 1px solid;
+}
 #add_caixa_opener::after{
   content: "F5";
+  font-size: 10px;
+  position: absolute;
+  top: 0;
+  right: 2px;
+  font-weight: 500;
+}
+#funcionarios_opener::after{
+  content: "F6";
   font-size: 10px;
   position: absolute;
   top: 0;

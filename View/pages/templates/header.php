@@ -12,10 +12,8 @@
       rel="stylesheet"
     />
 
-    <script
-      src="https://kit.fontawesome.com/01be29431d.js"
-      crossorigin="anonymous"
-    ></script>
+    <link rel="stylesheet" href="./icons/css/all.css" />
+
     <link rel="stylesheet"  href="<?php echo INCLUDE_PATH?>View/pages/style/style.css" />
     <title>AutoLub</title>
     <script type="text/javascript" src="<?php echo INCLUDE_PATH?>js/jquery.js"></script>

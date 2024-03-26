@@ -1,4 +1,3 @@
-
 <!-- <div class="saving_products">
 
     <h3 class="saving_header">
@@ -278,7 +277,7 @@
             </tr>
         </thead>
         <tbody>
-
+            
 
         </tbody>
     </table>
@@ -295,6 +294,64 @@
 </form>
 
 </div>
+<form class="modal modal_funcionarios">
+    <table>
+        <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>Nome</th>
+                <th>Administrador</th>
+                <th>Loja</th>
+                <th>Excluir</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+    <div class="inputs_add_usuario">
+        <div class="inputs_father_user">
+            <label for="input_add_usuario_codigo">Código:</label>
+            <input type="text" name="input_add_usuario_codigo" required id="input_add_usuario_codigo" class="oders_inputs">
+        </div>
+        <div class="inputs_father_user">
+            <label for="input_add_usuario_nome">Nome:</label>
+            <input type="text" name="input_add_usuario_nome" required id="input_add_usuario_nome" class="oders_inputs">
+        </div>
+        <div class="inputs_father_user">
+            <label for="input_add_usuario_senha">Senha:</label>
+            <div id="senha_user_input_father">
+            <input type="password" name="input_add_usuario_senha" required id="input_add_usuario_senha" class="oders_inputs">
+            <i onclick="changePasswordFuncionario()" id="see_password_funcionario" class="fa-solid fa-eye-slash"></i>
+            </div>
+        </div>
+        <span>Loja Destinada : <select name="select_caixa_add_usuario" id="select_caixa_add_usuario">
+
+                <?php
+                $caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_lojas`");
+                $caixas->execute();
+                $caixas = $caixas->fetchAll();
+                $query = "SELECT ";
+                foreach ($caixas as $key => $value) {
+                    echo '<option value="' . $value['caixa'] . '">' . ucfirst($value['caixa']) . '</option>';
+                    $query .="JSON_EXTRACT(json_precos, '$.".$value["caixa"]."') AS '".$value["caixa"]."',"; 
+                }
+                $query .="tb_produtos.* FROM tb_produtos;";
+                ?>
+            </select></span>
+        <div class=" input_por_peso">
+            <label for="">Administrador?</label><br />
+            <div class="inputs_radio_father">
+                <label for="sim">Sim</label>
+                <input class="oders_inputs" type="radio" name="add_funcionario" required value="1" id="sim">
+                <label for="nao">Não</label>
+                <input class="oders_inputs" type="radio" name="add_funcionario" value="0" id="nao">
+            </div>
+        </div>
+        <button id="add_usuario">Adicionar</button>
+    </div>
+</form>
 <form method="POST" class="modal modal_anotar_pedido">
     <input type="hidden" id="cliente_id" value="false" disabled>
     <input type="hidden" id="venda_id" value="false" disabled>
@@ -425,48 +482,50 @@
     <div class="princip_span" onclick="abrirModal('modal_produtos');" id="produtos_opener"><i class="fa-solid fa-cart-shopping"></i> <span>Produtos </span> </div>
     <div class="princip_span" id="clientes_opener" onclick="abrirModal('modal_lista_clientes');$('.modal_clientes input').val('')"> <i class="fa-solid fa-user-group"></i> <span>Adicionar Clientes </span> </div>
     <?php
-            if ($_COOKIE["zotmassael_usot"] == 1) {
-            ?> 
-    <div class="princip_span" id="add_caixa_opener" onclick="abrirModal('modal_criar_loja');"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
-    <?php 
-            }
-    ?> 
+    if ($_COOKIE["zotmassael_usot"] == 1) {
+    ?>
+        <div class="princip_span" id="add_caixa_opener" onclick="abrirModal('modal_criar_loja');"><i class="fa-solid fa-house-medical"></i> <span>Adicionar Loja</span> </div>
+        <div class="princip_span" id="funcionarios_opener" onclick="abrirModal('modal_funcionarios');atualizarTabelaFuncionário()"><i class="fa-solid fa-users"></i> <span>Funcionários</span> </div>
+
+    <?php
+    }
+    ?>
 </aside>
 <fundo></fundo>
-<?php 
-if($_COOKIE["zotmassael_usot"] == 1){
- ?> 
- <form action="" class="modal modal_fechar_caixa modal_admin_caixa">
-    <!-- <i id="print_fechamento" class="fa-solid fa-print"></i> -->
-    <div class="header_modal_fechar_caixa" style="display: flex;">
-        <h3> Funcionário(a): <red><select id="caixa_ser_fechado">
-                    <option disabled selected value="">Clique para selecionar</option>
-                    <?php
-                    $caixas = \MySql::conectar()->prepare("SELECT `tb_colaboradores`.* FROM  `tb_colaboradores`;");
-                    $caixas->execute();
-                    $caixas = $caixas->fetchAll();
-                    foreach ($caixas as $key => $value) {
-                        echo '<option value="' . $value['caixa'] . '||' . $value['codigo'] . '">' . ucfirst($value['nome']) . '</option>';
-                    }
-                    ?>
-                </select></red>
-        </h3>
-        <div class="left_side">
-            <label>Data do Fechamento:<i class="fa-solid fa-spinner fa-spin-pulse"></i></label>
-            <input type="date" value="<?php echo date('Y-m-d') ?>" id="data_fechamento_funcionario">
+<?php
+if ($_COOKIE["zotmassael_usot"] == 1) {
+?>
+    <form action="" class="modal modal_fechar_caixa modal_admin_caixa">
+        <!-- <i id="print_fechamento" class="fa-solid fa-print"></i> -->
+        <div class="header_modal_fechar_caixa" style="display: flex;">
+            <h3> Funcionário(a): <red><select id="caixa_ser_fechado">
+                        <option disabled selected value="">Clique para selecionar</option>
+                        <?php
+                        $caixas = \MySql::conectar()->prepare("SELECT `tb_colaboradores`.* FROM  `tb_colaboradores`;");
+                        $caixas->execute();
+                        $caixas = $caixas->fetchAll();
+                        foreach ($caixas as $key => $value) {
+                            echo '<option value="' . $value['caixa'] . '||' . $value['codigo'] . '">' . ucfirst($value['nome']) . '</option>';
+                        }
+                        ?>
+                    </select></red>
+            </h3>
+            <div class="left_side">
+                <label>Data do Fechamento:<i class="fa-solid fa-spinner fa-spin-pulse"></i></label>
+                <input type="date" value="<?php echo date('Y-m-d') ?>" id="data_fechamento_funcionario">
 
+            </div>
         </div>
-    </div>
-    <div class="valores_informados_box">
-        <span class="valores_informados_title">Valores Informados/Apurados:</span>
-        <div class="body_valores">
-            <div class="first_column">
-                <span class="column_title">Informados/Apurados</span>
-                <?php
-                $valores_informados_de_hoje = \MySql::conectar()->prepare("SELECT * FROM `tb_fechamento` WHERE `data` = CURDATE() ORDER BY `id`");
-                $valores_informados_de_hoje->execute(array());
-                $valores_informados_de_hoje = $valores_informados_de_hoje->fetch();
-                $valores_apurados_de_hoje = \MySql::conectar()->prepare("SELECT 
+        <div class="valores_informados_box">
+            <span class="valores_informados_title">Valores Informados/Apurados:</span>
+            <div class="body_valores">
+                <div class="first_column">
+                    <span class="column_title">Informados/Apurados</span>
+                    <?php
+                    $valores_informados_de_hoje = \MySql::conectar()->prepare("SELECT * FROM `tb_fechamento` WHERE `data` = CURDATE() ORDER BY `id`");
+                    $valores_informados_de_hoje->execute(array());
+                    $valores_informados_de_hoje = $valores_informados_de_hoje->fetch();
+                    $valores_apurados_de_hoje = \MySql::conectar()->prepare("SELECT 
                 (SELECT ROUND(SUM(`valor`),2) 
                  FROM `tb_vendas`
                  WHERE DATE(`data`) = CURDATE()
@@ -487,132 +546,132 @@ if($_COOKIE["zotmassael_usot"] == 1){
                  WHERE DATE(`data`) = CURDATE() GROUP BY DATE(`data`) 
                  ) AS sangria,
                  (SELECT `moeda_apurada` FROM `tb_fechamento` WHERE DATE(`data`) = CURDATE() GROUP BY DATE(`data`) ) AS moeda;");
-                $valores_apurados_de_hoje->execute();
-                $valores_apurados_de_hoje = $valores_apurados_de_hoje->fetch();
-                $total_valores_informados_de_hoje = 0;
+                    $valores_apurados_de_hoje->execute();
+                    $valores_apurados_de_hoje = $valores_apurados_de_hoje->fetch();
+                    $total_valores_informados_de_hoje = 0;
 
-                if ($total_valores_informados_de_hoje != false) {
-                    $total_valores_informados_de_hoje = $valores_informados_de_hoje['dinheiro'] + $valores_informados_de_hoje['moeda'] + $valores_informados_de_hoje['pix'] + $valores_informados_de_hoje['cartao'] - $valores_informados_de_hoje['sangria'];
-                } else {
-                    $valores_informados_de_hoje = [
-                        "dinheiro" => 0,
-                        "moeda" => 0,
-                        "pix" => 0,
-                        "cartao" => 0,
-                        "sangria" => 0,
-                    ];
-                }
-                $total_valores_apurados_de_hoje = $valores_apurados_de_hoje['dinheiro'] + $valores_apurados_de_hoje['moeda'] + $valores_apurados_de_hoje['pix'] + $valores_apurados_de_hoje['cartao'] - $valores_apurados_de_hoje['sangria'];
+                    if ($total_valores_informados_de_hoje != false) {
+                        $total_valores_informados_de_hoje = $valores_informados_de_hoje['dinheiro'] + $valores_informados_de_hoje['moeda'] + $valores_informados_de_hoje['pix'] + $valores_informados_de_hoje['cartao'] - $valores_informados_de_hoje['sangria'];
+                    } else {
+                        $valores_informados_de_hoje = [
+                            "dinheiro" => 0,
+                            "moeda" => 0,
+                            "pix" => 0,
+                            "cartao" => 0,
+                            "sangria" => 0,
+                        ];
+                    }
+                    $total_valores_apurados_de_hoje = $valores_apurados_de_hoje['dinheiro'] + $valores_apurados_de_hoje['moeda'] + $valores_apurados_de_hoje['pix'] + $valores_apurados_de_hoje['cartao'] - $valores_apurados_de_hoje['sangria'];
 
-                ?>
-                <div class="input_valores">
-                    <label for="dinheiro_informadas">Dinheiro: </label>
-                    <div class="input_modal_fechamento_column">
-                        <input type="text" disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" value="<?php echo number_format($valores_informados_de_hoje['dinheiro'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="dinheiro_informadas" id="dinheiro_informadas">
-                        <input type="text" disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" value="<?php echo number_format($valores_apurados_de_hoje['dinheiro'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="dinheiro_apuradas" id="dinheiro_apuradas" style="border-radius:0 15px 15px 0; border-left:1px solid gray;">
+                    ?>
+                    <div class="input_valores">
+                        <label for="dinheiro_informadas">Dinheiro: </label>
+                        <div class="input_modal_fechamento_column">
+                            <input type="text" disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" value="<?php echo number_format($valores_informados_de_hoje['dinheiro'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="dinheiro_informadas" id="dinheiro_informadas">
+                            <input type="text" disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" value="<?php echo number_format($valores_apurados_de_hoje['dinheiro'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="dinheiro_apuradas" id="dinheiro_apuradas" style="border-radius:0 15px 15px 0; border-left:1px solid gray;">
+                        </div>
                     </div>
-                </div>
-                <!-- <div class="input_valores">
+                    <!-- <div class="input_valores">
                     <label for="moedas_informadas">Moeda: </label>
                     <div class="input_modal_fechamento_column">
                         <input type="text" disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" value="<?php echo number_format($valores_informados_de_hoje['moeda'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="moedas_informadas" id="moedas_informadas">
                         <input type="text" onkeyup="mascaraMoedaSemSeparacaoMilhar(this,event)" value="<?php echo number_format($valores_apurados_de_hoje['moeda'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="moedas_apuradas" id="moedas_apuradas" style="border-radius:0 15px 15px 0; border-left:1px solid gray;">
                     </div>
                 </div> -->
-                <div class="input_valores">
-                    <label for="pix_informadas">Pix: </label>
-                    <div class="input_modal_fechamento_column">
-                        <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" type="text" value="<?php echo number_format($valores_informados_de_hoje['pix'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="pix_informadas" id="pix_informadas">
-                        <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" type="text" value="<?php echo number_format($valores_apurados_de_hoje['pix'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="pix_apuradas" id="pix_apuradas" style="border-radius:0 15px 15px 0; border-left:1px solid gray;">
+                    <div class="input_valores">
+                        <label for="pix_informadas">Pix: </label>
+                        <div class="input_modal_fechamento_column">
+                            <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" type="text" value="<?php echo number_format($valores_informados_de_hoje['pix'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="pix_informadas" id="pix_informadas">
+                            <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" type="text" value="<?php echo number_format($valores_apurados_de_hoje['pix'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="pix_apuradas" id="pix_apuradas" style="border-radius:0 15px 15px 0; border-left:1px solid gray;">
+                        </div>
                     </div>
                 </div>
+                <div class="first_column">
+                    <span class="column_title">Informados/Apurados</span>
+
+                    <div class="input_valores">
+                        <label for="cartao_informadas">Cartão: </label>
+                        <div class="input_modal_fechamento_column">
+                            <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" type="text" class="valores_informados input_princip_completo oders_inputs" value="<?php echo number_format($valores_informados_de_hoje['cartao'], 2, '.', '') ?>" name="cartao_informadas" id="cartao_informadas">
+                            <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" value="<?php echo number_format($valores_apurados_de_hoje['cartao'], 2, '.', '') ?>" type="text" class="valores_informados input_princip_completo oders_inputs" name="cartao_apuradas" id="cartao_apuradas" style="border-radius:0 15px 15px 0; border-left:1px solid gray;">
+                        </div>
+                    </div>
+
+                    <div class="input_valores">
+                        <label for="sangria_informadas">Sangria: </label>
+                        <div class="input_modal_fechamento_column">
+                            <input type="text" disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" class="valores_informados input_princip_completo oders_inputs" value="<?php echo number_format($valores_informados_de_hoje['sangria'], 2, '.', '') ?>" name="sangria_informadas" id="sangria_informadas">
+                            <input type="text" disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" value="<?php echo number_format($valores_apurados_de_hoje['sangria'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="sangria_apuradas" id="sangria_apuradas" style="border-radius:0 15px 15px 0; border-left:1px solid gray;">
+                        </div>
+                    </div>
+                    <div class="input_valores">
+                        <label for="codigo_funcionario_fechamento_caixa">Funcionário: </label>
+                        <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" type="text" class="valores_informados  input_princip_completo_apurados oders_inputs" name="codigo_funcionario_fechamento_caixa" id="codigo_funcionario_fechamento_caixa">
+                    </div>
+                </div>
+
+
             </div>
-            <div class="first_column">
-                <span class="column_title">Informados/Apurados</span>
 
-                <div class="input_valores">
-                    <label for="cartao_informadas">Cartão: </label>
-                    <div class="input_modal_fechamento_column">
-                        <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" type="text" class="valores_informados input_princip_completo oders_inputs" value="<?php echo number_format($valores_informados_de_hoje['cartao'], 2, '.', '') ?>" name="cartao_informadas" id="cartao_informadas">
-                        <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" value="<?php echo number_format($valores_apurados_de_hoje['cartao'], 2, '.', '') ?>" type="text" class="valores_informados input_princip_completo oders_inputs" name="cartao_apuradas" id="cartao_apuradas" style="border-radius:0 15px 15px 0; border-left:1px solid gray;">
-                    </div>
-                </div>
-
-                <div class="input_valores">
-                    <label for="sangria_informadas">Sangria: </label>
-                    <div class="input_modal_fechamento_column">
-                        <input type="text" disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" class="valores_informados input_princip_completo oders_inputs" value="<?php echo number_format($valores_informados_de_hoje['sangria'], 2, '.', '') ?>" name="sangria_informadas" id="sangria_informadas">
-                        <input type="text" disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" value="<?php echo number_format($valores_apurados_de_hoje['sangria'], 2, '.', '') ?>" class="valores_informados input_princip_completo oders_inputs" name="sangria_apuradas" id="sangria_apuradas" style="border-radius:0 15px 15px 0; border-left:1px solid gray;">
-                    </div>
-                </div>
-                <div class="input_valores">
-                    <label for="codigo_funcionario_fechamento_caixa">Funcionário: </label>
-                    <input disabled onkeyup="mascaraMoedaSemSeparacaoMilhar(this)" type="text" class="valores_informados  input_princip_completo_apurados oders_inputs" name="codigo_funcionario_fechamento_caixa" id="codigo_funcionario_fechamento_caixa">
-                </div>
-            </div>
-
+            <span class="valores_informados_footer">Valor Informado: <red> R$<?php echo number_format($total_valores_informados_de_hoje, 2, ',', '') ?></red></span>
+            <span class="valores_apurados_footer">Valor Apurado: <red> R$<?php echo number_format($total_valores_apurados_de_hoje, 2, ',', '') ?></red></span>
 
         </div>
-
-        <span class="valores_informados_footer">Valor Informado: <red> R$<?php echo number_format($total_valores_informados_de_hoje, 2, ',', '') ?></red></span>
-        <span class="valores_apurados_footer">Valor Apurado: <red> R$<?php echo number_format($total_valores_apurados_de_hoje, 2, ',', '') ?></red></span>
-
-    </div>
-    <span class="edit_fechamento_button" onclick="editarFechamento(this)">Editar fechamento </span>
-    <button id="salvar_form_fechamento_caixa">Salvar</button>
-</form>
- <?php
-}else{
+        <span class="edit_fechamento_button" onclick="editarFechamento(this)">Editar fechamento </span>
+        <button id="salvar_form_fechamento_caixa">Salvar</button>
+    </form>
+<?php
+} else {
 ?>
-<form class="modal modal_fechar_caixa modal_user_version" style="align-items: center;">
-<div class="valores_informados_box">
-        <span class="valores_informados_title">Valores Informados:</span>
-        <div class="body_valores">
-            <div class="first_column">
+    <form class="modal modal_fechar_caixa modal_user_version" style="align-items: center;">
+        <div class="valores_informados_box">
+            <span class="valores_informados_title">Valores Informados:</span>
+            <div class="body_valores">
+                <div class="first_column">
 
-                <input type="hidden"  value="<?php print_r($_COOKIE['caixa']); ?>" name="caixa_alvo">
-                <div class="input_valores">
-                    <label for="dinheiro_informadas">Dinheiro: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="dinheiro_informadas" id="dinheiro_informadas">
+                    <input type="hidden" value="<?php print_r($_COOKIE['caixa']); ?>" name="caixa_alvo">
+                    <div class="input_valores">
+                        <label for="dinheiro_informadas">Dinheiro: </label>
+                        <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="dinheiro_informadas" id="dinheiro_informadas">
+                    </div>
+                    <div class="input_valores">
+                        <label for="moedas_informadas">Moeda: </label>
+                        <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="moedas_informadas" id="moedas_informadas">
+                    </div>
+                    <div class="input_valores">
+                        <label for="pix_informadas">Pix: </label>
+                        <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="pix_informadas" id="pix_informadas">
+                    </div>
                 </div>
-                <div class="input_valores">
-                    <label for="moedas_informadas">Moeda: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="moedas_informadas" id="moedas_informadas">
-                </div>
-                <div class="input_valores">
-                    <label for="pix_informadas">Pix: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="pix_informadas" id="pix_informadas">
-                </div>
-            </div>
-            <div class="first_column">
-                <div class="input_valores">
-                    <label for="cartao_informadas">Cartão: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="cartao_informadas" id="cartao_informadas">
-                </div>
+                <div class="first_column">
+                    <div class="input_valores">
+                        <label for="cartao_informadas">Cartão: </label>
+                        <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="cartao_informadas" id="cartao_informadas">
+                    </div>
 
-                <!-- <div class="input_valores">
+                    <!-- <div class="input_valores">
                     <label for="pix_informadas">Vale-Ticket </label>
                     <input onKeyUp="mascaraMoeda(this, event)"type="text" class="input_princip others_inputs"name="pix_informadas" id="pix_informadas">
                     <input onKeyUp="mascaraMoeda(this, event)"type="text"  class="quantidade quantidade_pix others_inputs">
                 </div> -->
-                <div class="input_valores">
-                    <label for="sangria_informadas">Sangria: </label>
-                    <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="sangria_informadas" id="sangria_informadas">
+                    <div class="input_valores">
+                        <label for="sangria_informadas">Sangria: </label>
+                        <input onKeyUp="mascaraMoeda(this, event)" type="text" class="valores_informados input_princip_completo others_inputs" name="sangria_informadas" id="sangria_informadas">
+                    </div>
+                    <div class="input_valores">
+                        <label for="codigo_colaborador_informado_fechamento">Colaborador: </label>
+                        <input type="text" class="valores_informados input_princip_completo others_inputs colab_code" name="codigo_colaborador_informado_fechamento" id="codigo_colaborador_informado_fechamento">
+                    </div>
                 </div>
-                <div class="input_valores">
-                    <label for="codigo_colaborador_informado_fechamento">Colaborador: </label>
-                    <input  type="text" class="valores_informados input_princip_completo others_inputs colab_code" name="codigo_colaborador_informado_fechamento" id="codigo_colaborador_informado_fechamento">
-                </div>
-            </div>
-            <div class="second_column">
+                <div class="second_column">
 
+                </div>
             </div>
+            <span class="valores_informados_footer">Valor Total: <red> R$00,00</red></span>
         </div>
-        <span class="valores_informados_footer">Valor Total: <red> R$00,00</red></span>
-    </div>
-    <button id="salvar_fechamento_funcionario">Salvar</button>
-</form>
-<?php 
+        <button id="salvar_fechamento_funcionario">Salvar</button>
+    </form>
+<?php
 }
 ?>
 <div class="header_section">
@@ -654,9 +713,9 @@ if($_COOKIE["zotmassael_usot"] == 1){
             <span>Do dia <?php echo date('d/m/Y') ?></span>
             <?php
             if ($_COOKIE["zotmassael_usot"] == 1) {
-            ?> 
+            ?>
                 <button onclick="abrirModal('modal_fechar_caixa')"><i class="fa-solid fa-cart-shopping"></i> Fechamentos</button>
-            
+
             <?php
             } else {
             ?>
@@ -688,9 +747,9 @@ if($_COOKIE["zotmassael_usot"] == 1){
                 <th>Cliente</th>
                 <th class='hide_on_pdf'>Notas</th>
                 <th>Método de Pagamento</th>
-                <th  class='hide_on_pdf'>Editar</th>
-                <th  class='hide_on_pdf'>Excluir</th>
-                <th  class='hide_on_pdf'>Fechar Venda</th>
+                <th class='hide_on_pdf'>Editar</th>
+                <th class='hide_on_pdf'>Excluir</th>
+                <th class='hide_on_pdf'>Fechar Venda</th>
 
             </tr>
         </thead>

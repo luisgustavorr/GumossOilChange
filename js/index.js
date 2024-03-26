@@ -192,8 +192,8 @@ function editarCliente() {
 }
 editarCliente()
 function selectTr() {
-  $("body .modal_produtos tbody tr, body .modal_lista_clientes tbody tr").on("click", function () {
-    $(".modal_produtos tbody tr, .modal_lista_clientes tbody tr").removeClass("marked_tr_tabela_produtos")
+  $("body .modal_produtos tbody tr, body .modal_lista_clientes tbody tr,body .modal_funcionarios tbody tr").on("click", function () {
+    $(".modal_produtos tbody tr, .modal_lista_clientes tbody tr, .modal_funcionarios tbody tr").removeClass("marked_tr_tabela_produtos")
     $(this).addClass("marked_tr_tabela_produtos")
 
   })
@@ -319,6 +319,13 @@ shortcut.add("F5", () => {
     $("fundo").css("display", "none");
   });
   $("#add_caixa_opener").trigger("click")
+})
+shortcut.add("F6", () => {
+  $(".modal").each(function () {
+    $(this).css("display", "none");
+    $("fundo").css("display", "none");
+  });
+  $("#funcionarios_opener").trigger("click")
 })
 
 $("#clientes_opener").click(() => {
