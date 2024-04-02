@@ -1651,6 +1651,33 @@ input#valor_entrada {
   display: none;
   flex-direction: column;
 }
+#lixeira_opener {
+  color: white;
+  background: #F53F00;
+  padding: 10px 30px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+#pesquisar_cliente_button {
+  width: 50px;
+  background: #F53F00;
+  color: white;
+  border-radius: 0 10px 10px 0;
+  height: 30px;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+#pesquisar_cliente {
+  border: none;
+  border-radius: 10px 0 0 10px;
+  text-align: center;
+}
 .modal_funcionarios {
   width: 80%;
   transform: translate(-50%, -50%);
@@ -1803,13 +1830,14 @@ input#valor_entrada {
   cursor: pointer;
 }
 #add_produto_opener {
-  cursor: pointer;
-  background: #F53F00;
   color: white;
-  border: none;
-  height: 25px;
-  padding: 0 10px;
-  border-radius: 5px;
+  background: #F53F00;
+  padding: 10px 30px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 #add_cliente_opener {
   cursor: pointer;

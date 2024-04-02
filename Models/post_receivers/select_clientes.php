@@ -7,8 +7,12 @@ if(isset($_POST['id'])){
     $infos = $infos->fetch(PDO::FETCH_ASSOC);
     print_r(json_encode($infos,JSON_UNESCAPED_UNICODE));
 }else{
-    $caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_clientes` WHERE id != 0");
-    $caixas->execute();
+    $nome = "";
+    if(isset($_POST["nome"])){
+        $nome =$_POST["nome"];
+    }
+    $caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_clientes` WHERE id != 0 AND nome LIKE ?");
+    $caixas->execute(array("%".$nome."%"));
     $caixas = $caixas->fetchAll();
     $relacionadosOrange = true;
     $lastRelacionado = 0;

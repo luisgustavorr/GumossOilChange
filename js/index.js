@@ -242,6 +242,25 @@ $("#cnpj_cliente").keyup(function () {
   }
 
 })
+$(".valores_informados").keyup(function () {
+  soma = 0;
+  $(".valores_informados").each(function (index) {
+    if ($(this).val() != '' && $(this).attr("id").trim() != "codigo_colaborador_informado_fechamento") {
+
+      if ($(this).attr("id") != "sangria_informadas") {
+
+        soma += parseFloat($(this).val().replace(".", "").replace(",", "."));
+      }
+
+    }
+
+    console.log($(this).val().replace(".", "").replace(",", "."));
+  });
+
+  $(".valores_informados_footer red").text(
+    "R$" + soma.toFixed(2).replace(".", ",")
+  );
+});
 function changeSwitch(cnpj = false, manual = false) {
   $("#cnpj_cliente").val("")
   console.log(cnpj)

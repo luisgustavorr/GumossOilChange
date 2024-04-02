@@ -253,8 +253,8 @@
 
         <span id="add_cliente_opener" onclick="abrirModal('modal_clientes')">Adicionar Cliente</span>
         <div class="input_pesquisar_produto_father">
-            <input type="text" placeholder="Pesquisar Produto" id="pesquisar_produto">
-            <div id="pesquisar_produto_button"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <input type="text" placeholder="Pesquisar Produto" id="pesquisar_cliente">
+            <div id="pesquisar_cliente_button"><i class="fa-solid fa-magnifying-glass"></i></div>
         </div>
     </div>
 

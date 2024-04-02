@@ -309,6 +309,8 @@ async function deletaPreVenda(elemento) {
     }
     $.post("Models/post_receivers/delete_venda.php", { id: $(elemento).attr("id_venda") }, (ret) => {
       gerarGráficos()
+      alterarTabela();
+
       $(elemento).parent().parent().remove()
     })
 
@@ -465,11 +467,24 @@ $('#clientes_opener').click(function (e) {
 
   })
 })
-$('#pesquisar_clientes_button').click(function (e) {
+$("#pesquisar_cliente").keyup((e) => {
+  if (e.keyCode == 13) {
+    e.preventDefault()
+    $.post('Models/post_receivers/select_clientes.php', { nome: $("#pesquisar_cliente").val() }, (ret) => {
+      console.log(ret)
+      $(".modal_lista_clientes tbody").html(ret)
+      selectTr()
+      editarCliente()
+  
+      deletarProdutos()
+    })
+  }
+})
+$('#pesquisar_cliente_button').click(function (e) {
   e.preventDefault()
-  $.post('Models/post_receivers/select_clientes_modal_clientes.php', { produto: $("#pesquisar_cliente").val() }, (ret) => {
+  $.post('Models/post_receivers/select_clientes.php', { nome: $("#pesquisar_cliente").val() }, (ret) => {
     console.log(ret)
-    $(".modal_produtos tbody").html(ret)
+    $(".modal_lista_clientes tbody").html(ret)
     selectTr()
     editarCliente()
 
@@ -486,6 +501,8 @@ $('#pesquisar_produto_button').click(function (e) {
     deletarProdutos()
   })
 })
+
+
 $('#produtos_opener').click(function (e) {
   e.preventDefault()
   $.post('Models/post_receivers/select_produtos_modal_produtos.php', { produto: $("#pesquisar_produto").val() }, (ret) => {
@@ -718,6 +735,7 @@ $("#pesquisar_produto").keyup((e) => {
     })
   }
 })
+
 function openProdModal() {
   $("#input_file_label").css("display", "flex")
   reiniciarAddProduto()
@@ -1118,6 +1136,7 @@ $(".modal_criar_loja").submit(async function (e) {
   }
   $.post(include_path + "Models/post_receivers/insert_caixa.php", data, (ret) => {
     console.log(ret)
+    location.reload()
   })
 })
 

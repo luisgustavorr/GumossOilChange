@@ -1,6 +1,6 @@
 <?php 
 include('../../MySql.php');
-$caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_produtos` WHERE `nome` LIKE ? AND caixa = ? ORDER BY relacionado DESC;");
+$caixas = \MySql::conectar()->prepare("SELECT * FROM `tb_produtos` WHERE `nome` LIKE ? AND caixa = ? AND deletado = 0 ORDER BY relacionado DESC;");
 $caixas->execute(array('%'.$_POST['produto'].'%',$_COOKIE["caixa"]));
 $caixas = $caixas->fetchAll();
 $relacionadosOrange = true;
