@@ -19,7 +19,7 @@ foreach ($row_vendas as $key => $value) {
     $valor_venda = $value['total_valor'];
     $produto = $value['nomes'] != "" ? strtoupper($value['nomes']) : "Pré Venda";
     $quilometragem = $value['quilometragem'] != "" ? $value['quilometragem']."KM" : "Pré Venda";
-    $edit = $value["venda_fechada"]  == 0  ?"<i id_venda='".$value["id_venda"]."'onClick='editarPreVenda(this)'class=' fa-regular fa-pen-to-square'></i>" : '<i class="fa-solid fa-xmark"></i>';
+    $edit =( $value["venda_fechada"]  == 0 OR  $value["id_cliente"] == 0 )?"<i id_cliente='".$value["id_cliente"]."' id_venda='".$value["id_venda"]."'onClick='editarPreVenda(this)'class='fa-regular fa-pen-to-square'></i>" : '<i class="fa-solid fa-xmark"></i>';
     $venda_fechada =  $value["venda_fechada"]  == 0 ? "<button id_venda='".$value["id_venda"]."' onClick='fecharVenda(this)' fechada = '".$value["venda_fechada"]."' class='fechar_venda'>FECHAR</button>" : "<button fechada = '".$value["venda_fechada"]."' class='fechar_venda'>FECHADA</button>" ;
     if($value["nomes"] !=""){
         $subtitle ="title='Marca: ".$value['marca'].", Modelo: ".$value["modelo"]." e Placa: " . str_replace('_',' ',$value['nomes']) . "'";

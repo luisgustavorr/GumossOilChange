@@ -529,21 +529,21 @@ if ($_COOKIE["zotmassael_usot"] == 1) {
                 (SELECT ROUND(SUM(`valor`),2) 
                  FROM `tb_vendas`
                  WHERE DATE(`data`) = CURDATE()
-                 AND (`forma_pagamento` = 'Cartão Crédito' OR `forma_pagamento` = 'Cartão Débito') GROUP BY DATE(`data`) 
+                 AND (`forma_pagamento` = 'Cartão Crédito' OR `forma_pagamento` = 'Cartão Débito') AND fechada = 1 GROUP BY DATE(`data`) 
                  ) AS cartao,
                  (SELECT ROUND(SUM(`valor`),2) +0
                  FROM `tb_vendas`
                  WHERE DATE(`data`) = CURDATE()
-                 AND `forma_pagamento` = 'Dinheiro' GROUP BY DATE(`data`) 
+                 AND `forma_pagamento` = 'Dinheiro' GROUP BY DATE(`data`)   AND fechada = 1 
                  ) AS dinheiro,
                    (SELECT ROUND(SUM(`valor`),2)
                  FROM `tb_vendas`
                  WHERE DATE(`data`) = CURDATE()
-                 AND `forma_pagamento` = 'Pix' GROUP BY DATE(`data`) 
+                 AND `forma_pagamento` = 'Pix' GROUP BY DATE(`data`)   AND fechada = 1 
                  ) AS pix,
                  (SELECT ROUND(SUM(`valor`),2)
                  FROM `tb_sangrias`
-                 WHERE DATE(`data`) = CURDATE() GROUP BY DATE(`data`) 
+                 WHERE DATE(`data`) = CURDATE() GROUP BY DATE(`data`)   AND fechada = 1 
                  ) AS sangria,
                  (SELECT `moeda_apurada` FROM `tb_fechamento` WHERE DATE(`data`) = CURDATE() GROUP BY DATE(`data`) ) AS moeda;");
                     $valores_apurados_de_hoje->execute();
